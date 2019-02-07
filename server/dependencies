@@ -1,0 +1,4 @@
+flask
+flask_restful
+flask-sqlalchemy
+mysql-connector
