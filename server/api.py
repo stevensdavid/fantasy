@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
+import inspect
 
 from database import db_session
 from models import User
@@ -18,10 +19,8 @@ class Users(Resource):
     
     def put(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('first_name', type=str)
-        parser.add_argument('last_name', type=str)
-        parser.add_argument('email', type=str)
-        parser.add_argument('tag', type=str)
+        for arg, datatype in User.constructor_params():
+            parser.add_argument(arg, type=datatype)
         args = parser.parse_args(strict=True)
         # pylint: disable=no-member
         db_session.add(User(**args))
