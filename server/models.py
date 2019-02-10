@@ -126,6 +126,30 @@ class Event(Base, Serializeable):
         return f'<Event {self.name} ({self.event_id})>'
 
 
+class Entrant(Base, Serializeable):
+    __tablename__ = "Entrant"
+    event_id = Column(Integer, ForeignKey("Event.event_id"), primary_key=True)
+    player_id = Column(Integer, ForeignKey(
+        "Player.player_id"), primary_key=True)
+    seed = Column(Integer)
+
+    @staticmethod
+    def constructor_params():
+        return {
+            'event_id': int,
+            'player_id': int,
+            'seed': int,
+        }
+
+    def __init__(self, event_id, player_id, seed):
+        self.event_id = event_id
+        self.player_id = player_id
+        self.seed = seed
+
+    def __repr__(self):
+        return f'<Entrant player {self.player_id} event {self.event_id}>'
+
+
 class FantasyDraft(Base, Serializeable):
     __tablename__ = "FantasyDraft"
     league_id = Column(Integer, ForeignKey(

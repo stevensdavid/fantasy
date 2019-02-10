@@ -43,6 +43,14 @@ CREATE TABLE Event
   start_at     TIMESTAMP
 );
 
+CREATE TABLE Entrant
+(
+  event_id INT REFERENCES Event,
+  player_id INT REFERENCES Player,
+  seed INT,
+  PRIMARY KEY(event_id, player_id)
+);
+
 CREATE TABLE FantasyDraft
 (
   league_id INT REFERENCES FantasyLeague,
