@@ -41,6 +41,12 @@ CREATE TABLE Tournament
   slug VARCHAR(255)
 );
 
+create table VideoGame(
+  videogame_id int primary key,
+  name varchar(255),
+  display_name varchar(255)
+);
+
 CREATE TABLE Event
 (
   event_id     INT PRIMARY KEY,
@@ -48,7 +54,8 @@ CREATE TABLE Event
   name         VARCHAR(255),
   slug         VARCHAR(255),
   num_entrants INT,
-  start_at     TIMESTAMP
+  start_at     INT,
+  videogame_id int references VideoGame
 );
 
 CREATE TABLE Entrant

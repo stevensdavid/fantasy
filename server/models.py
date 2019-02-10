@@ -129,7 +129,8 @@ class Event(Base, Serializeable):
     name = Column(String)
     slug = Column(String)
     num_entrants = Column(Integer)
-    start_at = Column(TIMESTAMP)
+    start_at = Column(Integer)
+    videogame_id = Column(Integer, ForeignKey("VideoGame.videogame_id"))
 
     @staticmethod
     def constructor_params():
@@ -139,18 +140,36 @@ class Event(Base, Serializeable):
             'name': str,
             'slug': str,
             'num_entrants': int,
-            'start_at': str,
+            'start_at': int,
+            'videogame_id': int,
         }
 
-    def __init__(self, event_id, name, tournament_id, slug, num_entrants, start_at=None):
+    def __init__(self, event_id, name, tournament_id, slug, num_entrants, videogame_id, start_at=None):
         self.event_id = event_id
         self.name = name
         self.slug = slug
+        self.tournament_id = tournament_id
         self.num_entrants = num_entrants
+        self.videogame_id = videogame_id
         self.start_at = start_at
 
     def __repr__(self):
         return f'<Event {self.name} ({self.event_id})>'
+
+
+class VideoGame(Base, Serializeable):
+    __tablename__ = "VideoGame"
+    videogame_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    display_name = Column(String)
+
+    def __init__(self, videogame_id, name, display_name):
+        self.videogame_id = videogame_id
+        self.name = name
+        self.display_name = display_name
+
+    def __repr__(self):
+        return f'<VideoGame {self.videogame_id}>'
 
 
 class Entrant(Base, Serializeable):
