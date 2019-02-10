@@ -1,5 +1,6 @@
 from flask import Flask
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Api, Resource, reqparse
+
 from database import db_session
 from models import User
 
@@ -22,6 +23,7 @@ class Users(Resource):
         parser.add_argument('email', type=str)
         parser.add_argument('tag', type=str)
         args = parser.parse_args(strict=True)
+        # pylint: disable=no-member
         db_session.add(User(**args))
         db_session.commit()
 
@@ -34,4 +36,3 @@ def shutdown_session(exception=None):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
