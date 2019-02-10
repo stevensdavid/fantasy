@@ -102,6 +102,7 @@ class FantasyLeague(Base, Serializeable):
 class Event(Base, Serializeable):
     __tablename__ = "Event"
     event_id = Column(Integer, primary_key=True)
+    tournament_id = Column(Integer, ForeignKey("Tournament.tournament_id"))
     name = Column(String)
     slug = Column(String)
     num_entrants = Column(Integer)
@@ -110,13 +111,16 @@ class Event(Base, Serializeable):
     @staticmethod
     def constructor_params():
         return {
+            'event_id':int,
+            'tournament_id':int,
             'name': str,
             'slug': str,
             'num_entrants': int,
             'start_at': str,
         }
 
-    def __init__(self, name, slug, num_entrants, start_at=None):
+    def __init__(self, event_id, name, tournament_id, slug, num_entrants, start_at=None):
+        self.event_id = event_id
         self.name = name
         self.slug = slug
         self.num_entrants = num_entrants

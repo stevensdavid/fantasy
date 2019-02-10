@@ -34,9 +34,17 @@ CREATE TABLE FantasyLeague
   event_id  INT REFERENCES Event
 );
 
+CREATE TABLE Tournament
+(
+  tournament_id INT PRIMARY KEY ,
+  name VARCHAR(255),
+  slug VARCHAR(255)
+);
+
 CREATE TABLE Event
 (
   event_id     INT PRIMARY KEY,
+  tournament_id int references Tournament,
   name         VARCHAR(255),
   slug         VARCHAR(255),
   num_entrants INT,
