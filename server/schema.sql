@@ -1,5 +1,10 @@
 USE fantasy;
 
+CREATE TABLE Constants
+(
+  last_event_update DATE
+);
+
 CREATE TABLE User
 (
   user_id    INT AUTO_INCREMENT

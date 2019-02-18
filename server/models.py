@@ -1,10 +1,27 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, DATE
 from database import Base
 
 
 class Serializeable():
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Constants(Base, Serializeable):
+    __tablename__ = "Constants"
+    last_event_update = Column(DATE)
+
+    @staticmethod
+    def constructor_params():
+        return {
+            'last_event_update': DATE
+        }
+
+    def __init__(self, last_event_update):
+        self.last_event_update = last_event_update
+
+    def __repr__(self):
+        return f'<Constants last_event_update: {self.last_event_update}>'
 
 
 class User(Base, Serializeable):
