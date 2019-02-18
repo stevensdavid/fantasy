@@ -2,12 +2,15 @@ from flask import Flask
 from flask_restful import Api, Resource, reqparse
 import inspect
 import time
+from datetime import date
 
+from smashgg import SmashGG
 from database import db_session
-from models import User, Friends, Player, FantasyDraft, FantasyLeague, FantasyResult, Tournament, Event, VideoGame, FantasyDraft
+from models import User, Friends, Player, FantasyDraft, FantasyLeague, FantasyResult, Tournament, Event, VideoGame, FantasyDraft, Constants
 
 app = Flask(__name__)
 api = Api(app)
+smashgg = SmashGG()
 
 
 class Users(Resource):
@@ -39,6 +42,24 @@ class Events(Resource):
             for t in tournaments]}
 
 
+class DatabaseVersion():
+    def get(self):
+        current_version = Constants.query.first()
+        return {'last_event_update': current_version.last_event_update}
+
+    def put(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('last_event_update', type=date)
+        req_date = parser.parse_args(strict=True)['last_event_update']
+        current_version = Constants.query.first()
+        if req_date > current_version.last_event_update:
+            smashgg.get_new_events()
+            current_version.last_event_update = date.today()
+            db_session.commit()
+        return {'last_event_update': current_version.last_event_update}
+
+
+api.add_resource(DatabaseVersion, '/event_version')
 api.add_resource(Users, '/users')
 api.add_resource(Events, '/events')
 
