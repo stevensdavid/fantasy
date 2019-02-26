@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, DATE
+from sqlalchemy import Column, Integer, String, TIMESTAMP, ForeignKey, DATE, Boolean
 from database import Base
 
 
@@ -57,7 +57,7 @@ class User(Base, Serializeable):
 
 class Friends(Base, Serializeable):
     __tablename__ = "Friends"
-    user_1 = Column(Integer, ForeignKey("User.user_id"), primary_key=True, )
+    user_1 = Column(Integer, ForeignKey("User.user_id"), primary_key=True)
     user_2 = Column(Integer, ForeignKey("User.user_id"), primary_key=True)
 
     @staticmethod
@@ -101,16 +101,25 @@ class Player(Base, Serializeable):
 class FantasyLeague(Base, Serializeable):
     __tablename__ = "FantasyLeague"
     league_id = Column(Integer, primary_key=True)
+    name = Column(String)
     event_id = Column(Integer, ForeignKey("Event.event_id"))
+    owner = Column(Integer, ForeignKey('User.user_id'))
+    public = Column(Boolean)
 
     @staticmethod
     def constructor_params():
         return {
             'event_id': int,
+            'name':str, 
+            'owner':str, 
+            'public': bool
         }
 
-    def __init__(self, event_id):
+    def __init__(self, event_id, name, owner, public=True):
         self.event_id = event_id
+        self.name = name
+        self.owner = owner
+        self.public = public
 
     def __repr__(self):
         return f'<League {self.league_id}>'
@@ -121,6 +130,8 @@ class Tournament(Base, Serializeable):
     tournament_id = Column(Integer, primary_key=True)
     name = Column(String)
     slug = Column(String)
+    icon_path = Column(String)
+    banner_path = Column(String)
 
     @staticmethod
     def constructor_params():
@@ -128,12 +139,16 @@ class Tournament(Base, Serializeable):
             'tournament_id': int,
             'name': str,
             'slug': str,
+            'icon_path': str,
+            'banner_path': str
         }
 
-    def __init__(self, tournament_id, name, slug):
+    def __init__(self, tournament_id, name, slug, icon_path, banner_path):
         self.tournament_id = tournament_id
         self.name = name
         self.slug = slug
+        self.icon_path = icon_path
+        self.banner_path = banner_path
 
     def __repr__(self):
         return f'<Tournament {self.tournament_id}>'
@@ -179,11 +194,22 @@ class VideoGame(Base, Serializeable):
     videogame_id = Column(Integer, primary_key=True)
     name = Column(String)
     display_name = Column(String)
+    photo_path = Column(String)
 
-    def __init__(self, videogame_id, name, display_name):
+    @staticmethod
+    def constructor_params():
+        return {
+            'videogame_id': int,
+            'name': str,
+            'display_name': str,
+            'photo_path': str
+        }
+
+    def __init__(self, videogame_id, name, display_name, photo_path):
         self.videogame_id = videogame_id
         self.name = name
         self.display_name = display_name
+        self.photo_path = photo_path
 
     def __repr__(self):
         return f'<VideoGame {self.videogame_id}>'
