@@ -1,6 +1,6 @@
 import requests
 from database import db_session
-from models import Event, Tournament
+from models import Event, Tournament, Entrant
 from time import time
 import os
 from io import open as iopen
@@ -106,15 +106,53 @@ class SmashGG:
         r = self.session.post('https://api.smash.gg/gql/alpha',
                               json={'query': gql_query, 'variables': gql_vars},
                               headers={"Authorization": f"Bearer {self.api_key}"})
-        for event in r['tournament']['events']:
+        for event in r.json()['data']['tournament']['events']:
                 e = Event(event['id'], event['name'], tournament_id,
                           event['slug'], event['numEntrants'], event['videogame']['id'], event['startAt'])
                 db_session.add(e)
         db_session.commit()
 
     def get_entrants_in_event(self, event_id):
-        pass
+        per_page = 200
+
+        gql_query = '''
+        query SeedsAtEvent($event_id: Int, $page: Int, $per_page:Int) {
+            event(id: $event_id) {
+                entrants(query: {
+                    page: $page, 
+                    perPage: $per_page
+                }) {
+                    nodes {
+                        participants {
+                        playerId
+                        }
+                    }
+                }
+            }
+        }
+        '''
+        gql_vars = '''
+        {
+            "event_id" : %d,
+            "per_page": %d,
+            "page": %d
+        }
+        ''' % event_id, per_page
+        n_entrants = Event.query.filter(Event.event_id == event_id).num_entrants
+        read = 0
+        page = 1
+        while read < n_entrants:
+            r = self.session.post('https://api.smash.gg/gql/alpha',
+                              json={'query': gql_query, 
+                                    'variables': gql_vars % (event_id,per_page,page)},
+                              headers={"Authorization": f"Bearer {self.api_key}"})
+            for entrant in r.json()['data']['event']['entrants']['nodes']:
+                e = Entrant(event_id, entrant['playerId'], None)
+                db_session.add(e)
+            page += 1
+            read += per_page
+        db_session.commit()
 
 if __name__ == "__main__":
     gg = SmashGG()
-    gg.get_new_events()
+    gg.get_new_tournaments()
