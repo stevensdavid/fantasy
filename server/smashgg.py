@@ -1,6 +1,7 @@
 import requests
 from database import db_session
-from models import Event, Tournament, Entrant
+from models import Event, Tournament, Entrant, Placement
+from sqlalchemy.dialects.mysql import insert
 from time import time
 import os
 from io import open as iopen
@@ -22,7 +23,58 @@ class SmashGG:
         Arguments:
             event_id {int} -- The ID of the event to update standings for
         """
-        pass
+        n_entrants = Event.query.filter(
+            Event.event_id == event_id).num_entrants
+        per_page = 200
+        gql_query = '''
+        query EventStandings($eventId: Int!, $page: Int!, $perPage: Int!) {
+            event(id: $eventId) {
+                name
+                standings(query: {
+                    perPage: $perPage,
+                    page: $page
+                }){
+                    nodes {
+                        placement
+                        entrant {
+                            participants {
+                                playerId
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        '''
+        gql_vars = '''
+        {
+            "eventId": %d,
+            "page": %d,
+            "perPage": %d
+        }
+        '''
+        read = 0
+        page = 1
+        while read < n_entrants:
+            r = self.session.post('https://api.smash.gg/gql/alpha',
+                                  json={
+                                      'query': gql_query,
+                                      'variables': gql_vars %
+                                      (event_id, per_page, page)
+                                  },
+                                  headers={"Authorization":
+                                           f"Bearer {self.api_key}"})
+            for standing in r.json()['data']['event']['standings']['nodes']:
+                insert_stmt = insert(Placement).values(
+                    event_id=event_id,
+                    player_id=standing['entrant']['participants'][0]['playerId'],
+                    place=standing['placement']
+                ).on_duplicate_key_update(place=standing['placement'],
+                                          status='U')
+                db_session.execute(insert_stmt)
+            page += 1
+            read += per_page
+        db_session.commit()
 
     def get_new_tournaments(self):
         """Query SmashGG for new tournaments
@@ -127,7 +179,7 @@ class SmashGG:
                 }) {
                     nodes {
                         participants {
-                        playerId
+                            playerId
                         }
                     }
                 }
@@ -140,7 +192,7 @@ class SmashGG:
             "per_page": %d,
             "page": %d
         }
-        ''' % event_id, per_page
+        '''
         n_entrants = Event.query.filter(
             Event.event_id == event_id).num_entrants
         read = 0
