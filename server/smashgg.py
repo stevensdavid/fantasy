@@ -107,7 +107,7 @@ class SmashGG:
                               json={'query': gql_query, 'variables': gql_vars},
                               headers={"Authorization": f"Bearer {self.api_key}"})
         for event in r['tournament']['events']:
-                e = Event(event['id'], event['name'], t.tournament_id,
+                e = Event(event['id'], event['name'], tournament_id,
                           event['slug'], event['numEntrants'], event['videogame']['id'], event['startAt'])
                 db_session.add(e)
         db_session.commit()
