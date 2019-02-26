@@ -132,6 +132,7 @@ class Tournament(Base, Serializeable):
     slug = Column(String)
     icon_path = Column(String)
     banner_path = Column(String)
+    is_featured = Column(Boolean)
 
     @staticmethod
     def constructor_params():
@@ -140,13 +141,15 @@ class Tournament(Base, Serializeable):
             'name': str,
             'slug': str,
             'icon_path': str,
-            'banner_path': str
+            'banner_path': str,
+            'is_featured': bool
         }
 
-    def __init__(self, tournament_id, name, slug, icon_path, banner_path):
+    def __init__(self, tournament_id, name, slug, is_featured, icon_path, banner_path):
         self.tournament_id = tournament_id
         self.name = name
         self.slug = slug
+        self.is_featured = is_featured
         self.icon_path = icon_path
         self.banner_path = banner_path
 
