@@ -20,6 +20,7 @@ Skapa ny användare
 lägg till vän
 
 Se turneringar
+Se utvalda turneringar
 Söka turneringar
 
 Se alla events i turnering
