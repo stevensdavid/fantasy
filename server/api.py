@@ -12,6 +12,29 @@ app = Flask(__name__)
 api = Api(app)
 smashgg = SmashGG()
 
+"""
+API endpoints providing support for:
+Söka användare
+Skapa ny användare
+Ändra lösenord
+lägg till vän
+
+Se turneringar
+Söka turneringar
+
+Se alla events i turnering
+
+Se alla vänner till användare
+
+Se användares drafts
+Se användares ligor (både ägda och deltagande)
+Skapa ligor
+Skapa drafts
+Redigera liga
+Redigera drafts
+Bjud in deltagare
+"""
+
 
 class Users(Resource):
     def get(self):
