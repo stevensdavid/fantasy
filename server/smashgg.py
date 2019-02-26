@@ -53,7 +53,8 @@ class SmashGG:
         ''' % int(time())
         r = self.session.post('https://api.smash.gg/gql/alpha',
                               json={'query': gql_query, 'variables': gql_vars},
-                              headers={"Authorization": f"Bearer {self.api_key}"})
+                              headers={"Authorization":
+                                       f"Bearer {self.api_key}"})
         for tournament in r.json()['data']['tournaments']['nodes']:
             image_dir = f"images/tournaments/{tournament['id']}"
             if not os.path.exists(image_dir):
@@ -78,7 +79,7 @@ class SmashGG:
             t = Tournament(tournament['id'],
                            tournament['name'], tournament['slug'],
                            tournament['isFeatured'],
-                           icon_path=os.path.abspath(icon_path), 
+                           icon_path=os.path.abspath(icon_path),
                            banner_path=os.path.abspath(banner_path))
             db_session.add(t)
         db_session.commit()
@@ -105,11 +106,13 @@ class SmashGG:
         ''' % tournament_id
         r = self.session.post('https://api.smash.gg/gql/alpha',
                               json={'query': gql_query, 'variables': gql_vars},
-                              headers={"Authorization": f"Bearer {self.api_key}"})
+                              headers={"Authorization":
+                                       f"Bearer {self.api_key}"})
         for event in r.json()['data']['tournament']['events']:
-                e = Event(event['id'], event['name'], tournament_id,
-                          event['slug'], event['numEntrants'], event['videogame']['id'], event['startAt'])
-                db_session.add(e)
+            e = Event(event['id'], event['name'], tournament_id,
+                      event['slug'], event['numEntrants'],
+                      event['videogame']['id'], event['startAt'])
+            db_session.add(e)
         db_session.commit()
 
     def get_entrants_in_event(self, event_id):
@@ -138,20 +141,26 @@ class SmashGG:
             "page": %d
         }
         ''' % event_id, per_page
-        n_entrants = Event.query.filter(Event.event_id == event_id).num_entrants
+        n_entrants = Event.query.filter(
+            Event.event_id == event_id).num_entrants
         read = 0
         page = 1
         while read < n_entrants:
             r = self.session.post('https://api.smash.gg/gql/alpha',
-                              json={'query': gql_query, 
-                                    'variables': gql_vars % (event_id,per_page,page)},
-                              headers={"Authorization": f"Bearer {self.api_key}"})
+                                  json={
+                                      'query': gql_query,
+                                      'variables': gql_vars %
+                                      (event_id, per_page, page)
+                                  },
+                                  headers={"Authorization":
+                                           f"Bearer {self.api_key}"})
             for entrant in r.json()['data']['event']['entrants']['nodes']:
                 e = Entrant(event_id, entrant['playerId'], None)
                 db_session.add(e)
             page += 1
             read += per_page
         db_session.commit()
+
 
 if __name__ == "__main__":
     gg = SmashGG()
