@@ -24,8 +24,8 @@ class SmashGG:
         """
         pass
 
-    def get_new_events(self):
-        """Query SmashGG for new events
+    def get_new_tournaments(self):
+        """Query SmashGG for new tournaments
         """
         gql_query = '''
         query FutureTournaments($now: Timestamp) {
@@ -38,18 +38,9 @@ class SmashGG:
                     id
                     name
                     slug
+                    isFeatured
                     images {
                         url
-                    }
-                    events {
-                        id
-                        name
-                        slug
-                        numEntrants
-                        startAt
-                        videogame {
-                            id
-                        }
                     }
                 }
 			}
@@ -85,15 +76,44 @@ class SmashGG:
                 else:
                     banner_path = None
             t = Tournament(tournament['id'],
-                           tournament['name'], tournament['slug'], 
+                           tournament['name'], tournament['slug'],
+                           tournament['isFeatured'],
                            icon_path=os.path.abspath(icon_path), 
                            banner_path=os.path.abspath(banner_path))
             db_session.add(t)
-            for event in tournament['events']:
+        db_session.commit()
+
+    def get_events_in_tournament(self, tournament_id):
+        gql_query = '''
+        query TournamentQuery($tournament_id: Int) {
+            tournament(id: $tournament_id){
+                events {
+                    id
+                    name
+                    slug
+                    numEntrants
+                    startAt
+                    videogameId
+                }
+            }
+        }
+        '''
+        gql_vars = '''
+        {
+            "tournament_id": %d
+        }
+        ''' % tournament_id
+        r = self.session.post('https://api.smash.gg/gql/alpha',
+                              json={'query': gql_query, 'variables': gql_vars},
+                              headers={"Authorization": f"Bearer {self.api_key}"})
+        for event in r['tournament']['events']:
                 e = Event(event['id'], event['name'], t.tournament_id,
                           event['slug'], event['numEntrants'], event['videogame']['id'], event['startAt'])
                 db_session.add(e)
         db_session.commit()
+
+    def get_entrants_in_event(self, event_id):
+        pass
 
 if __name__ == "__main__":
     gg = SmashGG()
