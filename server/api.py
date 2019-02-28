@@ -14,8 +14,8 @@ smashgg = SmashGG()
 
 """
 API endpoints providing support for:
-Söka användare
-Skapa ny användare
+Söka användare +
+Skapa ny användare +
 Ändra lösenord
 lägg till vän
 
@@ -37,7 +37,7 @@ Bjud in deltagare
 """
 
 
-class Users(Resource):
+class UsersAPI(Resource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('page', int)
@@ -58,7 +58,7 @@ class Users(Resource):
         db_session.commit()
 
 
-class Events(Resource):
+class EventsAPI(Resource):
     def get(self):
         events = Event.query.filter(Event.start_at > time.time()).limit(10)
         tournament_ids = [e.tournament_id for e in events]
@@ -72,7 +72,18 @@ class Events(Resource):
             for t in tournaments]}
 
 
-class DatabaseVersion():
+class FriendsAPI(Resource):
+    def get(self):
+        pass
+
+    def put(self):
+        pass
+
+    def delete(self):
+        pass
+
+
+class DatabaseVersionAPI():
     def get(self):
         current_version = Constants.query.first()
         return {'last_event_update': current_version.last_event_update}
@@ -89,9 +100,9 @@ class DatabaseVersion():
         return {'last_event_update': current_version.last_event_update}
 
 
-api.add_resource(DatabaseVersion, '/event_version')
-api.add_resource(Users, '/users')
-api.add_resource(Events, '/events')
+api.add_resource(DatabaseVersionAPI, '/event_version')
+api.add_resource(UsersAPI, '/users')
+api.add_resource(EventsAPI, '/events')
 
 
 @app.teardown_appcontext
