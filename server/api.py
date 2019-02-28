@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import Api, Resource, reqparse
+from sqlalchemy import or_
 import inspect
 import time
 from datetime import date
@@ -39,13 +40,11 @@ Bjud in deltagare
 
 class UsersAPI(Resource):
     def get(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('page', int)
-        parser.add_argument('perPage', int)
+        parser = make_pagination_reqparser()
         parser.add_argument('gamertag', str)
         args = parser.parse_args(strict=True)
         users = User.query.filter(User.tag.like(f'%{args["gamertag"]}%')).paginate(
-            page=args['page'], per_page=args['perPage']).all()
+            page=args['page'], per_page=args['perPage']).items
         return {'users': [x.as_dict() for x in users]}
 
     def put(self):
@@ -64,9 +63,6 @@ class EventsAPI(Resource):
         tournament_ids = [e.tournament_id for e in events]
         tournaments = Tournament.query.filter(
             Tournament.tournament_id.in_(tournament_ids)).all()
-        print(tournaments)
-        print(events)
-        print({e.tournament_id for e in events})
         return {'tournaments': [{**t.as_dict(), 'events': [
             e.as_dict() for e in events if e.tournament_id == t.tournament_id]}
             for t in tournaments]}
@@ -74,7 +70,14 @@ class EventsAPI(Resource):
 
 class FriendsAPI(Resource):
     def get(self):
-        pass
+        parser = make_pagination_reqparser()
+        parser.add_argument('id', int)
+        args = parser.parse_args()
+        friends = User.query.filter(Friends.query.filter(
+            (Friends.user_1 == args['id'] & Friends.user_2 == User.user_id)
+            | (Friends.user_2 == args['id'] & Friends.user_1 == User.user_id)
+        ).exists()).paginate(page=args['page'], per_page=args['perPage']).items
+        return {'friends': [x.as_dict() for x in friends]}
 
     def put(self):
         pass
@@ -103,6 +106,14 @@ class DatabaseVersionAPI():
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users')
 api.add_resource(EventsAPI, '/events')
+api.add_resource(FriendsAPI, '/friends')
+
+
+def make_pagination_reqparser():
+    parser = reqparse.RequestParser()
+    parser.add_argument('page', int)
+    parser.add_argument('perPage', int)
+    return parser
 
 
 @app.teardown_appcontext
