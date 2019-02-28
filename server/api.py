@@ -81,7 +81,17 @@ class FriendsAPI(Resource):
         return {'friends': [x.as_dict() for x in friends]}
 
     def put(self):
-        pass
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', int)
+        parser.add_argument('friendId', int)
+        args = parser.parse_args()
+        # Create symmetrical entities
+        db_session.add(Friends(args['id'], args['friendId']))
+        db_session.add(Friends(args['friendId'], args['id']))
+        db_session.commit()
+        # Return no-content.
+        # TODO: consider returning new object, probably better design
+        return '', 204
 
     def delete(self):
         pass
