@@ -81,10 +81,7 @@ class FriendsAPI(Resource):
         return {'friends': [x.as_dict() for x in friends]}
 
     def put(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('id', int)
-        parser.add_argument('friendId', int)
-        args = parser.parse_args()
+        args = self._parse_put_delete()
         # Create symmetrical entities
         db_session.add(Friends(args['id'], args['friendId']))
         db_session.add(Friends(args['friendId'], args['id']))
@@ -95,6 +92,12 @@ class FriendsAPI(Resource):
 
     def delete(self):
         pass
+
+    def _parse_put_delete():
+        parser = reqparse.RequestParser()
+        parser.add_argument('id', int)
+        parser.add_argument('friendId', int)
+        return parser.parse_args()
 
 
 class DatabaseVersionAPI():
