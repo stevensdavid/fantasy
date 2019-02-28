@@ -91,9 +91,15 @@ class FriendsAPI(Resource):
         return '', 204
 
     def delete(self):
-        pass
+        args = self._parse_put_delete()
+        db_session.delete(Friends(args['id'], args['friendId']))
+        db_session.delete(Friends(args['friendId'], args['id']))
+        db_session.commit()
+        # Return no-content.
+        # TODO: consider returning deleted object, probably better design
+        return '', 204
 
-    def _parse_put_delete():
+    def _parse_put_delete(self):
         parser = reqparse.RequestParser()
         parser.add_argument('id', int)
         parser.add_argument('friendId', int)
