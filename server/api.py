@@ -73,9 +73,10 @@ class FriendsAPI(Resource):
         parser = make_pagination_reqparser()
         parser.add_argument('id', int)
         args = parser.parse_args()
+        # The Friends junction table has symmetrical entries, i.e. both Friends(x,y)
+        # and Friends(y,x)
         friends = User.query.filter(Friends.query.filter(
             (Friends.user_1 == args['id'] & Friends.user_2 == User.user_id)
-            | (Friends.user_2 == args['id'] & Friends.user_1 == User.user_id)
         ).exists()).paginate(page=args['page'], per_page=args['perPage']).items
         return {'friends': [x.as_dict() for x in friends]}
 
