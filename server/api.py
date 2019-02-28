@@ -39,7 +39,13 @@ Bjud in deltagare
 
 class Users(Resource):
     def get(self):
-        users = User.query.limit(10).all()
+        parser = reqparse.RequestParser()
+        parser.add_argument('page', int)
+        parser.add_argument('perPage', int)
+        parser.add_argument('gamertag', str)
+        args = parser.parse_args(strict=True)
+        users = User.query.filter(User.tag.like(f'%{args["gamertag"]}%')).paginate(
+            page=args['page'], per_page=args['perPage']).all()
         return {'users': [x.as_dict() for x in users]}
 
     def put(self):
