@@ -622,9 +622,29 @@ class FeaturedTournaments(Resource):
 
 class Images(Resource):
     def get(self, fname):
+        """Get an image file
+        ---
+        parameters:
+            -   name: fname
+                in: path
+                type: integer
+                required: true
+                description: >
+                    The URI of the image. This should ideally by taken straight
+                    from one of the relevant entities, such as Tournament.banner_path
+        responses:
+            200:
+                description: The image in PNG format
+                content:
+                    image/png:
+                        schema:
+                            type: string
+                            format: binary
+        """
         with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
             return send_file(io.BytesIO(img.read()),
-                             mimetype='image/png', as_attachment=True, attachment_filename=os.path.split(fname)[1])
+                             mimetype='image/png', as_attachment=True,
+                             attachment_filename=os.path.split(fname)[1])
 
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
