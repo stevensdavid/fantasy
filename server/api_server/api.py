@@ -1,13 +1,14 @@
 import inspect
+import io
+import os
 import time
 from datetime import date
 
-from flask import Flask, send_from_directory, send_file,  make_response, safe_join
+from flask import (Flask, make_response, safe_join, send_file,
+                   send_from_directory)
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
-import os
-import io
 
 from . import api, app, db
 from .marshmallow_schemas import (ConstantsSchema, EventSchema,
@@ -139,39 +140,37 @@ class TournamentsAPI(Resource):
 
 
 class FriendsAPI(Resource):
-    def get(self):
+    def get(self, user_id):
         parser = make_pagination_reqparser()
-        parser.add_argument('id', int)
+        parser.add_argument('friendId', int)
         args = parser.parse_args()
         # The Friends junction table has symmetrical entries, i.e. both Friends(x,y)
         # and Friends(y,x)
         friends = User.query.filter(Friends.query.filter(
-            (Friends.user_1 == args['id'] & Friends.user_2 == User.user_id)
+            (Friends.user_1 == args['friendId']
+             & Friends.user_2 == User.user_id)
         ).exists()).paginate(page=args['page'], per_page=args['perPage']).items
-        return {'friends': [x.as_dict() for x in friends]}
+        return friends_schema.jsonify(friends)
 
-    def put(self):
+    def post(self, user_id):
         args = self._parse_put_delete()
         # Create symmetrical entities
-        db.session.add(Friends(args['id'], args['friendId']))
-        db.session.add(Friends(args['friendId'], args['id']))
+        friends = Friends(user_id, args['friendId'])
+        db.session.add(friends)
+        db.session.add(Friends(args['friendId'], user_id))
         db.session.commit()
-        # Return no-content.
-        # TODO: consider returning new object, probably better design
-        return '', 204
+        return friend_schema(friends)
 
-    def delete(self):
+    def delete(self, user_id):
         args = self._parse_put_delete()
-        db.session.delete(Friends(args['id'], args['friendId']))
-        db.session.delete(Friends(args['friendId'], args['id']))
+        friends = Friends(user_id, args['friendId'])
+        db.session.delete(friends)
+        db.session.delete(Friends(args['friendId'], user_id))
         db.session.commit()
-        # Return no-content.
-        # TODO: consider returning deleted object, probably better design
-        return '', 204
+        return friend_schema(friends)
 
     def _parse_put_delete(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('id', int)
         parser.add_argument('friendId', int)
         return parser.parse_args()
 
@@ -212,7 +211,7 @@ api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
 api.add_resource(TournamentsAPI, '/tournaments',
                  '/tournaments/<int:tournament_id>')
-api.add_resource(FriendsAPI, '/friends')
+api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FeaturedTournaments, '/featured')
 api.add_resource(Images, '/images/<path:fname>')
 
