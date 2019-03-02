@@ -1,3 +1,7 @@
+server/images
+.vscode
+*.zip
+*.key
 *api_key
 # mwb
 *.bak
