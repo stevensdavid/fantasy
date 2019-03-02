@@ -1,11 +1,10 @@
 import os
-from io import open as iopen
 from time import time
 
 import requests
 from sqlalchemy.dialects.mysql import insert
 
-from . import db
+from . import db, app
 from .models import Entrant, Event, Placement, Tournament
 
 
@@ -66,7 +65,7 @@ class SmashGG:
                                   },
                                   headers={"Authorization":
                                            f"Bearer {self.api_key}"})
-            for standing in r.json()['data']['event']['standings']['nodes']:
+            for standing in r.json()['event']['standings']['nodes']:
                 insert_stmt = insert(Placement).values(
                     event_id=event_id,
                     player_id=standing['entrant']['participants'][0]['playerId'],
@@ -76,7 +75,7 @@ class SmashGG:
                 db.execute(insert_stmt)
             page += 1
             read += per_page
-        db.commit()
+        db.session.commit()
 
     def get_new_tournaments(self):
         """Query SmashGG for new tournaments
@@ -85,14 +84,15 @@ class SmashGG:
         query FutureTournaments($now: Timestamp) {
 		    tournaments(query: {
                 filter: {
-                    afterDate: $now
+                    afterDate: $now,
+                    isFeatured: %s
                 }
             }) {
                 nodes {
                     id
                     name
                     slug
-                    isFeatured
+                    endAt
                     images {
                         url
                     }
@@ -105,38 +105,59 @@ class SmashGG:
             "now": %d
         }
         ''' % int(time())
+        # Get featured tournaments
         r = self.session.post('https://api.smash.gg/gql/alpha',
-                              json={'query': gql_query, 'variables': gql_vars},
+                              json={'query': gql_query % 'true',
+                                    'variables': gql_vars},
                               headers={"Authorization":
                                        f"Bearer {self.api_key}"})
-        for tournament in r.json()['data']['tournaments']['nodes']:
-            image_dir = f"images/tournaments/{tournament['id']}"
+        print(r.json())
+        self._handle_tournament_query_result(r, is_featured=True)
+        # Get non-featured tournaments
+        r = self.session.post('https://api.smash.gg/gql/alpha',
+                              json={'query': gql_query % 'false',
+                                    'variables': gql_vars},
+                              headers={"Authorization":
+                                       f"Bearer {self.api_key}"})
+        self._handle_tournament_query_result(r, is_featured=False)
+        db.session.commit()
+
+    def _handle_tournament_query_result(self, res, is_featured):
+        for tournament in res.json()['data']['tournaments']['nodes']:
+            image_dir = app.config['IMAGE_DIR'] + f"/tournaments/{tournament['id']}"
             if not os.path.exists(image_dir):
-                os.mkdir(image_dir)
+                os.makedirs(image_dir)
             images = tournament['images']
             icon_path = image_dir + '/icon.png'
             if not os.path.exists(icon_path):
-                icon = requests.get(images[0])
-                if icon.status_code == requests.codes.ok:
-                    with iopen(icon_path) as file:
-                        file.write(icon.content)
-                else:
-                    banner_path = None
+                try:
+                    icon = requests.get(images[0]['url'])
+                    if icon.status_code == requests.codes.ok:
+                        with open(icon_path, 'w+b') as file:
+                            file.write(icon.content)
+                    else:
+                        icon_path = None
+                except IndexError:
+                    icon_path = None
             banner_path = image_dir + '/banner.png'
             if not os.path.exists(banner_path):
-                banner = requests.get(images[1])
-                if banner.status_code == requests.codes.ok:
-                    with iopen(banner_path) as file:
-                        file.write(banner.content)
-                else:
+                try:
+                    banner = requests.get(images[1]['url'])
+                    if banner.status_code == requests.codes.ok:
+                        with open(banner_path, 'w+b') as file:
+                            file.write(banner.content)
+                    else:
+                        banner_path = None
+                except IndexError:
                     banner_path = None
-            t = Tournament(tournament['id'],
-                           tournament['name'], tournament['slug'],
-                           tournament['isFeatured'],
-                           icon_path=os.path.abspath(icon_path),
-                           banner_path=os.path.abspath(banner_path))
-            db.add(t)
-        db.commit()
+            t = Tournament(tournament_id=tournament['id'],
+                           name=tournament['name'],
+                           slug=tournament['slug'],
+                           is_featured=is_featured,
+                           ends_at=tournament['endAt'],
+                           icon_path='/'.join(icon_path.split('/')[-3:]) if icon_path is not None else None,
+                           banner_path='/'.join(banner_path.split('/')[-3:]) if banner_path is not None else None)
+            db.session.add(t)
 
     def get_events_in_tournament(self, tournament_id):
         gql_query = '''
@@ -166,8 +187,8 @@ class SmashGG:
             e = Event(event['id'], event['name'], tournament_id,
                       event['slug'], event['numEntrants'],
                       event['videogame']['id'], event['startAt'])
-            db.add(e)
-        db.commit()
+            db.session.add(e)
+        db.session.commit()
 
     def get_entrants_in_event(self, event_id):
         per_page = 200
@@ -210,10 +231,10 @@ class SmashGG:
                                            f"Bearer {self.api_key}"})
             for entrant in r.json()['data']['event']['entrants']['nodes']:
                 e = Entrant(event_id, entrant['playerId'], None)
-                db.add(e)
+                db.session.add(e)
             page += 1
             read += per_page
-        db.commit()
+        db.session.commit()
 
 
 if __name__ == "__main__":
