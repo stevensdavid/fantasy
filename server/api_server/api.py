@@ -85,17 +85,31 @@ class UsersAPI(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        # for arg, datatype in User.constructor_params():
-        #     parser.add_argument(arg, type=datatype)
-        parser.add_argument('tag', type=str)
-        parser.add_argument('email', type=str)
-        parser.add_argument('pw', str)
+        for arg, datatype in User.constructor_params():
+            parser.add_argument(arg, type=datatype)
+        # parser.add_argument('tag', type=str)
+        # parser.add_argument('email', type=str)
+        # parser.add_argument('pw', str)
         args = parser.parse_args(strict=True)
         # pylint: disable=no-member
         user = User(**args)
         db.session.add(user)
         db.session.commit()
         return user_schema.jsonify(user)
+
+    def put(self, user_id):
+        parser = reqparse.RequestParser()
+        for arg, datatype in User.constructor_params().items():
+            parser.add_argument(arg, type=datatype)
+        user = User.query.filter(User.user_id == user_id).first()
+        if user is not None:
+            args = parser.parse_args(strict=True)
+            for key, value in args.items():
+                if value is not None:
+                    setattr(user, key, value)
+            db.session.commit()
+            return user_schema.jsonify(user)
+        return {"error":"User not found"}, 404
 
 
 class EventsAPI(Resource):
