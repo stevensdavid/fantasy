@@ -461,8 +461,9 @@ class FriendsAPI(Resource):
                                 type: string
                             photo_path:
                                 type: string
-                                description: The URI of the profile photo. The image itself can be
-                                            retrieved using GET /images/{photo_path}
+                                description: >
+                                    The URI of the profile photo. The image itself can be
+                                    retrieved using GET /images/{photo_path}
         """
         parser = make_pagination_reqparser()
         parser.add_argument('tag', str)
@@ -539,11 +540,13 @@ class FriendsAPI(Resource):
                             description: An echo of {friendId}
         """
         args = self._parse_put_delete()
-        friends = Friends.query.filter(Friends.user_1 == user_id, Friends.user_2 == args['friendId']).first()
+        friends = Friends.query.filter(
+            Friends.user_1 == user_id, Friends.user_2 == args['friendId']).first()
         if not friends:
             return {'error': 'Not found'}, 404
         db.session.delete(friends)
-        db.session.delete(Friends.query.filter(Friends.user_2 == user_id, Friends.user_1 == args['friendId']).first())
+        db.session.delete(Friends.query.filter(
+            Friends.user_2 == user_id, Friends.user_1 == args['friendId']).first())
         db.session.commit()
         return friends.as_dict()
 
@@ -572,6 +575,46 @@ class DatabaseVersionAPI(Resource):
 
 class FeaturedTournaments(Resource):
     def get(self):
+        """Get all upcoming featured tournaments
+        ---
+        responses:
+            200:
+                description: A list of the featured tournaments
+                schema:
+                    id: FeaturedTournaments
+                    type: array
+                    items:
+                        properties:
+                            banner_path:
+                                type: string
+                                description: >
+                                    The URI of the banner image. The image itself can be
+                                    retrieved using GET /images/{banner_path}
+                            ends_at:
+                                type: integer
+                                description: A timestamp marking the end time of the event
+                            events:
+                                type: array
+                                items:
+                                    type: integer
+                                    description: The unique ID of an event in the tournament
+                            icon_path:
+                                type: string
+                                description: >
+                                    The URI of the icon image. The image itself can be
+                                    retrieved using GET /images/{icon_path}
+                            is_featured:
+                                type: boolean
+                                description: Whether or not the tournament is featured by Smash.GG
+                            slug:
+                                type: string
+                                description: >
+                                    The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
+                                    see the tournament page.
+                            tournament_id:
+                                type: integer
+                                description: The unique ID for the tournament
+        """
         tournaments = Tournament.query.filter(
             Tournament.is_featured & (Tournament.ends_at > time.time())).all()
         return tournaments_schema.jsonify(tournaments)
