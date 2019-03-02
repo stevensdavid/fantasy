@@ -3,9 +3,10 @@ from time import time
 
 import requests
 from sqlalchemy.dialects.mysql import insert
+from sqlalchemy.exc import IntegrityError
 
 from . import db, app
-from .models import Entrant, Event, Placement, Tournament
+from .models import Entrant, Event, Placement, Tournament, VideoGame
 
 
 class SmashGG:
@@ -77,6 +78,38 @@ class SmashGG:
             read += per_page
         db.session.commit()
 
+    def get_videogames(self):
+        # Sadly, the Smash.GG GraphQL API does not currently support querying videogames, so we have
+        # to fallback to their REST API
+        res = self.session.get('https://api.smash.gg/videogames')
+        for game in res.json()['entities']['videogame']:
+            if db.session.query(VideoGame).filter(VideoGame.videogame_id == game["id"]).first():
+                # This game is already in the database
+                continue
+            print(f'Getting data for {game["name"]}')
+            # Download the corresponding image
+            image_dir = app.config['IMAGE_DIR'] + \
+                f"/videogames/{game['id']}"
+            if not os.path.exists(image_dir):
+                os.makedirs(image_dir)
+            image_path = image_dir + '/image.png'
+            if not os.path.exists(image_path):
+                try:
+                    image = requests.get(game['images'][0]['url'])
+                    if image.status_code == requests.codes.ok:
+                        with open(image_path, 'w+b') as file:
+                            file.write(image.content)
+                    else:
+                        image_path = None
+                except IndexError:
+                    image_path = None
+            db.session.add(VideoGame(videogame_id=game['id'],
+                                     name=game['name'],
+                                     display_name=game['displayName'],
+                                     photo_path='/'.join(image_path.split('/')
+                                              [-3:]) if image_path is not None else None))
+        db.session.commit()
+
     def get_new_tournaments(self):
         """Query SmashGG for new tournaments
         """
@@ -124,7 +157,8 @@ class SmashGG:
 
     def _handle_tournament_query_result(self, res, is_featured):
         for tournament in res.json()['data']['tournaments']['nodes']:
-            image_dir = app.config['IMAGE_DIR'] + f"/tournaments/{tournament['id']}"
+            image_dir = app.config['IMAGE_DIR'] + \
+                f"/tournaments/{tournament['id']}"
             if not os.path.exists(image_dir):
                 os.makedirs(image_dir)
             images = tournament['images']
@@ -155,7 +189,8 @@ class SmashGG:
                            slug=tournament['slug'],
                            is_featured=is_featured,
                            ends_at=tournament['endAt'],
-                           icon_path='/'.join(icon_path.split('/')[-3:]) if icon_path is not None else None,
+                           icon_path='/'.join(icon_path.split('/')
+                                              [-3:]) if icon_path is not None else None,
                            banner_path='/'.join(banner_path.split('/')[-3:]) if banner_path is not None else None)
             db.session.add(t)
 
@@ -184,11 +219,19 @@ class SmashGG:
                               headers={"Authorization":
                                        f"Bearer {self.api_key}"})
         for event in r.json()['data']['tournament']['events']:
-            e = Event(event['id'], event['name'], tournament_id,
-                      event['slug'], event['numEntrants'],
-                      event['videogame']['id'], event['startAt'])
+            e = None
+            e = Event(event_id=event['id'],
+                    name=event['name'], tournament_id=tournament_id,
+                    slug=event['slug'], num_entrants=event['numEntrants'],
+                    videogame_id=event['videogameId'], start_at=event['startAt'])
             db.session.add(e)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            # In all likelihood due to the videogame not being stored in the database
+            self.get_videogames()
+            db.session.commit()
 
     def get_entrants_in_event(self, event_id):
         per_page = 200
@@ -230,7 +273,8 @@ class SmashGG:
                                   headers={"Authorization":
                                            f"Bearer {self.api_key}"})
             for entrant in r.json()['data']['event']['entrants']['nodes']:
-                e = Entrant(event_id, entrant['playerId'], None)
+                e = Entrant(event_id=event_id,
+                            player_id=entrant['playerId'], seed=None)
                 db.session.add(e)
             page += 1
             read += per_page
