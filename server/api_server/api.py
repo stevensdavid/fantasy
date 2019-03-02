@@ -7,13 +7,29 @@ from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 
-from .smashgg import SmashGG
 from . import api, app, db
+from .marshmallow_schemas import (ConstantsSchema, EventSchema,
+                                  FantasyDraftSchema, FantasyLeagueSchema,
+                                  FantasyResultSchema, FriendsSchema,
+                                  PlayerSchema, TournamentSchema, UserSchema,
+                                  VideoGameSchema)
 from .models import (Constants, Event, FantasyDraft, FantasyLeague,
-                     FantasyResult, Friends, Player, Tournament,
-                     User, VideoGame)
+                     FantasyResult, Friends, Player, Tournament, User,
+                     VideoGame)
+from .smashgg import SmashGG
 
 smashgg = SmashGG()
+
+constants_schema = ConstantsSchema()
+event_schema = EventSchema()
+fantasy_draft_schema = FantasyDraftSchema()
+fantasy_league_schema = FantasyLeagueSchema()
+fantasy_result_schema = FantasyResultSchema()
+friends_schema = FriendsSchema()
+player_schema = PlayerSchema()
+tournament_schema = TournamentSchema()
+user_schema = UserSchema()
+video_game_schema = VideoGameSchema()
 
 """
 API endpoints providing support for:
