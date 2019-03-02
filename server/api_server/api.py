@@ -87,11 +87,7 @@ class UsersAPI(Resource):
         parser = reqparse.RequestParser()
         for arg, datatype in User.constructor_params().items():
             parser.add_argument(arg, type=datatype)
-        # parser.add_argument('tag', type=str)
-        # parser.add_argument('email', type=str)
-        # parser.add_argument('pw', str)
         args = parser.parse_args(strict=True)
-        # pylint: disable=no-member
         user = User(**args)
         db.session.add(user)
         db.session.commit()
@@ -109,18 +105,37 @@ class UsersAPI(Resource):
                     setattr(user, key, value)
             db.session.commit()
             return user_schema.jsonify(user)
-        return {"error":"User not found"}, 404
+        return {"error": "User not found"}, 404
 
 
 class EventsAPI(Resource):
-    def get(self):
-        events = Event.query.filter(Event.start_at > time.time()).limit(10)
-        tournament_ids = [e.tournament_id for e in events]
+    def get(self, event_id):
+        event = Event.query.filter(Event.event_id == event_id).first()
+        return event_schema.jsonify(event)
+
+
+class TournamentsAPI(Resource):
+    def get(self, tournament_id=None):
+        if tournament_id:
+            tournament = Tournament.query.filter(
+                Tournament.tournament_id == tournament_id).first()
+            if not tournament.events:
+                print(f'Getting events for tournament {tournament_id}')
+                smashgg.get_events_in_tournament(tournament_id)
+                # Rerun query, this time we will have events
+                tournament = Tournament.query.filter(
+                    Tournament.tournament_id == tournament_id).first()
+            return tournament_schema.jsonify(tournament)
+        parser = make_pagination_reqparser()
+        parser.add_argument('name', type=str)
+        args = parser.parse_args(strict=True)
+
+        # tournaments = Tournament.query.all()
         tournaments = Tournament.query.filter(
-            Tournament.tournament_id.in_(tournament_ids)).all()
-        return {'tournaments': [{**t.as_dict(), 'events': [
-            e.as_dict() for e in events if e.tournament_id == t.tournament_id]}
-            for t in tournaments]}
+            Tournament.name.like(
+                f'%{args["name"] if args["name"] is not None else ""}%')
+        ).paginate(page=args['page'], per_page=args['perPage']).items
+        return tournaments_schema.jsonify(tournaments)
 
 
 class FriendsAPI(Resource):
@@ -189,12 +204,14 @@ class Images(Resource):
     def get(self, fname):
         with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
             return send_file(io.BytesIO(img.read()),
-            mimetype='image/png', as_attachment=True, attachment_filename=os.path.split(fname)[1])
+                             mimetype='image/png', as_attachment=True, attachment_filename=os.path.split(fname)[1])
 
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
-api.add_resource(EventsAPI, '/events')
+api.add_resource(EventsAPI, '/events/<int:event_id>')
+api.add_resource(TournamentsAPI, '/tournaments',
+                 '/tournaments/<int:tournament_id>')
 api.add_resource(FriendsAPI, '/friends')
 api.add_resource(FeaturedTournaments, '/featured')
 api.add_resource(Images, '/images/<path:fname>')
@@ -214,6 +231,7 @@ def shutdown_session(exception=None):
 
 def main():
     app.run(debug=True)
+    # app.run(debug=True, ssl_context=('localhost.crt', 'localhost.key'))
 
 
 if __name__ == '__main__':
