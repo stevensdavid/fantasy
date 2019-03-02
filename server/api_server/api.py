@@ -69,16 +69,19 @@ Bjud in deltagare
 
 
 class UsersAPI(Resource):
-    def get(self):
-        parser = make_pagination_reqparser()
-        parser.add_argument('gamertag', str)
-        args = parser.parse_args(strict=True)
-        print(args['page'])
-        users = User.query.all()
-        print([x.as_dict() for x in users])
-        # users = User.query.filter(User.tag.like(f'%{args["gamertag"]}%')).paginate(
-        #     page=args['page'], per_page=args['perPage']).items
-        return user_schema.jsonify(users)
+    def get(self, user_id=None):
+        if user_id:
+            user = User.query.filter(User.user_id == user_id).first()
+            return user_schema.jsonify(user)
+        else:
+            parser = make_pagination_reqparser()
+            parser.add_argument('tag', str)
+            args = parser.parse_args(strict=True)
+            print(args)
+            # users = User.query.all()
+            users = User.query.filter(User.tag.like(f'%{args["tag"]}%')).paginate(
+                page=args['page'], per_page=args['perPage']).items
+            return users_schema.jsonify(users)
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -163,7 +166,6 @@ class FeaturedTournaments(Resource):
     def get(self):
         tournaments = Tournament.query.filter(
             Tournament.is_featured & (Tournament.ends_at > time.time())).all()
-        print([x.as_dict() for x in tournaments])
         return tournaments_schema.jsonify(tournaments)
 
 
@@ -175,7 +177,7 @@ class Images(Resource):
 
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
-api.add_resource(UsersAPI, '/users')
+api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events')
 api.add_resource(FriendsAPI, '/friends')
 api.add_resource(FeaturedTournaments, '/featured')
