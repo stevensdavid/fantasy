@@ -219,10 +219,11 @@ class SmashGG:
                               headers={"Authorization":
                                        f"Bearer {self.api_key}"})
         for event in r.json()['data']['tournament']['events']:
-            e = None
             e = Event(event_id=event['id'],
-                    name=event['name'], tournament_id=tournament_id,
-                    slug=event['slug'], num_entrants=event['numEntrants'],
+                    name=event['name'],
+                    tournament_id=tournament_id,
+                    slug=event['slug'],
+                    num_entrants=event['numEntrants'] if event['numEntrants'] is not None else 0,
                     videogame_id=event['videogameId'], start_at=event['startAt'])
             db.session.add(e)
         try:
