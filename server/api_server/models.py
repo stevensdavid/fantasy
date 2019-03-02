@@ -88,9 +88,9 @@ class FantasyLeague(db.Model, Serializeable):
     public = db.Column(db.Boolean, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey("Event.event_id"), nullable=False)
-    event = db.relationship('Event', backref=db.backref('fantasyleagues', lazy=True))
+    event = db.relationship('Event', backref=db.backref('fantasy_leagues', lazy=True))
     owner_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
-    owner = db.relationship('User', backref=db.backref('fantasyleagues', lazy=True))
+    owner = db.relationship('User', backref=db.backref('fantasy_leagues', lazy=True))
 
     @staticmethod
     def constructor_params():
@@ -204,12 +204,12 @@ class FantasyDraft(db.Model, Serializeable):
     __tablename__ = "FantasyDraft"
     league_id = db.Column(db.Integer, db.ForeignKey(
         "FantasyLeague.league_id"), primary_key=True)
-    league = db.relationship('FantasyLeague', backref=db.backref('fantasydrafts', lazy=True))
+    league = db.relationship('FantasyLeague', backref=db.backref('fantasy_drafts', lazy=True))
     user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('fantasydrafts', lazy=True))
+    user = db.relationship('User', backref=db.backref('fantasy_drafts', lazy=True))
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
-    player = db.relationship('Player', backref=db.backref('fantasydrafts', lazy=True))
+    player = db.relationship('Player', backref=db.backref('fantasy_drafts', lazy=True))
 
 
     @staticmethod
@@ -250,9 +250,9 @@ class FantasyResult(db.Model, Serializeable):
     __tablename__ = "FantasyResult"
     league_id = db.Column(db.Integer, db.ForeignKey(
         "FantasyLeague.league_id"), primary_key=True)
-    league = db.relationship('FantasyLeague', backref=db.backref('fantasyresults', lazy=True))
+    league = db.relationship('FantasyLeague', backref=db.backref('fantasy_results', lazy=True))
     user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('fantasyresults', lazy=True))
+    user = db.relationship('User', backref=db.backref('fantasy_results', lazy=True))
     score = db.Column(db.Integer)
 
     @staticmethod
