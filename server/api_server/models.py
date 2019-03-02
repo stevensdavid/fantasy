@@ -113,6 +113,7 @@ class Tournament(db.Model, Serializeable):
     icon_path = db.Column(db.String(255))
     banner_path = db.Column(db.String(255))
     is_featured = db.Column(db.Boolean, nullable=False)
+    ends_at = db.Column(db.Integer, nullable=False)
 
     @staticmethod
     def constructor_params():
@@ -122,7 +123,8 @@ class Tournament(db.Model, Serializeable):
             'slug': str,
             'icon_path': str,
             'banner_path': str,
-            'is_featured': bool
+            'is_featured': bool,
+            'ends_at' : int
         }
 
     def __repr__(self):
