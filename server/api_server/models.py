@@ -1,5 +1,7 @@
-from api import db
 from datetime import date
+
+from . import db
+
 
 class Serializeable():
     def as_dict(self):

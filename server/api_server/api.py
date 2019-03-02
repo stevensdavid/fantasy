@@ -1,16 +1,18 @@
-from flask import Flask
-from flask_restful import Api, Resource, reqparse
-from sqlalchemy import or_
 import inspect
 import time
 from datetime import date
 
-from smashgg import SmashGG
-from database import db_session
-from models import User, Friends, Player, FantasyDraft, FantasyLeague, FantasyResult, Tournament, Event, VideoGame, FantasyDraft, Constants
+from flask import Flask
+from flask_restful import Api, Resource, reqparse
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_
 
-app = Flask(__name__)
-api = Api(app)
+from .smashgg import SmashGG
+from . import api, app, db
+from .models import (Constants, Event, FantasyDraft, FantasyLeague,
+                     FantasyResult, Friends, Player, Tournament,
+                     User, VideoGame)
+
 smashgg = SmashGG()
 
 """
@@ -53,8 +55,8 @@ class UsersAPI(Resource):
             parser.add_argument(arg, type=datatype)
         args = parser.parse_args(strict=True)
         # pylint: disable=no-member
-        db_session.add(User(**args))
-        db_session.commit()
+        db.add(User(**args))
+        db.commit()
 
 
 class EventsAPI(Resource):
@@ -83,18 +85,18 @@ class FriendsAPI(Resource):
     def put(self):
         args = self._parse_put_delete()
         # Create symmetrical entities
-        db_session.add(Friends(args['id'], args['friendId']))
-        db_session.add(Friends(args['friendId'], args['id']))
-        db_session.commit()
+        db.add(Friends(args['id'], args['friendId']))
+        db.add(Friends(args['friendId'], args['id']))
+        db.commit()
         # Return no-content.
         # TODO: consider returning new object, probably better design
         return '', 204
 
     def delete(self):
         args = self._parse_put_delete()
-        db_session.delete(Friends(args['id'], args['friendId']))
-        db_session.delete(Friends(args['friendId'], args['id']))
-        db_session.commit()
+        db.delete(Friends(args['id'], args['friendId']))
+        db.delete(Friends(args['friendId'], args['id']))
+        db.commit()
         # Return no-content.
         # TODO: consider returning deleted object, probably better design
         return '', 204
@@ -106,7 +108,7 @@ class FriendsAPI(Resource):
         return parser.parse_args()
 
 
-class DatabaseVersionAPI():
+class DatabaseVersionAPI(Resource):
     def get(self):
         current_version = Constants.query.first()
         return {'last_event_update': current_version.last_event_update}
@@ -119,7 +121,7 @@ class DatabaseVersionAPI():
         if req_date > current_version.last_event_update:
             smashgg.get_new_events()
             current_version.last_event_update = date.today()
-            db_session.commit()
+            db.commit()
         return {'last_event_update': current_version.last_event_update}
 
 
@@ -138,8 +140,12 @@ def make_pagination_reqparser():
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db_session.remove()
+    db.remove()
+
+
+def main():
+    app.run(debug=True)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    main()

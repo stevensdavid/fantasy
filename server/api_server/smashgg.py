@@ -1,17 +1,19 @@
-import requests
-from database import db_session
-from models import Event, Tournament, Entrant, Placement
-from sqlalchemy.dialects.mysql import insert
-from time import time
 import os
 from io import open as iopen
+from time import time
+
+import requests
+from sqlalchemy.dialects.mysql import insert
+
+from . import db
+from .models import Entrant, Event, Placement, Tournament
 
 
 class SmashGG:
     """Class for providing easy access to the SmashGG GraphQL API
     """
     api_key = ""
-    with open('server/api_key') as f:
+    with open('api_server/api_key') as f:
         api_key = f.read()
 
     def __init__(self):
@@ -71,10 +73,10 @@ class SmashGG:
                     place=standing['placement']
                 ).on_duplicate_key_update(place=standing['placement'],
                                           status='U')
-                db_session.execute(insert_stmt)
+                db.execute(insert_stmt)
             page += 1
             read += per_page
-        db_session.commit()
+        db.commit()
 
     def get_new_tournaments(self):
         """Query SmashGG for new tournaments
@@ -133,8 +135,8 @@ class SmashGG:
                            tournament['isFeatured'],
                            icon_path=os.path.abspath(icon_path),
                            banner_path=os.path.abspath(banner_path))
-            db_session.add(t)
-        db_session.commit()
+            db.add(t)
+        db.commit()
 
     def get_events_in_tournament(self, tournament_id):
         gql_query = '''
@@ -164,8 +166,8 @@ class SmashGG:
             e = Event(event['id'], event['name'], tournament_id,
                       event['slug'], event['numEntrants'],
                       event['videogame']['id'], event['startAt'])
-            db_session.add(e)
-        db_session.commit()
+            db.add(e)
+        db.commit()
 
     def get_entrants_in_event(self, event_id):
         per_page = 200
@@ -208,10 +210,10 @@ class SmashGG:
                                            f"Bearer {self.api_key}"})
             for entrant in r.json()['data']['event']['entrants']['nodes']:
                 e = Entrant(event_id, entrant['playerId'], None)
-                db_session.add(e)
+                db.add(e)
             page += 1
             read += per_page
-        db_session.commit()
+        db.commit()
 
 
 if __name__ == "__main__":
