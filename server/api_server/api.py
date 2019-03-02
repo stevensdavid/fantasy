@@ -116,8 +116,27 @@ class UsersAPI(Resource):
                             type: string
                         photo_path:
                             type: string
-                            description: The URI of the profile photo. The image itself can be
-                                        retrieved using GET /images/{photo_path}
+                            description: >
+                                The URI of the profile photo. The image itself can be
+                                retrieved using GET /images/{photo_path}
+                        fantasy_drafts:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of one of the user's fantasy drafts
+                            default: []
+                        fantasy_leagues:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of one of the user's fantasy leagues
+                            default: []
+                        fantasy_results:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of one of the user's fantasy results
+                            default: []
         """
         if user_id:
             user = User.query.filter(User.user_id == user_id).first()
@@ -242,8 +261,27 @@ class UsersAPI(Resource):
                             type: string
                         photo_path:
                             type: string
-                            description: The URI of the profile photo. The image itself can be
-                                        retrieved using GET /images/{photo_path}
+                            description: >
+                                The URI of the profile photo. The image itself can be
+                                retrieved using GET /images/{photo_path}
+                        fantasy_drafts:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of one of the user's fantasy drafts
+                            default: []
+                        fantasy_leagues:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of one of the user's fantasy leagues
+                            default: []
+                        fantasy_results:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of one of the user's fantasy results
+                            default: []
         """
         parser = reqparse.RequestParser()
         for arg, datatype in User.constructor_params().items():
@@ -333,17 +371,18 @@ class TournamentsAPI(Resource):
                 type: string
                 required: false
                 description: Search for tournaments matching the equivalent regex .*{name}.*
-	    responses:
+        responses:
             200:
-                description: A single tournament if tournament_id is specified, 
-                    else a paginated list of tournaments
+                description: A single tournament if tournament_id is specified,
+                            else a paginated list of tournaments
                 schema:
                     id: Tournament
                     properties:
                         banner_path:
                             type: string
-                            description: The URI of the banner image. The image itself can be
-                                        retrieved using GET /images/{banner_path}
+                            description: >
+                                The URI of the banner image. The image itself can be
+                                retrieved using GET /images/{banner_path}
                         ends_at:
                             type: integer
                             description: A timestamp marking the end time of the event
@@ -354,14 +393,16 @@ class TournamentsAPI(Resource):
                                 description: The unique ID of an event in the tournament
                         icon_path:
                             type: string
-                            description: The URI of the icon image. The image itself can be
-                                        retrieved using GET /images/{icon_path}
+                            description: >
+                                The URI of the icon image. The image itself can be
+                                retrieved using GET /images/{icon_path}
                         is_featured:
                             type: boolean
                             description: Whether or not the tournament is featured by Smash.GG
                         slug:
                             type: string
-                            description: The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
+                            description: >
+                                The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
                                 see the tournament page.
                         tournament_id:
                             type: integer
@@ -391,6 +432,38 @@ class TournamentsAPI(Resource):
 
 class FriendsAPI(Resource):
     def get(self, user_id):
+        """Get all users who are friends with a specific user
+        ---
+        parameters:
+            -   name: user_id
+                in: path
+                type: integer
+                required: true
+        responses:
+            200:
+                description: All of the user's friends
+                schema:
+                    id: Friends
+                    type: array
+                    items:
+                        properties:
+                            user_id:
+                                type: integer
+                                description: The user's unique ID
+                            tag:
+                                type: string
+                                description: The user's gamertag
+                            first_name:
+                                type: string
+                            last_name:
+                                type: string
+                            email:
+                                type: string
+                            photo_path:
+                                type: string
+                                description: The URI of the profile photo. The image itself can be
+                                            retrieved using GET /images/{photo_path}
+        """
         parser = make_pagination_reqparser()
         parser.add_argument('tag', str)
         args = parser.parse_args(strict=True)
@@ -404,6 +477,30 @@ class FriendsAPI(Resource):
         return users_schema.jsonify(friends)
 
     def post(self, user_id):
+        """Make {user_id} friends with {friendId}. Creates symmetrical records in the database
+        ---
+        parameters:
+            -   name: user_id
+                in: path
+                type: integer
+                required: true
+            -   name: friendId
+                in: body
+                type: integer
+                required: true
+        responses:
+            200:
+                description: The resulting friend-pair
+                schema:
+                    id: Friends
+                    properties:
+                        user_1: 
+                            type: integer
+                            description: An echo of {user_id}
+                        user_2:
+                            type: integer
+                            description: An echo of {friendId}
+        """
         args = self._parse_put_delete()
         # Create symmetrical entities
         friends = Friends(user_1=user_id, user_2=args['friendId'])
@@ -417,6 +514,30 @@ class FriendsAPI(Resource):
         return friends.as_dict()
 
     def delete(self, user_id):
+        """Delete {user_id}s friendship with {friendId}. Removes symmetrical records in the database
+        ---
+        parameters:
+            -   name: user_id
+                in: path
+                type: integer
+                required: true
+            -   name: friendId
+                in: body
+                type: integer
+                required: true
+        responses:
+            200:
+                description: The deleted friend-pair
+                schema:
+                    id: Friends
+                    properties:
+                        user_1: 
+                            type: integer
+                            description: An echo of {user_id}
+                        user_2:
+                            type: integer
+                            description: An echo of {friendId}
+        """
         args = self._parse_put_delete()
         friends = Friends.query.filter(Friends.user_1 == user_id, Friends.user_2 == args['friendId']).first()
         if not friends:
