@@ -303,7 +303,7 @@ class EventsAPI(Resource):
                                     Not entirely certain if this is an integer. TODO investigate
                         slug:
                             type: string
-                            description: The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
+                            description: The Smash.GG URL for the event. Users can visit smash.gg/{slug} to 
                                 see the event page.
                         start_at:
                             type: integer
@@ -321,6 +321,52 @@ class EventsAPI(Resource):
 
 class TournamentsAPI(Resource):
     def get(self, tournament_id=None):
+        """Get tournaments, or a specific tournament
+        ---
+        parameters:
+            -   name: tournament_id
+                in: path
+                type: integer
+                required: false
+            -   name: name
+                in: query
+                type: string
+                required: false
+                description: Search for tournaments matching the equivalent regex .*{name}.*
+	    responses:
+            200:
+                description: A single tournament if tournament_id is specified, 
+                    else a paginated list of tournaments
+                schema:
+                    id: Tournament
+                    properties:
+                        banner_path:
+                            type: string
+                            description: The URI of the banner image. The image itself can be
+                                        retrieved using GET /images/{banner_path}
+                        ends_at:
+                            type: integer
+                            description: A timestamp marking the end time of the event
+                        events:
+                            type: array
+                            items:
+                                type: integer
+                                description: The unique ID of an event in the tournament
+                        icon_path:
+                            type: string
+                            description: The URI of the icon image. The image itself can be
+                                        retrieved using GET /images/{icon_path}
+                        is_featured:
+                            type: boolean
+                            description: Whether or not the tournament is featured by Smash.GG
+                        slug:
+                            type: string
+                            description: The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
+                                see the tournament page.
+                        tournament_id:
+                            type: integer
+                            description: The unique ID for the tournament
+        """
         if tournament_id:
             tournament = Tournament.query.filter(
                 Tournament.tournament_id == tournament_id).first()
