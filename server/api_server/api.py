@@ -92,8 +92,10 @@ class UsersAPI(Resource):
         parser.add_argument('pw', str)
         args = parser.parse_args(strict=True)
         # pylint: disable=no-member
-        db.session.add(User(**args))
+        user = User(**args)
+        db.session.add(user)
         db.session.commit()
+        return user_schema.jsonify(user)
 
 
 class EventsAPI(Resource):
