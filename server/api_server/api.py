@@ -85,7 +85,7 @@ class UsersAPI(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        for arg, datatype in User.constructor_params():
+        for arg, datatype in User.constructor_params().items():
             parser.add_argument(arg, type=datatype)
         # parser.add_argument('tag', type=str)
         # parser.add_argument('email', type=str)
