@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flasgger import Swagger
 # from flask_talisman import Talisman
 import os
 
@@ -15,3 +16,4 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 app.config['IMAGE_DIR'] = os.getcwd() + '/images'
+swagger = Swagger(app)
