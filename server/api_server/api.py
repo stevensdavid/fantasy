@@ -261,6 +261,60 @@ class UsersAPI(Resource):
 
 class EventsAPI(Resource):
     def get(self, event_id):
+        """Get event information
+        ---
+        parameters:
+            -   name: event_id
+                in: path
+                type: integer
+                required: true
+        responses:
+            200:
+                description: The event
+                schema:
+                    id: Event
+                    properties:
+                        entrants:
+                            type: array
+                            items:
+                                type: integer
+                                description: The entrant's unique ID
+                            description: List of the entrants in the event
+                        event_id:
+                            type: integer
+                            description: The event's unique ID
+                        fantasy_leagues:
+                            type: array
+                            items:
+                                type: integer
+                                description: The fantasy league's unique ID
+                            description: List of all fantasy leagues for the event
+                        name:
+                            type: string
+                            description: The name of the tournament. This is human-readable and suitable for users
+                        num_entrants:
+                            type: integer
+                            description: The number of entrants in the tournament
+                        placements:
+                            type: array
+                            items:
+                                type: integer
+                                description: A list of all placements in the event. 
+                                    Not entirely certain if this is an integer. TODO investigate
+                        slug:
+                            type: string
+                            description: The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
+                                see the event page.
+                        start_at:
+                            type: integer
+                            description: The timestamp at which the event starts
+                        tournament:
+                            type: integer
+                            description: The unique ID of the tournament that this event is part of
+                        videogame:
+                            type: integer
+                            description: The unique ID of the video game that this event is for
+        """
         event = Event.query.filter(Event.event_id == event_id).first()
         return event_schema.jsonify(event)
 
