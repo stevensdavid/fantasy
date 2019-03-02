@@ -9,6 +9,7 @@ from flask import (Flask, make_response, safe_join, send_file,
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 
 from . import api, app, db
 from .marshmallow_schemas import (ConstantsSchema, EventSchema,
@@ -142,32 +143,39 @@ class TournamentsAPI(Resource):
 class FriendsAPI(Resource):
     def get(self, user_id):
         parser = make_pagination_reqparser()
-        parser.add_argument('friendId', int)
-        args = parser.parse_args()
+        parser.add_argument('tag', str)
+        args = parser.parse_args(strict=True)
         # The Friends junction table has symmetrical entries, i.e. both Friends(x,y)
         # and Friends(y,x)
         friends = User.query.filter(Friends.query.filter(
-            (Friends.user_1 == args['friendId']
-             & Friends.user_2 == User.user_id)
-        ).exists()).paginate(page=args['page'], per_page=args['perPage']).items
-        return friends_schema.jsonify(friends)
+            Friends.user_1 == user_id, Friends.user_2 == User.user_id
+        ).exists()
+            & User.tag.like(f'%{args["tag"] if args["tag"] is not None else ""}%')
+        ).paginate(page=args['page'], per_page=args['perPage']).items
+        return users_schema.jsonify(friends)
 
     def post(self, user_id):
         args = self._parse_put_delete()
         # Create symmetrical entities
-        friends = Friends(user_id, args['friendId'])
+        friends = Friends(user_1=user_id, user_2=args['friendId'])
         db.session.add(friends)
-        db.session.add(Friends(args['friendId'], user_id))
-        db.session.commit()
-        return friend_schema(friends)
+        db.session.add(Friends(user_1=args['friendId'], user_2=user_id))
+        try:
+            db.session.commit()
+        except IntegrityError:
+            # These users are already friends
+            db.session.rollback()
+        return friends.as_dict()
 
     def delete(self, user_id):
         args = self._parse_put_delete()
-        friends = Friends(user_id, args['friendId'])
+        friends = Friends.query.filter(Friends.user_1 == user_id, Friends.user_2 == args['friendId']).first()
+        if not friends:
+            return {'error': 'Not found'}, 404
         db.session.delete(friends)
-        db.session.delete(Friends(args['friendId'], user_id))
+        db.session.delete(Friends.query.filter(Friends.user_2 == user_id, Friends.user_1 == args['friendId']).first())
         db.session.commit()
-        return friend_schema(friends)
+        return friends.as_dict()
 
     def _parse_put_delete(self):
         parser = reqparse.RequestParser()
