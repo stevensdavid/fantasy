@@ -47,14 +47,14 @@ video_games_schema = VideoGameSchema(many=True)
 API endpoints providing support for:
 Söka användare +
 Skapa ny användare +
-Ändra lösenord
+Ändra lösenord +
 lägg till vän
 
-Se turneringar
-Se utvalda turneringar
-Söka turneringar
+Se turneringar +
+Se utvalda turneringar +
+Söka turneringar +
 
-Se alla events i turnering
+Se alla events i turnering +
 
 Se alla vänner till användare
 
