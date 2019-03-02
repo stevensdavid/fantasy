@@ -180,7 +180,7 @@ class VideoGame(db.Model, Serializeable):
 class Entrant(db.Model, Serializeable):
     __tablename__ = "Entrant"
     event_id = db.Column(db.Integer, db.ForeignKey("Event.event_id"), primary_key=True)
-    event = db.relationship('Events', backref=db.backref('entrants', lazy=True))
+    event = db.relationship('Event', backref=db.backref('entrants', lazy=True))
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     player = db.relationship('Player', backref=db.backref('entrants', lazy=True))
@@ -201,7 +201,7 @@ class Entrant(db.Model, Serializeable):
 class FantasyDraft(db.Model, Serializeable):
     __tablename__ = "FantasyDraft"
     league_id = db.Column(db.Integer, db.ForeignKey(
-        "League.league_id"), primary_key=True)
+        "FantasyLeague.league_id"), primary_key=True)
     league = db.relationship('FantasyLeague', backref=db.backref('fantasydrafts', lazy=True))
     user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
     user = db.relationship('User', backref=db.backref('fantasydrafts', lazy=True))
