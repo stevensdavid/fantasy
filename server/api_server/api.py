@@ -19,10 +19,10 @@ from .marshmallow_schemas import (ConstantsSchema, EventSchema,
                                   FantasyDraftSchema, FantasyLeagueSchema,
                                   FantasyResultSchema, FriendsSchema,
                                   PlayerSchema, TournamentSchema, UserSchema,
-                                  VideoGameSchema)
+                                  VideoGameSchema, EntrantSchema)
 from .models import (Constants, Event, FantasyDraft, FantasyLeague,
                      FantasyResult, Friends, Player, Tournament, User,
-                     VideoGame)
+                     VideoGame, Entrant)
 from .smashgg import SmashGG
 
 smashgg = SmashGG()
@@ -37,6 +37,7 @@ player_schema = PlayerSchema()
 tournament_schema = TournamentSchema()
 user_schema = UserSchema()
 video_game_schema = VideoGameSchema()
+entrant_schema = EntrantSchema()
 
 events_schema = EventSchema(many=True)
 fantasy_drafts_schema = FantasyDraftSchema(many=True)
@@ -47,6 +48,7 @@ players_schema = PlayerSchema(many=True)
 tournaments_schema = TournamentSchema(many=True)
 users_schema = UserSchema(many=True)
 video_games_schema = VideoGameSchema(many=True)
+entrants_schema = EntrantSchema(many=True)
 
 """
 API endpoints providing support for:
@@ -63,12 +65,12 @@ Se alla events i turnering +
 
 Se alla vänner till användare +
 
-Se användares drafts
-Se användares ligor (både ägda och deltagande)
-Skapa ligor
-Skapa drafts
-Redigera liga
-Redigera drafts
+Se användares drafts +
+Se användares ligor (både ägda och deltagande) +
+Skapa ligor +
+Skapa drafts +
+Redigera liga +
+Redigera drafts +
 Bjud in deltagare
 """
 
@@ -1017,6 +1019,45 @@ class LeagueAPI(Resource):
         return {"error": "League not found"}, 404
 
 
+class EntrantsAPI(Resource):
+    def get(self, event_id):
+        """Get entrants in event
+        ---
+        parameters:
+            -   name: page
+                type: integer
+                required: false
+                description: The page of results to get
+                default: 1
+            -   name: perPage
+                type: integer
+                required: false
+                description: The number of entrants to include on each page
+                default: 20
+        responses:
+            200:
+                description: The entrants in the event
+                schema:
+        
+        """
+
+        parser = make_pagination_reqparser()
+        args = parser.parse_args()
+        entrants = Entrant.query.filter(Entrant.event_id).order_by(
+            Entrant.seed).paginate(page=args['page'], per_page=args['perPage']
+                                   ).items
+        if not entrants or entrants[0].seed is None:
+            # The seeding is not yet complete. In most cases this also means
+            # that signups are not yet complete, so update both using the API
+            smashgg.get_entrants_in_event()
+            # Rerun query
+            entrants = Entrant.query.filter(Entrant.event_id).order_by(
+                Entrant.seed).paginate(page=args['page'],
+                                       per_page=args['perPage']
+                                       ).items
+        return entrants_schema.jsonify(entrants)
+
+
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
@@ -1027,6 +1068,7 @@ api.add_resource(FeaturedTournamentsAPI, '/featured')
 api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
+api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 
 
 def make_pagination_reqparser():
