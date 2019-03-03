@@ -772,6 +772,179 @@ class DraftsAPI(Resource):
         return fantasy_draft_schema.jsonify(draft)
 
 
+class LeagueAPI(Resource):
+    def get(self, league_id=None):
+        """Get fantasy leagues
+        ---
+        parameters:
+            -   name: league_id
+                in: path
+                required: false
+                type: integer
+                description: The ID of the league to retrieve
+            -   name: eventId
+                in: query
+                required: false
+                type: integer
+                description: The ID of the event to query leagues for
+            -   name: page
+                in: query
+                required: false
+                type: integer
+                description: The page of results to return
+                default: 1
+            -   name: perPage
+                in: query
+                required: false
+                type: integer
+                description: The number of items to include per page
+                default: 20
+            -   name: requirePublic
+                in: query
+                required: false
+                type: boolean
+                description: Only return public fantasy leagues
+                default: false
+        responses:
+            200:
+                description: The fantasy leagues matching the parameters
+                schema:
+
+        """
+        if league_id:
+            league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+            return fantasy_league_schema.jsonify(league)
+        parser = make_pagination_reqparser()
+        parser.add_argument('eventId', type=int)
+        args = parser.parse_args(strict=True)
+        # users = User.query.filter(User.tag.like(f'%{args["tag"]}%')).paginate(
+        #     page=args['page'], per_page=args['perPage']).items
+        allowed_privacies = [True] if args['requirePublic'] else [False, True]
+        if args['eventId']:
+            leagues = FantasyLeague.query.filter(FantasyLeague.event_id == args['eventId'],
+                                                 FantasyLeague.public.in_(allowed_privacies)).paginate(
+                page=args['page'], per_page=args['perPage']).items
+        else:
+            leagues = FantasyLeague.query.filter(FantasyLeague.public.in_(allowed_privacies)).paginate(
+                page=args['page'], per_page=args['perPage']).items
+        return fantasy_leagues_schema.jsonify(leagues)
+
+    def delete(self, league_id):
+        """Delete a fantasy league
+        ---
+        parameters:
+            -   name: league_id
+                in: path
+                type: integer
+                description: The ID of the league to delete
+                required: true
+        responses:
+            200:
+                description: The deleted entity
+                schema:
+
+        """
+        league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+        db.session.delete(league)
+        db.session.commit()
+        return fantasy_league_schema.jsonify(league)
+
+    def post(self):
+        """Create a new fantasy league
+        ---
+        parameters:
+            -   name: eventId
+                in: body
+                required: true
+                type: integer
+                description: The unique identifier of the event that the league is for
+            -   name: ownerId
+                in: body
+                required: true
+                type: integer
+                description: The unique identifier of the player that created the league
+            -   name: draftSize
+                in: body
+                required: true
+                type: integer
+                description: The number of players each user is allowed to draft
+            -   name: public
+                in: body
+                required: true
+                type: boolean
+                description: Whether or not the league is invite-only
+            -   name: name
+                in: body
+                required: true
+                type: string
+                description: The name of the league
+        responses:
+            200:
+                description: The created fantasy league
+                schema:
+
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('eventId', type=int)
+        parser.add_argument('ownerId', type=int)
+        parser.add_argument('draftSize', type=int)
+        parser.add_argument('public', type=bool)
+        parser.add_argument('name', type=str)
+        args = parser.parse_args(strict=True)
+        league = FantasyLeague(event_id=args['eventId'], owner_id=args['ownerId'],
+                               draft_size=args['draftSize'], public=args['public'],
+                               name=args['name'])
+        db.session.add(league)
+        db.session.commit()
+        return fantasy_league_schema.jsonify(league)
+
+    def put(self, league_id):
+        """Update a fantasy league
+        ---
+        parameters:
+            -   name: leagueId
+                in: path
+                required: true
+                type: integer
+                description: The unique identifier of the league
+            -   name: draftSize
+                in: body
+                required: false
+                type: integer
+                description: The number of players each user is allowed to draft. If the new size is smaller
+                    than the previous size, all drafts in the league will be deleted.
+            -   name: public
+                in: body
+                required: false
+                type: boolean
+                description: Whether or not the league is invite-only
+            -   name: name
+                in: body
+                required: false
+                type: string
+                description: The name of the league
+        responses:
+            200:
+                description: The updated fantasy league
+                schema:
+
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('leagueId', type=int)
+        parser.add_argument('draftSize', type=int)
+        parser.add_argument('public', type=bool)
+        parser.add_argument('name', type=str)
+        league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+        if league is not None:
+            args = parser.parse_args(strict=True)
+            for key, value in args.items():
+                if value is not None:
+                    setattr(league, key, value)
+            db.session.commit()
+            return user_schema.jsonify(league)
+        return {"error": "League not found"}, 404
+
+
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
@@ -781,6 +954,7 @@ api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
 api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
+api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
 
 
 def make_pagination_reqparser():
