@@ -259,6 +259,19 @@ class SmashGG:
                         }
                     }
                 }
+                phases {
+                    paginatedSeeds(query: {
+                        page: $page,
+                        perPage: $per_page
+                    }) {
+                        nodes {
+                            seedNum
+                            players {
+                                id
+                            }
+                        }
+                    }
+                }
             }
         }
         '''
@@ -283,9 +296,21 @@ class SmashGG:
                                   headers={"Authorization":
                                            f"Bearer {self.api_key}"})
             for entrant in r.json()['data']['event']['entrants']['nodes']:
+                # TODO: This search is quadratic in terms of the number of
+                # entrants. I'm not certain if there is a better way. Worth
+                # noting is that the number of entrants is going to be <2000,
+                # but that is still a fairly large number...
+                try:
+                    seed = filter(
+                        lambda x: x['players'][0] == entrant['playerId'],
+                        r.json['data']['event']['phases']['nodes'][0]
+                    ).next()['seedNum']
+                except (IndexError, KeyError):
+                    seed = None
                 e = Entrant(event_id=event_id,
-                            player_id=entrant['playerId'], seed=None)
-                db.session.add(e)
+                            player_id=entrant['playerId'], seed=seed)
+                # Merge performs an UPDATE query if the row already exists
+                db.session.merge(e)
             page += 1
             read += per_page
         db.session.commit()
