@@ -91,6 +91,7 @@ class FantasyLeague(db.Model, Serializeable):
     event = db.relationship('Event', backref=db.backref('fantasy_leagues', lazy=True))
     owner_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
     owner = db.relationship('User', backref=db.backref('fantasy_leagues', lazy=True))
+    draft_size = db.Column(db.Integer, nullable=False)
 
     @staticmethod
     def constructor_params():
