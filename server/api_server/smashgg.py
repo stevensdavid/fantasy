@@ -124,6 +124,7 @@ class SmashGG:
                     afterDate: $now,
                     isFeatured: %s
                 }
+                sortBy: "startAt"
             }) {
                 nodes {
                     id
@@ -198,7 +199,7 @@ class SmashGG:
                            banner_path='/'.join(banner_path.split('/')[-3:])
                            if banner_path is not None else None
                            )
-            db.session.add(t)
+            db.session.merge(t)
 
     def get_events_in_tournament(self, tournament_id):
         gql_query = '''
@@ -233,7 +234,7 @@ class SmashGG:
                       if event['numEntrants'] is not None else 0,
                       videogame_id=event['videogameId'],
                       start_at=event['startAt'])
-            db.session.add(e)
+            db.session.merge(e)
         try:
             db.session.commit()
         except IntegrityError:
