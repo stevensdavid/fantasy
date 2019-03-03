@@ -69,7 +69,8 @@ class SmashGG:
             for standing in r.json()['event']['standings']['nodes']:
                 insert_stmt = insert(Placement).values(
                     event_id=event_id,
-                    player_id=standing['entrant']['participants'][0]['playerId'],
+                    player_id=standing['entrant']['participants'][0]
+                                      ['playerId'],
                     place=standing['placement']
                 ).on_duplicate_key_update(place=standing['placement'],
                                           status='U')
@@ -79,11 +80,12 @@ class SmashGG:
         db.session.commit()
 
     def get_videogames(self):
-        # Sadly, the Smash.GG GraphQL API does not currently support querying videogames, so we have
-        # to fallback to their REST API
+        # Sadly, the Smash.GG GraphQL API does not currently support querying
+        # videogames, so we have # to fallback to their REST API
         res = self.session.get('https://api.smash.gg/videogames')
         for game in res.json()['entities']['videogame']:
-            if db.session.query(VideoGame).filter(VideoGame.videogame_id == game["id"]).first():
+            if db.session.query(VideoGame).filter(
+                    VideoGame.videogame_id == game["id"]).first():
                 # This game is already in the database
                 continue
             print(f'Getting data for {game["name"]}')
@@ -106,8 +108,10 @@ class SmashGG:
             db.session.add(VideoGame(videogame_id=game['id'],
                                      name=game['name'],
                                      display_name=game['displayName'],
-                                     photo_path='/'.join(image_path.split('/')
-                                              [-3:]) if image_path is not None else None))
+                                     photo_path=(
+                                         '/'.join(image_path.split('/')[-3:])
+                                         if image_path is not None else None
+            )))
         db.session.commit()
 
     def get_new_tournaments(self):
@@ -189,9 +193,11 @@ class SmashGG:
                            slug=tournament['slug'],
                            is_featured=is_featured,
                            ends_at=tournament['endAt'],
-                           icon_path='/'.join(icon_path.split('/')
-                                              [-3:]) if icon_path is not None else None,
-                           banner_path='/'.join(banner_path.split('/')[-3:]) if banner_path is not None else None)
+                           icon_path='/'.join(icon_path.split('/')[-3:])
+                           if icon_path is not None else None,
+                           banner_path='/'.join(banner_path.split('/')[-3:])
+                           if banner_path is not None else None
+                           )
             db.session.add(t)
 
     def get_events_in_tournament(self, tournament_id):
@@ -220,17 +226,20 @@ class SmashGG:
                                        f"Bearer {self.api_key}"})
         for event in r.json()['data']['tournament']['events']:
             e = Event(event_id=event['id'],
-                    name=event['name'],
-                    tournament_id=tournament_id,
-                    slug=event['slug'],
-                    num_entrants=event['numEntrants'] if event['numEntrants'] is not None else 0,
-                    videogame_id=event['videogameId'], start_at=event['startAt'])
+                      name=event['name'],
+                      tournament_id=tournament_id,
+                      slug=event['slug'],
+                      num_entrants=event['numEntrants']
+                      if event['numEntrants'] is not None else 0,
+                      videogame_id=event['videogameId'],
+                      start_at=event['startAt'])
             db.session.add(e)
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            # In all likelihood due to the videogame not being stored in the database
+            # In all likelihood due to the videogame not being stored in the
+            # database
             self.get_videogames()
             db.session.commit()
 

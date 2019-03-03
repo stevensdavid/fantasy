@@ -49,8 +49,10 @@ class User(db.Model, Serializeable):
 
 class Friends(db.Model, Serializeable):
     __tablename__ = "Friends"
-    user_1 = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
-    user_2 = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
+    user_1 = db.Column(db.Integer, db.ForeignKey(
+        "User.user_id"), primary_key=True)
+    user_2 = db.Column(db.Integer, db.ForeignKey(
+        "User.user_id"), primary_key=True)
 
     @staticmethod
     def constructor_params():
@@ -87,18 +89,22 @@ class FantasyLeague(db.Model, Serializeable):
     name = db.Column(db.String(45), nullable=False)
     public = db.Column(db.Boolean, nullable=False)
 
-    event_id = db.Column(db.Integer, db.ForeignKey("Event.event_id"), nullable=False)
-    event = db.relationship('Event', backref=db.backref('fantasy_leagues', lazy=True))
-    owner_id = db.Column(db.Integer, db.ForeignKey('User.user_id'), nullable=False)
-    owner = db.relationship('User', backref=db.backref('fantasy_leagues', lazy=True))
+    event_id = db.Column(db.Integer, db.ForeignKey(
+        "Event.event_id"), nullable=False)
+    event = db.relationship(
+        'Event', backref=db.backref('fantasy_leagues', lazy=True))
+    owner_id = db.Column(db.Integer, db.ForeignKey(
+        'User.user_id'), nullable=False)
+    owner = db.relationship(
+        'User', backref=db.backref('fantasy_leagues', lazy=True))
     draft_size = db.Column(db.Integer, nullable=False)
 
     @staticmethod
     def constructor_params():
         return {
             'event_id': int,
-            'name':str, 
-            'owner':str, 
+            'name': str,
+            'owner': str,
             'public': bool
         }
 
@@ -125,7 +131,7 @@ class Tournament(db.Model, Serializeable):
             'icon_path': str,
             'banner_path': str,
             'is_featured': bool,
-            'ends_at' : int
+            'ends_at': int
         }
 
     def __repr__(self):
@@ -135,14 +141,18 @@ class Tournament(db.Model, Serializeable):
 class Event(db.Model, Serializeable):
     __tablename__ = "Event"
     event_id = db.Column(db.Integer, primary_key=True)
-    tournament_id = db.Column(db.Integer, db.ForeignKey("Tournament.tournament_id"), nullable=False)
-    tournament = db.relationship('Tournament', backref=db.backref('events', lazy=True))
+    tournament_id = db.Column(db.Integer, db.ForeignKey(
+        "Tournament.tournament_id"), nullable=False)
+    tournament = db.relationship(
+        'Tournament', backref=db.backref('events', lazy=True))
     name = db.Column(db.String(255))
     slug = db.Column(db.String(255))
     num_entrants = db.Column(db.Integer, nullable=False)
     start_at = db.Column(db.Integer, nullable=False)
-    videogame_id = db.Column(db.Integer, db.ForeignKey("VideoGame.videogame_id"), nullable=False)
-    videogame = db.relationship('VideoGame', backref=db.backref('events', lazy=True))
+    videogame_id = db.Column(db.Integer, db.ForeignKey(
+        "VideoGame.videogame_id"), nullable=False)
+    videogame = db.relationship(
+        'VideoGame', backref=db.backref('events', lazy=True))
 
     @staticmethod
     def constructor_params():
@@ -182,11 +192,13 @@ class VideoGame(db.Model, Serializeable):
 
 class Entrant(db.Model, Serializeable):
     __tablename__ = "Entrant"
-    event_id = db.Column(db.Integer, db.ForeignKey("Event.event_id"), primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey(
+        "Event.event_id"), primary_key=True)
     event = db.relationship('Event', backref=db.backref('entrants', lazy=True))
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
-    player = db.relationship('Player', backref=db.backref('entrants', lazy=True))
+    player = db.relationship(
+        'Player', backref=db.backref('entrants', lazy=True))
     seed = db.Column(db.Integer)
 
     @staticmethod
@@ -205,13 +217,16 @@ class FantasyDraft(db.Model, Serializeable):
     __tablename__ = "FantasyDraft"
     league_id = db.Column(db.Integer, db.ForeignKey(
         "FantasyLeague.league_id"), primary_key=True)
-    league = db.relationship('FantasyLeague', backref=db.backref('fantasy_drafts', lazy=True))
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('fantasy_drafts', lazy=True))
+    league = db.relationship(
+        'FantasyLeague', backref=db.backref('fantasy_drafts', lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "User.user_id"), primary_key=True)
+    user = db.relationship(
+        'User', backref=db.backref('fantasy_drafts', lazy=True))
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
-    player = db.relationship('Player', backref=db.backref('fantasy_drafts', lazy=True))
-
+    player = db.relationship(
+        'Player', backref=db.backref('fantasy_drafts', lazy=True))
 
     @staticmethod
     def constructor_params():
@@ -222,17 +237,21 @@ class FantasyDraft(db.Model, Serializeable):
         }
 
     def __repr__(self):
-        return f'<FantasyDraft league {self.league_id} user {self.user_id} player {self.player_id}>'
+        return f'<FantasyDraft league {self.league_id} user {self.user_id}' \
+               f'player {self.player_id}>'
 
 
 class Placement(db.Model, Serializeable):
     __tablename__ = "Placement"
-    event_id = db.Column(db.Integer, db.ForeignKey("Event.event_id"), primary_key=True)
-    event = db.relationship('Event', backref=db.backref('placements', lazy=True)) 
+    event_id = db.Column(db.Integer, db.ForeignKey(
+        "Event.event_id"), primary_key=True)
+    event = db.relationship(
+        'Event', backref=db.backref('placements', lazy=True))
 
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
-    player = db.relationship('Player', backref=db.backref('placements', lazy=True))
+    player = db.relationship(
+        'Player', backref=db.backref('placements', lazy=True))
     place = db.Column(db.Integer)
 
     @staticmethod
@@ -251,9 +270,12 @@ class FantasyResult(db.Model, Serializeable):
     __tablename__ = "FantasyResult"
     league_id = db.Column(db.Integer, db.ForeignKey(
         "FantasyLeague.league_id"), primary_key=True)
-    league = db.relationship('FantasyLeague', backref=db.backref('fantasy_results', lazy=True))
-    user_id = db.Column(db.Integer, db.ForeignKey("User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('fantasy_results', lazy=True))
+    league = db.relationship(
+        'FantasyLeague', backref=db.backref('fantasy_results', lazy=True))
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "User.user_id"), primary_key=True)
+    user = db.relationship('User', backref=db.backref(
+        'fantasy_results', lazy=True))
     score = db.Column(db.Integer)
 
     @staticmethod

@@ -98,7 +98,9 @@ class UsersAPI(Resource):
                 required: false
         responses:
             200:
-                description: A single user if user_id is specified or a paginated list of all users
+                description: >
+                    A single user if user_id is specified or a paginated list of
+                    all users
                 schema:
                     id: User
                     properties:
@@ -117,25 +119,31 @@ class UsersAPI(Resource):
                         photo_path:
                             type: string
                             description: >
-                                The URI of the profile photo. The image itself can be
-                                retrieved using GET /images/{photo_path}
+                                The URI of the profile photo. The image itself 
+                                can be retrieved using GET /images/{photo_path}
                         fantasy_drafts:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of one of the user's fantasy drafts
+                                description: >
+                                    The unique ID of one of the user's fantasy 
+                                    drafts
                             default: []
                         fantasy_leagues:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of one of the user's fantasy leagues
+                                description: >
+                                    The unique ID of one of the user's fantasy 
+                                    leagues
                             default: []
                         fantasy_results:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of one of the user's fantasy results
+                                description: >
+                                    The unique ID of one of the user's fantasy 
+                                    results
                             default: []
         """
         if user_id:
@@ -199,8 +207,9 @@ class UsersAPI(Resource):
                             type: string
                         photo_path:
                             type: string
-                            description: The URI of the profile photo. The image itself can be
-                                        retrieved using GET /images/{photo_path}
+                            description: >
+                                The URI of the profile photo. The image itself 
+                                can be retrieved using GET /images/{photo_path}
         """
         parser = reqparse.RequestParser()
         for arg, datatype in User.constructor_params().items():
@@ -262,25 +271,31 @@ class UsersAPI(Resource):
                         photo_path:
                             type: string
                             description: >
-                                The URI of the profile photo. The image itself can be
-                                retrieved using GET /images/{photo_path}
+                                The URI of the profile photo. The image itself 
+                                can be retrieved using GET /images/{photo_path}
                         fantasy_drafts:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of one of the user's fantasy drafts
+                                description: >
+                                    The unique ID of one of the user's fantasy 
+                                    drafts
                             default: []
                         fantasy_leagues:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of one of the user's fantasy leagues
+                                description: >
+                                    The unique ID of one of the user's fantasy 
+                                    leagues
                             default: []
                         fantasy_results:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of one of the user's fantasy results
+                                description: >
+                                    The unique ID of one of the user's fantasy 
+                                    results
                             default: []
         """
         parser = reqparse.RequestParser()
@@ -326,32 +341,43 @@ class EventsAPI(Resource):
                             items:
                                 type: integer
                                 description: The fantasy league's unique ID
-                            description: List of all fantasy leagues for the event
+                            description: >
+                                List of all fantasy leagues for the event
                         name:
                             type: string
-                            description: The name of the tournament. This is human-readable and suitable for users
+                            description: >
+                                The name of the tournament. This is 
+                                human-readable and suitable for users
                         num_entrants:
                             type: integer
-                            description: The number of entrants in the tournament
+                            description: >
+                                The number of entrants in the tournament
                         placements:
                             type: array
                             items:
                                 type: integer
-                                description: A list of all placements in the event. 
-                                    Not entirely certain if this is an integer. TODO investigate
+                                description: >
+                                    A list of all placements in the event. Not 
+                                    entirely certain if this is an integer. 
+                                    TODO investigate
                         slug:
                             type: string
-                            description: The Smash.GG URL for the event. Users can visit smash.gg/{slug} to 
-                                see the event page.
+                            description: >
+                                The Smash.GG URL for the event. Users can visit 
+                                smash.gg/{slug} to see the event page.
                         start_at:
                             type: integer
                             description: The timestamp at which the event starts
                         tournament:
                             type: integer
-                            description: The unique ID of the tournament that this event is part of
+                            description: >
+                                The unique ID of the tournament that this event 
+                                is part of
                         videogame:
                             type: integer
-                            description: The unique ID of the video game that this event is for
+                            description: >
+                                The unique ID of the video game that this event 
+                                is for
         """
         event = Event.query.filter(Event.event_id == event_id).first()
         return event_schema.jsonify(event)
@@ -370,40 +396,48 @@ class TournamentsAPI(Resource):
                 in: query
                 type: string
                 required: false
-                description: Search for tournaments matching the equivalent regex .*{name}.*
+                description: >
+                    Search for tournaments matching the equivalent of the regex 
+                    .*{name}.*
         responses:
             200:
-                description: A single tournament if tournament_id is specified,
-                            else a paginated list of tournaments
+                description: >
+                    A single tournament if tournament_id is specified, else a 
+                    paginated list of tournaments
                 schema:
                     id: Tournament
                     properties:
                         banner_path:
                             type: string
                             description: >
-                                The URI of the banner image. The image itself can be
-                                retrieved using GET /images/{banner_path}
+                                The URI of the banner image. The image itself 
+                                can be retrieved using GET /images/{banner_path}
                         ends_at:
                             type: integer
-                            description: A timestamp marking the end time of the event
+                            description: >
+                                A timestamp marking the end time of the event
                         events:
                             type: array
                             items:
                                 type: integer
-                                description: The unique ID of an event in the tournament
+                                description: >
+                                    The unique ID of an event in the tournament
                         icon_path:
                             type: string
                             description: >
-                                The URI of the icon image. The image itself can be
-                                retrieved using GET /images/{icon_path}
+                                The URI of the icon image. The image itself can 
+                                be retrieved using GET /images/{icon_path}
                         is_featured:
                             type: boolean
-                            description: Whether or not the tournament is featured by Smash.GG
+                            description: >
+                                Whether or not the tournament is featured by 
+                                Smash.GG
                         slug:
                             type: string
                             description: >
-                                The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
-                                see the tournament page.
+                                The Smash.GG URL for the tournament. Users can 
+                                visit smash.gg/{slug} to see the tournament 
+                                page.
                         tournament_id:
                             type: integer
                             description: The unique ID for the tournament
@@ -462,23 +496,28 @@ class FriendsAPI(Resource):
                             photo_path:
                                 type: string
                                 description: >
-                                    The URI of the profile photo. The image itself can be
-                                    retrieved using GET /images/{photo_path}
+                                    The URI of the profile photo. The image 
+                                    itself can be retrieved using GET 
+                                    /images/{photo_path}
         """
         parser = make_pagination_reqparser()
         parser.add_argument('tag', str)
         args = parser.parse_args(strict=True)
-        # The Friends junction table has symmetrical entries, i.e. both Friends(x,y)
-        # and Friends(y,x)
-        friends = User.query.filter(Friends.query.filter(
-            Friends.user_1 == user_id, Friends.user_2 == User.user_id
-        ).exists()
-                                    & User.tag.like(f'%{args["tag"] if args["tag"] is not None else ""}%')
-                                    ).paginate(page=args['page'], per_page=args['perPage']).items
+        # The Friends junction table has symmetrical entries, i.e. both
+        # Friends(x,y) and Friends(y,x)
+        friends = User.query.filter(
+            Friends.query.filter(
+                Friends.user_1 == user_id, Friends.user_2 == User.user_id
+            ).exists()
+            & User.tag.like(
+                f'%{args["tag"] if args["tag"] is not None else ""}%')
+        ).paginate(page=args['page'], per_page=args['perPage']).items
         return users_schema.jsonify(friends)
 
     def post(self, user_id):
-        """Make {user_id} friends with {friendId}. Creates symmetrical records in the database
+        """Make {user_id} friends with {friendId}. 
+
+        Creates symmetrical records in the database
         ---
         parameters:
             -   name: user_id
@@ -515,7 +554,9 @@ class FriendsAPI(Resource):
         return friends.as_dict()
 
     def delete(self, user_id):
-        """Delete {user_id}s friendship with {friendId}. Removes symmetrical records in the database
+        """Delete {user_id}s friendship with {friendId}. 
+
+        Removes symmetrical records in the database
         ---
         parameters:
             -   name: user_id
@@ -541,12 +582,14 @@ class FriendsAPI(Resource):
         """
         args = self._parse_put_delete()
         friends = Friends.query.filter(
-            Friends.user_1 == user_id, Friends.user_2 == args['friendId']).first()
+            Friends.user_1 == user_id, Friends.user_2 == args['friendId']
+        ).first()
         if not friends:
             return {'error': 'Not found'}, 404
         db.session.delete(friends)
         db.session.delete(Friends.query.filter(
-            Friends.user_2 == user_id, Friends.user_1 == args['friendId']).first())
+            Friends.user_2 == user_id, Friends.user_1 == args['friendId']
+        ).first())
         db.session.commit()
         return friends.as_dict()
 
@@ -588,29 +631,38 @@ class FeaturedTournamentsAPI(Resource):
                             banner_path:
                                 type: string
                                 description: >
-                                    The URI of the banner image. The image itself can be
-                                    retrieved using GET /images/{banner_path}
+                                    The URI of the banner image. The image 
+                                    itself can be retrieved using GET 
+                                    /images/{banner_path}
                             ends_at:
                                 type: integer
-                                description: A timestamp marking the end time of the event
+                                description: >
+                                    A timestamp marking the end time of the 
+                                    event
                             events:
                                 type: array
                                 items:
                                     type: integer
-                                    description: The unique ID of an event in the tournament
+                                    description: > 
+                                        The unique ID of an event in the 
+                                        tournament
                             icon_path:
                                 type: string
                                 description: >
-                                    The URI of the icon image. The image itself can be
-                                    retrieved using GET /images/{icon_path}
+                                    The URI of the icon image. The image itself 
+                                    can be retrieved using GET 
+                                    /images/{icon_path}
                             is_featured:
                                 type: boolean
-                                description: Whether or not the tournament is featured by Smash.GG
+                                description: >
+                                    Whether or not the tournament is featured by
+                                    Smash.GG
                             slug:
                                 type: string
                                 description: >
-                                    The Smash.GG URL for the tournament. Users can visit smash.gg/{slug} to 
-                                    see the tournament page.
+                                    The Smash.GG URL for the tournament. Users 
+                                    can visit smash.gg/{slug} to see the 
+                                    tournament page.
                             tournament_id:
                                 type: integer
                                 description: The unique ID for the tournament
@@ -631,7 +683,8 @@ class ImagesAPI(Resource):
                 required: true
                 description: >
                     The URI of the image. This should ideally by taken straight
-                    from one of the relevant entities, such as Tournament.banner_path
+                    from one of the relevant entities, such as 
+                    Tournament.banner_path
         responses:
             200:
                 description: The image in PNG format
@@ -673,10 +726,12 @@ class DraftsAPI(Resource):
 
         """
         if user_id:
-            draft = FantasyDraft.query.filter(FantasyDraft.league_id == league_id,
-                                              FantasyDraft.user_id == user_id).all()
+            draft = FantasyDraft.query.filter(
+                FantasyDraft.league_id == league_id,
+                FantasyDraft.user_id == user_id).all()
             return fantasy_drafts_schema.jsonify(draft)
-        drafts = FantasyDraft.query.filter(FantasyDraft.league_id == league_id).all()
+        drafts = FantasyDraft.query.filter(
+            FantasyDraft.league_id == league_id).all()
         return fantasy_drafts_schema.jsonify(drafts)
 
     def post(self, league_id, user_id):
@@ -710,32 +765,36 @@ class DraftsAPI(Resource):
                         error:
                             type: string
                             description: >
-                                An error message describing what went wrong. The API
-                                distinguishes between two different causes of errors:
-                                the user's draft being full and integrity errors due
-                                to the passed parameters.
+                                An error message describing what went wrong. The
+                                API distinguishes between two different causes 
+                                of errors: the user's draft being full and 
+                                integrity errors due to the passed parameters.
         """
         parser = reqparse.RequestParser()
         parser.add_argument('playerId', type=int)
         args = parser.parse_args(strict=True)
-        league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
-        current_draft = FantasyDraft.query.filter(FantasyDraft.league_id == league_id,
-                                                  FantasyDraft.user_id == user_id).all()
+        league = FantasyLeague.query.filter(
+            FantasyLeague.league_id == league_id).first()
+        current_draft = FantasyDraft.query.filter(
+            FantasyDraft.league_id == league_id, FantasyDraft.user_id == user_id
+        ).all()
         if len(current_draft) < league.draft_size_limit:
-            draft = FantasyDraft(league_id=league_id, user_id=user_id, player_id=args['playerId'])
+            draft = FantasyDraft(league_id=league_id,
+                                 user_id=user_id, player_id=args['playerId'])
             db.session.add(draft)
             try:
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
                 return {
-                           "error": "One of the provided parameters points to a non-existent entity."
-                       }, 400
+                    "error": "One of the provided parameters points to a non-"
+                             "existent entity."
+                }, 400
             return fantasy_draft_schema.jsonify(draft)
         return {
-                   "error": f"The user's draft is full. The draft size limit for "
-                   f"league {league.name} is {league.draft_size_limit}."
-               }, 400
+            "error": f"The user's draft is full. The draft size limit for "
+            f"league {league.name} is {league.draft_size_limit}."
+        }, 400
 
     def delete(self, league_id, user_id):
         """Remove a player from the user's fantasy draft
@@ -764,9 +823,11 @@ class DraftsAPI(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('playerId', type=int)
         args = parser.parse_args(strict=True)
-        draft = FantasyDraft.query.filter(FantasyDraft.league_id == league_id,
-                                          FantasyDraft.user_id == user_id,
-                                          FantasyDraft.player_id == args['playerId']).first()
+        draft = FantasyDraft.query.filter(
+            FantasyDraft.league_id == league_id,
+            FantasyDraft.user_id == user_id,
+            FantasyDraft.player_id == args['playerId']
+        ).first()
         db.session.delete(draft)
         db.session.commit()
         return fantasy_draft_schema.jsonify(draft)
@@ -812,7 +873,8 @@ class LeagueAPI(Resource):
 
         """
         if league_id:
-            league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+            league = FantasyLeague.query.filter(
+                FantasyLeague.league_id == league_id).first()
             return fantasy_league_schema.jsonify(league)
         parser = make_pagination_reqparser()
         parser.add_argument('eventId', type=int)
@@ -821,12 +883,14 @@ class LeagueAPI(Resource):
         #     page=args['page'], per_page=args['perPage']).items
         allowed_privacies = [True] if args['requirePublic'] else [False, True]
         if args['eventId']:
-            leagues = FantasyLeague.query.filter(FantasyLeague.event_id == args['eventId'],
-                                                 FantasyLeague.public.in_(allowed_privacies)).paginate(
-                page=args['page'], per_page=args['perPage']).items
+            leagues = FantasyLeague.query.filter(
+                FantasyLeague.event_id == args['eventId'],
+                FantasyLeague.public.in_(allowed_privacies)
+            ).paginate(page=args['page'], per_page=args['perPage']).items
         else:
-            leagues = FantasyLeague.query.filter(FantasyLeague.public.in_(allowed_privacies)).paginate(
-                page=args['page'], per_page=args['perPage']).items
+            leagues = FantasyLeague.query.filter(FantasyLeague.public.in_(
+                allowed_privacies)).paginate(page=args['page'],
+                                             per_page=args['perPage']).items
         return fantasy_leagues_schema.jsonify(leagues)
 
     def delete(self, league_id):
@@ -844,7 +908,8 @@ class LeagueAPI(Resource):
                 schema:
 
         """
-        league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+        league = FantasyLeague.query.filter(
+            FantasyLeague.league_id == league_id).first()
         db.session.delete(league)
         db.session.commit()
         return fantasy_league_schema.jsonify(league)
@@ -857,12 +922,14 @@ class LeagueAPI(Resource):
                 in: body
                 required: true
                 type: integer
-                description: The unique identifier of the event that the league is for
+                description: > 
+                    The unique identifier of the event that the league is for
             -   name: ownerId
                 in: body
                 required: true
                 type: integer
-                description: The unique identifier of the player that created the league
+                description: > 
+                    The unique identifier of the player that created the league
             -   name: draftSize
                 in: body
                 required: true
@@ -891,8 +958,10 @@ class LeagueAPI(Resource):
         parser.add_argument('public', type=bool)
         parser.add_argument('name', type=str)
         args = parser.parse_args(strict=True)
-        league = FantasyLeague(event_id=args['eventId'], owner_id=args['ownerId'],
-                               draft_size=args['draftSize'], public=args['public'],
+        league = FantasyLeague(event_id=args['eventId'],
+                               owner_id=args['ownerId'],
+                               draft_size=args['draftSize'],
+                               public=args['public'],
                                name=args['name'])
         db.session.add(league)
         db.session.commit()
@@ -911,8 +980,10 @@ class LeagueAPI(Resource):
                 in: body
                 required: false
                 type: integer
-                description: The number of players each user is allowed to draft. If the new size is smaller
-                    than the previous size, all drafts in the league will be deleted.
+                description: > 
+                    The number of players each user is allowed to draft. 
+                    If the new size is smaller than the previous size, all 
+                    drafts in the league will be deleted.
             -   name: public
                 in: body
                 required: false
@@ -934,7 +1005,8 @@ class LeagueAPI(Resource):
         parser.add_argument('draftSize', type=int)
         parser.add_argument('public', type=bool)
         parser.add_argument('name', type=str)
-        league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+        league = FantasyLeague.query.filter(FantasyLeague.league_id
+                                            == league_id).first()
         if league is not None:
             args = parser.parse_args(strict=True)
             for key, value in args.items():

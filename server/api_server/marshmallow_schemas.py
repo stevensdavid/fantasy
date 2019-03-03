@@ -1,10 +1,13 @@
-from .models import Constants, User, Friends, Player, Tournament, Event, VideoGame, Entrant, FantasyDraft, FantasyLeague, FantasyResult, Placement
+from .models import (Constants, User, Friends, Player, Tournament, Event,
+                     VideoGame, Entrant, FantasyDraft, FantasyLeague,
+                     FantasyResult, Placement)
 from . import app, ma
 
 
 class ConstantsSchema(ma.ModelSchema):
     class Meta:
         model = Constants
+
 
 class UserSchema(ma.ModelSchema):
     class Meta:
