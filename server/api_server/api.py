@@ -473,8 +473,8 @@ class FriendsAPI(Resource):
         friends = User.query.filter(Friends.query.filter(
             Friends.user_1 == user_id, Friends.user_2 == User.user_id
         ).exists()
-            & User.tag.like(f'%{args["tag"] if args["tag"] is not None else ""}%')
-        ).paginate(page=args['page'], per_page=args['perPage']).items
+                                    & User.tag.like(f'%{args["tag"] if args["tag"] is not None else ""}%')
+                                    ).paginate(page=args['page'], per_page=args['perPage']).items
         return users_schema.jsonify(friends)
 
     def post(self, user_id):
@@ -647,6 +647,131 @@ class Images(Resource):
                              attachment_filename=os.path.split(fname)[1])
 
 
+class Drafts(Resource):
+    def get(self, league_id, user_id=None):
+        """Get fantasy drafts
+        ---
+        parameters:
+            -   name: league_id
+                in: path
+                required: true
+                type: integer
+                description: The ID of the league to get drafts for
+            -   name: user_id
+                in: path
+                required: false
+                type: integer
+                description: >
+                    The ID of a specific user whose draft should be extracted.
+                    The response will have the same schema, but every returned
+                    item will belong to the same user.
+        responses:
+            200:
+                schema:
+
+
+
+        """
+        if user_id:
+            draft = FantasyDraft.query.filter(FantasyDraft.league_id == league_id,
+                                              FantasyDraft.user_id == user_id).all()
+            return fantasy_drafts_schema.jsonify(draft)
+        drafts = FantasyDraft.query.filter(FantasyDraft.league_id == league_id).all()
+        return fantasy_drafts_schema.jsonify(drafts)
+
+    def post(self, league_id, user_id):
+        """Add a player to the user's fantasy draft
+        ---
+        parameters:
+            -   name: league_id
+                type: integer
+                in: path
+                required: true
+                description: The fantasy league's unique identifier
+            -   name: user_id
+                type: integer
+                in: path
+                required: true
+                description: The unique ID of the user to draft the player for
+            -   name: playerId
+                type: integer
+                in: body
+                required: true
+                description: The unique player ID of the player to draft
+        responses:
+            200:
+                description: The created draft entity
+                schema:
+
+            400:
+                description: Bad request
+                schema:
+                    properties:
+                        error:
+                            type: string
+                            description: >
+                                An error message describing what went wrong. The API
+                                distinguishes between two different causes of errors:
+                                the user's draft being full and integrity errors due
+                                to the passed parameters.
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('playerId', type=int)
+        args = parser.parse_args(strict=True)
+        league = FantasyLeague.query.filter(FantasyLeague.league_id == league_id).first()
+        current_draft = FantasyDraft.query.filter(FantasyDraft.league_id == league_id,
+                                                  FantasyDraft.user_id == user_id).all()
+        if len(current_draft) < league.draft_size_limit:
+            draft = FantasyDraft(league_id=league_id, user_id=user_id, player_id=args['playerId'])
+            db.session.add(draft)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                return {
+                           "error": "One of the provided parameters points to a non-existent entity."
+                       }, 400
+            return fantasy_draft_schema.jsonify(draft)
+        return {
+                   "error": f"The user's draft is full. The draft size limit for "
+                   f"league {league.name} is {league.draft_size_limit}."
+               }, 400
+
+    def delete(self, league_id, user_id):
+        """Remove a player from the user's fantasy draft
+        ---
+        parameters:
+            -   name: league_id
+                type: integer
+                in: path
+                required: true
+                description: The fantasy league's unique identifier
+            -   name: user_id
+                type: integer
+                in: path
+                required: true
+                description: The unique ID of the user to draft the player for
+            -   name: playerId
+                type: integer
+                in: body
+                required: true
+                description: The unique player ID of the player to draft
+        responses:
+            200:
+                description: The removed draft entity
+                schema:
+        """
+        parser = reqparse.RequestParser()
+        parser.add_argument('playerId', type=int)
+        args = parser.parse_args(strict=True)
+        draft = FantasyDraft.query.filter(FantasyDraft.league_id == league_id,
+                                          FantasyDraft.user_id == user_id,
+                                          FantasyDraft.player_id == args['playerId']).first()
+        db.session.delete(draft)
+        db.session.commit()
+        return fantasy_draft_schema.jsonify(draft)
+
+
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
@@ -655,6 +780,7 @@ api.add_resource(TournamentsAPI, '/tournaments',
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FeaturedTournaments, '/featured')
 api.add_resource(Images, '/images/<path:fname>')
+api.add_resource(Drafts, '/drafts/<int:league_id>/<int:user_id>')
 
 
 def make_pagination_reqparser():
