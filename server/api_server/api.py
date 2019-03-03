@@ -573,7 +573,7 @@ class DatabaseVersionAPI(Resource):
         return {'last_event_update': current_version.last_event_update}
 
 
-class FeaturedTournaments(Resource):
+class FeaturedTournamentsAPI(Resource):
     def get(self):
         """Get all upcoming featured tournaments
         ---
@@ -620,7 +620,7 @@ class FeaturedTournaments(Resource):
         return tournaments_schema.jsonify(tournaments)
 
 
-class Images(Resource):
+class ImagesAPI(Resource):
     def get(self, fname):
         """Get an image file
         ---
@@ -647,7 +647,7 @@ class Images(Resource):
                              attachment_filename=os.path.split(fname)[1])
 
 
-class Drafts(Resource):
+class DraftsAPI(Resource):
     def get(self, league_id, user_id=None):
         """Get fantasy drafts
         ---
@@ -778,9 +778,9 @@ api.add_resource(EventsAPI, '/events/<int:event_id>')
 api.add_resource(TournamentsAPI, '/tournaments',
                  '/tournaments/<int:tournament_id>')
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
-api.add_resource(FeaturedTournaments, '/featured')
-api.add_resource(Images, '/images/<path:fname>')
-api.add_resource(Drafts, '/drafts/<int:league_id>/<int:user_id>')
+api.add_resource(FeaturedTournamentsAPI, '/featured')
+api.add_resource(ImagesAPI, '/images/<path:fname>')
+api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 
 
 def make_pagination_reqparser():
