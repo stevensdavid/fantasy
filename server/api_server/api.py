@@ -1069,6 +1069,7 @@ class EntrantsAPI(Resource):
                                        ).items
         return entrants_schema.jsonify(entrants)
 
+
 class LoginAPI(Resource):
     def post(self):
         '''
@@ -1091,6 +1092,9 @@ class LoginAPI(Resource):
                                 The resulting authentication token. This token
                                 should be included in the authorization header
                                 as "Authorization: FANTASY-TOKEN key={token}"
+                        userId:
+                            type: int
+                            description: The user's unique ID
             400:
                 description: Failed login
                 schema:
@@ -1105,9 +1109,11 @@ class LoginAPI(Resource):
         args = parser.parse_args()
         user = User.query.filter(User.email == args['email'])
         if not bcrypt.checkpw(args['pw'], user.hashed):
-            return {'error':'Invalid username or password'}, 400
+            return {'error': 'Invalid username or password'}, 400
         # User is authenticated
-        return {'token':base64.b64encode(user.email + ':' + user.hashed)}, 200
+        return {'token': base64.b64encode(user.email + ':' + user.hashed),
+                'userId': user.user_id}, 200
+
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
