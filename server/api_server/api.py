@@ -264,6 +264,8 @@ class UsersAPI(Resource):
                 in: body
                 type: string
                 required: false
+        security:
+
         responses:
             200:
                 description: The updated user
@@ -1099,7 +1101,7 @@ class LoginAPI(Resource):
                             description: >
                                 The resulting authentication token. This token
                                 should be included in the authorization header
-                                as "Authorization: {token}"
+                                as "Authorization: bearer {token}"
                         userId:
                             type: integer
                             description: The user's unique ID
@@ -1132,7 +1134,13 @@ def user_is_logged_in(user_id):
     :return: If the request passes the authentication
     :retype: bool
     """
-    token = request.headers.get('Authorization')
+    header = request.headers.get('Authorization')
+    try:
+        scheme, token = header.split(' ')
+    except ValueError:
+        return False
+    if scheme != 'bearer':
+        return False
     user = User.query.filter(User.user_id == user_id).first()
     email, hashed = base64.b64decode(token).decode().split(':')
     return email == user.email and hashed == user.hashed
