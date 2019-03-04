@@ -197,7 +197,11 @@ class SmashGG:
                            icon_path='/'.join(icon_path.split('/')[-3:])
                            if icon_path is not None else None,
                            banner_path='/'.join(banner_path.split('/')[-3:])
-                           if banner_path is not None else None
+                           if banner_path is not None else None,
+                           ext_icon_url=None if len(
+                               images) < 1 else images[0]['url'],
+                           ext_banner_url=None if len(
+                               images) < 2 else images[1]['url']
                            )
             db.session.merge(t)
 
