@@ -10,7 +10,7 @@ import bcrypt
 import base64
 
 from flask import (Flask, make_response, safe_join, send_file,
-                   send_from_directory)
+                   send_from_directory, request)
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -1091,7 +1091,7 @@ class LoginAPI(Resource):
                             description: >
                                 The resulting authentication token. This token
                                 should be included in the authorization header
-                                as "Authorization: FANTASY-TOKEN key={token}"
+                                as "Authorization: {token}"
                         userId:
                             type: integer
                             description: The user's unique ID
@@ -1107,13 +1107,27 @@ class LoginAPI(Resource):
         parser.add_argument('email', type=str)
         parser.add_argument('pw', type=str)
         args = parser.parse_args()
-        user = User.query.filter(User.email == args['email'])
+        user = User.query.filter(User.email == args['email']).first()
         if not bcrypt.checkpw(args['pw'], user.hashed):
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
-        return {'token': base64.b64encode(user.email + ':' + user.hashed),
+        return {'token':
+                base64.b64encode((user.email + ':' + user.hashed).encode()),
                 'userId': user.user_id}, 200
 
+
+def user_is_logged_in(user_id):
+    """Verify the authentication token in the request's headers
+
+    :param user_id: The ID  of the user that the incoming request claims to be
+    :type user_id: int
+    :return: If the request passes the authentication
+    :retype: bool
+    """
+    token = request.headers.get('Authorization')
+    user = User.query.filter(User.user_id == user_id).first()
+    email, hashed = base64.b64decode(token).decode().split(':')
+    return email == user.email and hashed == user.hashed
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
