@@ -1,9 +1,11 @@
-requests==2.21.0
-flask_marshmallow==0.9.0
-marshmallow-sqlalchemy==0.16.0
-SQLAlchemy==1.2.18
-Flask_SQLAlchemy==2.3.2
 Flask==1.0.2
-flasgger==0.9.2
+flask_marshmallow==0.9.0
+apispec==1.0.0
+Flask_SQLAlchemy==2.3.2
+SQLAlchemy==1.2.18
+requests==2.21.0
+marshmallow==2.18.1
+apispec_webframeworks==0.3.0
 Flask_RESTful==0.3.7
+flasgger==0.9.2
 python_bcrypt==0.3.2

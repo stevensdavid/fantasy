@@ -106,49 +106,7 @@ class UsersAPI(Resource):
                     A single user if user_id is specified or a paginated list of
                     all users
                 schema:
-                    id: User
-                    properties:
-                        user_id:
-                            type: integer
-                            description: The user's unique ID
-                        tag:
-                            type: string
-                            description: The user's gamertag
-                        first_name:
-                            type: string
-                        last_name:
-                            type: string
-                        email:
-                            type: string
-                        photo_path:
-                            type: string
-                            description: >
-                                The URI of the profile photo. The image itself 
-                                can be retrieved using GET /images/{photo_path}
-                        fantasy_drafts:
-                            type: array
-                            items:
-                                type: integer
-                                description: >
-                                    The unique ID of one of the user's fantasy 
-                                    drafts
-                            default: []
-                        fantasy_leagues:
-                            type: array
-                            items:
-                                type: integer
-                                description: >
-                                    The unique ID of one of the user's fantasy 
-                                    leagues
-                            default: []
-                        fantasy_results:
-                            type: array
-                            items:
-                                type: integer
-                                description: >
-                                    The unique ID of one of the user's fantasy 
-                                    results
-                            default: []
+                    import: "swagger/User.json"
         """
         if user_id:
             user = User.query.filter(User.user_id == user_id).first()
@@ -1099,7 +1057,7 @@ class EntrantsAPI(Resource):
         if not entrants or entrants[0].seed is None:
             # The seeding is not yet complete. In most cases this also means
             # that signups are not yet complete, so update both using the API
-            smashgg.get_entrants_in_event()
+            smashgg.get_entrants_in_event(event_id)
             # Rerun query
             entrants = Entrant.query.filter(Entrant.event_id).order_by(
                 Entrant.seed).paginate(page=args['page'],
@@ -1186,7 +1144,7 @@ api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 api.add_resource(LoginAPI, '/login')
 
-NOT_LOGGED_IN_RESPONSE = [{'error' : 'login required'}, 401]
+NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
 
 def make_pagination_reqparser():
     parser = reqparse.RequestParser(bundle_errors=True)
@@ -1201,10 +1159,12 @@ def shutdown_session(exception=None):
 
 
 def main():
-    app.run(debug=True)
-    # app.run(host='0.0.0.0',
-    #         ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem', 
-    #                      '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+    if 'FANTASY_PROD' in os.environ.keys() and os.environ['FANTASY_PROD'] == 'y':
+	    app.run(host='0.0.0.0',
+                    ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
+                                 '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+    else:
+         app.run(debug=True)
 
 
 if __name__ == '__main__':
