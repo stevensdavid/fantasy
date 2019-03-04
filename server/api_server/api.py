@@ -1159,10 +1159,12 @@ def shutdown_session(exception=None):
 
 
 def main():
-    app.run(debug=True)
-    # app.run(host='0.0.0.0',
-    #         ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem', 
-    #                      '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+    if 'FANTASY_PROD' in os.environ.keys() and os.environ['FANTASY_PROD'] == 'y':
+	    app.run(host='0.0.0.0',
+                    ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
+                                 '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+    else:
+         app.run(debug=True)
 
 
 if __name__ == '__main__':
