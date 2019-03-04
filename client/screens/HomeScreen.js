@@ -11,7 +11,7 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
-import {TournamentCoverFlow} from '../components/TournamentCoverFlow';
+import {TournamentCoverFlow} from '../components/Tournament/TournamentCoverFlow';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {

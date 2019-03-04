@@ -15,9 +15,12 @@ import { Icon } from 'react-native-elements';
 export class LoginForm extends React.Component {
     constructor(props) {
         super(props);
-        state = {
-           email   : '',
+
+        this.state = {
+           email: '',
            password: '',
+           emailFocus: false,
+           passwordFocus: false,
         }
     }
 
@@ -35,7 +38,7 @@ export class LoginForm extends React.Component {
         callback(responseJson);
       })
       .catch((error) => {
-        console.error('Fetch featured error: ' + error);
+        console.error('Login error: ' + error);
       });
     }
       
@@ -43,8 +46,12 @@ export class LoginForm extends React.Component {
         return (
             <View style={styles.container}>
               <View style={styles.inputContainer}>
-              <Icon name= {Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} type='ionicon' color='silver'/>
-                <TextInput style={styles.inputs}
+              <Icon name= {Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} type='ionicon' 
+              color={this.state.emailFocus ? 'black' : 'silver'}/>
+                <TextInput 
+                    onFocus={() => {this.setState({emailFocus: true})}}
+                    onBlur={() => {this.setState({emailFocus: false})}}
+                    style={styles.inputs}
                     placeholder="Email"
                     keyboardType="email-address"
                     underlineColorAndroid='transparent'
@@ -52,8 +59,11 @@ export class LoginForm extends React.Component {
               </View>
               
               <View style={styles.inputContainer}>
-                <Icon name={Platform.OS === 'ios' ? 'ios-key' : 'md-key'} type='ionicon' color='silver'/>
-                <TextInput style={styles.inputs}
+                <Icon name={Platform.OS === 'ios' ? 'ios-key' : 'md-key'} type='ionicon' color={this.state.passwordFocus ? 'black' : 'silver'}/>
+                <TextInput 
+                    onFocus={() => {this.setState({passwordFocus: true})}}
+                    onBlur={() => {this.setState({passwordFocus: false})}}
+                    style={styles.inputs}
                     placeholder="Password"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
