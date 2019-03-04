@@ -1,7 +1,7 @@
 import React from 'react';
 import { ExpoConfigView } from '@expo/samples';
 
-export default class CreateLeagueScreen extends React.Component {
+export default class LeaguesScreen extends React.Component {
   static navigationOptions = {
     title: 'Create League',
   };
