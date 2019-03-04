@@ -246,7 +246,7 @@ class UsersAPI(Resource):
             -   name: tag
                 in: body
                 type: string
-                required: true
+                required: false
                 description: The user's gamertag
             -   name: first_name
                 in: body
@@ -259,11 +259,11 @@ class UsersAPI(Resource):
             -   name: email
                 in: body
                 type: string
-                required: true
+                required: false
             -   name: pw
                 in: body
                 type: string
-                required: true
+                required: false
         responses:
             200:
                 description: The updated user
@@ -312,6 +312,8 @@ class UsersAPI(Resource):
                                     results
                             default: []
         """
+        if not user_is_logged_in(user_id):
+            return {'error' : 'login required'}, 401
         parser = reqparse.RequestParser()
         for arg, datatype in User.constructor_params().items():
             parser.add_argument(arg, type=datatype)
@@ -321,6 +323,12 @@ class UsersAPI(Resource):
             for key, value in args.items():
                 if value is not None:
                     setattr(user, key, value)
+            # Handle passwords separately as they need rehashing
+            if args['pw']:
+                salt = bcrypt.gensalt()
+                hashed = bcrypt.hashpw(args['pw'], salt)
+                user.salt = salt
+                user.hashed = hashed
             db.session.commit()
             return user_schema.jsonify(user)
         return {"error": "User not found"}, 404
