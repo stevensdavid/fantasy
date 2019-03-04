@@ -7,6 +7,7 @@ import os
 import time
 from datetime import date
 import bcrypt
+import base64
 
 from flask import (Flask, make_response, safe_join, send_file,
                    send_from_directory)
@@ -1068,6 +1069,45 @@ class EntrantsAPI(Resource):
                                        ).items
         return entrants_schema.jsonify(entrants)
 
+class LoginAPI(Resource):
+    def post(self):
+        '''
+        parameters:
+            -   name: email
+                in: body
+                type: str
+                required: true
+            -   name: pw
+                in: body
+                type: str
+                required: true
+        respones:
+            200:
+                schema:
+                    properties:
+                        token:
+                            type: string
+                            description: >
+                                The resulting authentication token. This token
+                                should be included in the authorization header
+                                as "Authorization: FANTASY-TOKEN key={token}"
+            400:
+                description: Failed login
+                schema:
+                    properties:
+                        error:
+                            type: string
+                            description: The error message
+        '''
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str)
+        parser.add_argument('pw', type=str)
+        args = parser.parse_args()
+        user = User.query.filter(User.email == args['email'])
+        if not bcrypt.checkpw(args['pw'], user.hashed):
+            return {'error':'Invalid username or password'}, 400
+        # User is authenticated
+        return {'token':base64.b64encode(user.email + ':' + user.hashed)}, 200
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
@@ -1080,6 +1120,7 @@ api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
+api.add_resource(LoginAPI, '/login')
 
 
 def make_pagination_reqparser():
