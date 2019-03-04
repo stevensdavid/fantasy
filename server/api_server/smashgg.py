@@ -300,18 +300,16 @@ class SmashGG:
                                   },
                                   headers={"Authorization":
                                            f"Bearer {self.api_key}"})
+            seeding = {}
+            try:
+                for seed in r.json()['data']['event']['phases']['nodes'][0]:
+                    seeding[seed['players'][0]] = seed['seedNum']
+            except (KeyError, IndexError):
+                # The tournament hasn't been seeded
+                pass
             for entrant in r.json()['data']['event']['entrants']['nodes']:
-                # TODO: This search is quadratic in terms of the number of
-                # entrants. I'm not certain if there is a better way. Worth
-                # noting is that the number of entrants is going to be <2000,
-                # but that is still a fairly large number...
-                try:
-                    seed = filter(
-                        lambda x: x['players'][0] == entrant['playerId'],
-                        r.json['data']['event']['phases']['nodes'][0]
-                    ).next()['seedNum']
-                except (IndexError, KeyError):
-                    seed = None
+                seed = seeding[entrant['playerId']
+                               ] if entrant['playerId'] in seeding else None
                 e = Entrant(event_id=event_id,
                             player_id=entrant['playerId'], seed=seed)
                 # Merge performs an UPDATE query if the row already exists
