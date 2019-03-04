@@ -11,10 +11,12 @@ export default class LeaguesScreen extends React.Component {
     super(props);
 
     this.navigationWillFocusListener = props.navigation.addListener('willFocus', () => {
-      this.setState({
-        register: global.register,
-        token: global.token
-      })
+      if(this.state.token !== global.token) {
+        this.setState({
+          register: global.register,
+          token: global.token
+        })
+      }
     })
 
     this.setRegister = this.setRegister.bind(this);

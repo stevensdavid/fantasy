@@ -26,7 +26,17 @@ export class LoginForm extends React.Component {
     }
 
     tryLogin () {
-      
+      fetch(global.server + '/login', {
+        method: "POST",
+        headers: httpGetHeaders
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        callback(responseJson);
+      })
+      .catch((error) => {
+        console.error('Fetch featured error: ' + error);
+      });
     }
       
     render() {

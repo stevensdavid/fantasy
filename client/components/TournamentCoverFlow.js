@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const server = "https://dstevens.se:5000";
 let httpJsonHeaders = {};
 let httpGetHeaders = {};
 
@@ -47,7 +46,7 @@ let loadingGIF = <Image
 {/*backgroundColor: "#131862"*/}
 export class TournamentCoverFlow extends React.Component {
   getFeatured(callback) {
-    fetch(server + '/featured', {
+    fetch(global.server + '/featured', {
         method: "GET",
         headers: httpGetHeaders
       })
