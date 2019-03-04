@@ -24,6 +24,10 @@ export class LoginForm extends React.Component {
     onClickListener = (viewId) => {
         Alert.alert("Alert", "Button pressed "+viewId);
     }
+
+    tryLogin () {
+      
+    }
       
     render() {
         return (
@@ -48,10 +52,6 @@ export class LoginForm extends React.Component {
       
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(2)}>
                 <Text style={styles.loginText}>Login</Text>
-              </TouchableHighlight>
-      
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
-                  <Text>Forgot your password?</Text>
               </TouchableHighlight>
       
               <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(true)}>

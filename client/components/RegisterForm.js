@@ -86,7 +86,7 @@ export class RegisterForm extends React.Component {
               </TouchableHighlight>
       
               <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(false)}>
-                  <Text>Cancel</Text>
+                  <Text>Back</Text>
               </TouchableHighlight>
             </View>
     );

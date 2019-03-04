@@ -12,6 +12,13 @@ export default class ProfileScreen extends React.Component {
   constructor(props){
     super(props);
 
+    this.navigationWillFocusListener = props.navigation.addListener('willFocus', () => {
+      this.setState({
+        register: global.register,
+        token: global.token
+      })
+    })
+
     this.setRegister = this.setRegister.bind(this);
     this.setToken = this.setToken.bind(this);
 
@@ -19,6 +26,10 @@ export default class ProfileScreen extends React.Component {
       register: global.register,
       token: global.token
     };
+  }
+
+  componentWillUnmount () {
+    this.navigationWillFocusListener.remove()
   }
 
   setRegister(reg) {
