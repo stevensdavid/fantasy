@@ -1,14 +1,25 @@
 import React from 'react';
-import { ExpoConfigView } from '@expo/samples';
+import { View, Text} from 'react-native';
+import { LoginForm } from '../components/LoginForm';
+import { ProfileView } from '../components/ProfileView';
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
     title: 'Profile',
   };
 
+  constructor(props){
+    super(props);
+  }
+
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
-    return <ExpoConfigView />;
+    const loginComponent = <LoginForm></LoginForm>;
+    const ProfileViewComponent = <ProfileView></ProfileView>;
+
+    return (
+      <View>
+        {global.token? ProfileViewComponent : loginComponent}
+      </View>
+    );
   }
 }

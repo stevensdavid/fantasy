@@ -1160,7 +1160,9 @@ def shutdown_session(exception=None):
 
 def main():
     app.run(debug=True)
-    # app.run(debug=True, ssl_context=('localhost.crt', 'localhost.key'))
+    # app.run(host='0.0.0.0',
+    #         ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem', 
+    #                      '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
 
 
 if __name__ == '__main__':
