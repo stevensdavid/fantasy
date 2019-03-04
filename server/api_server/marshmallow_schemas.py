@@ -12,7 +12,7 @@ class ConstantsSchema(ma.ModelSchema):
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
-        exclude = ('pw',)
+        exclude = ('pw','salt',)
 
 
 class FriendsSchema(ma.ModelSchema):

@@ -6,6 +6,7 @@ import io
 import os
 import time
 from datetime import date
+import bcrypt
 
 from flask import (Flask, make_response, safe_join, send_file,
                    send_from_directory)
@@ -163,7 +164,7 @@ class UsersAPI(Resource):
         """Create user
         ---
         parameters:
-            -   name: user_id
+            -   name: userId
                 in: body
                 type: integer
                 required: false
@@ -173,11 +174,11 @@ class UsersAPI(Resource):
                 type: string
                 required: true
                 description: The user's gamertag
-            -   name: first_name
+            -   name: firstName
                 in: body
                 type: string
                 required: false
-            -   name: last_name
+            -   name: lastName
                 in: body
                 type: string
                 required: false
@@ -214,10 +215,21 @@ class UsersAPI(Resource):
                                 can be retrieved using GET /images/{photo_path}
         """
         parser = reqparse.RequestParser()
-        for arg, datatype in User.constructor_params().items():
-            parser.add_argument(arg, type=datatype)
+        parser.add_argument('tag', type=str)
+        parser.add_argument('firstName', type=str)
+        parser.add_argument('lastName', type=str)
+        parser.add_argument('email', type=str)
+        parser.add_argument('pw', type=str)
         args = parser.parse_args(strict=True)
-        user = User(**args)
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(args['pw'], salt)
+        user = User(tag=args['tag'],
+                    first_name=args['firstName'],
+                    last_name=args['lastName'],
+                    email=args['email'],
+                    pw=hashed,
+                    salt=salt,
+                    photo_path=None)
         db.session.add(user)
         db.session.commit()
         return user_schema.jsonify(user)
@@ -1038,7 +1050,7 @@ class EntrantsAPI(Resource):
             200:
                 description: The entrants in the event
                 schema:
-        
+
         """
 
         parser = make_pagination_reqparser()
