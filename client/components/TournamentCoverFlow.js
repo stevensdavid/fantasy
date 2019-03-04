@@ -58,7 +58,8 @@ export class TournamentCoverFlow extends React.Component {
         console.error('Fetch featured error: ' + error);
       });
   }
-  
+
+  /* 
     async setFeaturedCards(featuredJSON) {
     const imageURI = "https://images.smash.gg/images/tournament/55815/image-8ff562a5399c25df876c2af6b99a528a.png?fbclid=IwAR3B2aZF5iU5Cs4SIj1FCSr9Svj_5tXmD09g6QEZpm0DWTqFgVCG1fin5W8";
     const pArray = featuredJSON.map(async tournamentInfo => {
@@ -98,8 +99,9 @@ export class TournamentCoverFlow extends React.Component {
       showLoading: false
     })
   }
+  */
 
-    wetFeaturedCards(featuredJSON) {
+    setFeaturedCards(featuredJSON) {
     featuredJSON.map( tournamentInfo => {
         featuredCards.push([
         <View key={tournamentInfo.tournament_id}>
@@ -109,7 +111,7 @@ export class TournamentCoverFlow extends React.Component {
         <Image
           resizeMode="cover"
           style={styles.image}
-          source={{uri: tournamentInfo.smashgg_icon_URI}}
+          source={{uri: tournamentInfo.ext_icon_url}}
         />
         <Text>"Text goes here?"</Text>
         </View>
@@ -123,6 +125,9 @@ export class TournamentCoverFlow extends React.Component {
         </View>
         </View>
         ])
+      })
+      this.setState({
+        showLoading: false
       })
     }
 
