@@ -1076,11 +1076,11 @@ class LoginAPI(Resource):
         parameters:
             -   name: email
                 in: body
-                type: str
+                type: string
                 required: true
             -   name: pw
                 in: body
-                type: str
+                type: string
                 required: true
         respones:
             200:
