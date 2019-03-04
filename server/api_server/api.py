@@ -1104,7 +1104,7 @@ class LoginAPI(Resource):
         parser.add_argument('pw', type=str)
         args = parser.parse_args()
         user = User.query.filter(User.email == args['email']).first()
-        if not bcrypt.checkpw(args['pw'], user.hashed):
+        if not user or not bcrypt.hashpw(args['pw'], user.hashed) == user.hashed:
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
         return {'token':
