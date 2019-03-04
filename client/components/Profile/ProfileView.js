@@ -30,7 +30,7 @@ export class ProfileView extends React.Component {
         </Text>
         <Text style={({fontSize: 14, color:'#b3002d'})}>Score: 0</Text>
         </View>
-        <TouchableHighlight style={[styles.buttonContainer]} onPress={() => this.props.setEdting(true)}>
+        <TouchableHighlight style={[styles.buttonContainer]} onPress={() => this.props.setEditing(true)}>
           <Icon name= 'edit' type='material' 
               color='silver' size={42}/>
         </TouchableHighlight>
