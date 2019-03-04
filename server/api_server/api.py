@@ -7,9 +7,10 @@ import os
 import time
 from datetime import date
 import bcrypt
+import base64
 
 from flask import (Flask, make_response, safe_join, send_file,
-                   send_from_directory)
+                   send_from_directory, request)
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
@@ -245,7 +246,7 @@ class UsersAPI(Resource):
             -   name: tag
                 in: body
                 type: string
-                required: true
+                required: false
                 description: The user's gamertag
             -   name: first_name
                 in: body
@@ -258,11 +259,13 @@ class UsersAPI(Resource):
             -   name: email
                 in: body
                 type: string
-                required: true
+                required: false
             -   name: pw
                 in: body
                 type: string
-                required: true
+                required: false
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The updated user
@@ -311,6 +314,8 @@ class UsersAPI(Resource):
                                     results
                             default: []
         """
+        if not user_is_logged_in(user_id):
+            return NOT_LOGGED_IN_RESPONSE
         parser = reqparse.RequestParser()
         for arg, datatype in User.constructor_params().items():
             parser.add_argument(arg, type=datatype)
@@ -320,6 +325,12 @@ class UsersAPI(Resource):
             for key, value in args.items():
                 if value is not None:
                     setattr(user, key, value)
+            # Handle passwords separately as they need rehashing
+            if args['pw']:
+                salt = bcrypt.gensalt()
+                hashed = bcrypt.hashpw(args['pw'], salt)
+                user.salt = salt
+                user.hashed = hashed
             db.session.commit()
             return user_schema.jsonify(user)
         return {"error": "User not found"}, 404
@@ -541,6 +552,8 @@ class FriendsAPI(Resource):
                 in: body
                 type: integer
                 required: true
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The resulting friend-pair
@@ -554,6 +567,8 @@ class FriendsAPI(Resource):
                             type: integer
                             description: An echo of {friendId}
         """
+        if not user_is_logged_in(user_id):
+            return NOT_LOGGED_IN_RESPONSE
         args = self._parse_put_delete()
         # Create symmetrical entities
         friends = Friends(user_1=user_id, user_2=args['friendId'])
@@ -580,6 +595,8 @@ class FriendsAPI(Resource):
                 in: body
                 type: integer
                 required: true
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The deleted friend-pair
@@ -593,6 +610,8 @@ class FriendsAPI(Resource):
                             type: integer
                             description: An echo of {friendId}
         """
+        if not user_is_logged_in(user_id):
+            return NOT_LOGGED_IN_RESPONSE
         args = self._parse_put_delete()
         friends = Friends.query.filter(
             Friends.user_1 == user_id, Friends.user_2 == args['friendId']
@@ -766,6 +785,8 @@ class DraftsAPI(Resource):
                 in: body
                 required: true
                 description: The unique player ID of the player to draft
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The created draft entity
@@ -783,6 +804,8 @@ class DraftsAPI(Resource):
                                 of errors: the user's draft being full and 
                                 integrity errors due to the passed parameters.
         """
+        if not user_is_logged_in(user_id):
+            return NOT_LOGGED_IN_RESPONSE
         parser = reqparse.RequestParser()
         parser.add_argument('playerId', type=int)
         args = parser.parse_args(strict=True)
@@ -828,11 +851,15 @@ class DraftsAPI(Resource):
                 in: body
                 required: true
                 description: The unique player ID of the player to draft
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The removed draft entity
                 schema:
         """
+        if not user_is_logged_in(user_id):
+            return NOT_LOGGED_IN_RESPONSE
         parser = reqparse.RequestParser()
         parser.add_argument('playerId', type=int)
         args = parser.parse_args(strict=True)
@@ -915,6 +942,8 @@ class LeagueAPI(Resource):
                 type: integer
                 description: The ID of the league to delete
                 required: true
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The deleted entity
@@ -923,6 +952,8 @@ class LeagueAPI(Resource):
         """
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
+        if not user_is_logged_in(league.owner_id):
+            return NOT_LOGGED_IN_RESPONSE
         db.session.delete(league)
         db.session.commit()
         return fantasy_league_schema.jsonify(league)
@@ -958,6 +989,8 @@ class LeagueAPI(Resource):
                 required: true
                 type: string
                 description: The name of the league
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The created fantasy league
@@ -971,6 +1004,8 @@ class LeagueAPI(Resource):
         parser.add_argument('public', type=bool)
         parser.add_argument('name', type=str)
         args = parser.parse_args(strict=True)
+        if not user_is_logged_in(args['ownerId']):
+            return NOT_LOGGED_IN_RESPONSE
         league = FantasyLeague(event_id=args['eventId'],
                                owner_id=args['ownerId'],
                                draft_size=args['draftSize'],
@@ -1007,6 +1042,8 @@ class LeagueAPI(Resource):
                 required: false
                 type: string
                 description: The name of the league
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The updated fantasy league
@@ -1021,6 +1058,8 @@ class LeagueAPI(Resource):
         league = FantasyLeague.query.filter(FantasyLeague.league_id
                                             == league_id).first()
         if league is not None:
+            if not user_is_logged_in(league.owner_id):
+                return NOT_LOGGED_IN_RESPONSE
             args = parser.parse_args(strict=True)
             for key, value in args.items():
                 if value is not None:
@@ -1069,6 +1108,71 @@ class EntrantsAPI(Resource):
         return entrants_schema.jsonify(entrants)
 
 
+class LoginAPI(Resource):
+    def post(self):
+        '''
+        parameters:
+            -   name: email
+                in: body
+                type: string
+                required: true
+            -   name: pw
+                in: body
+                type: string
+                required: true
+        respones:
+            200:
+                schema:
+                    properties:
+                        token:
+                            type: string
+                            description: >
+                                The resulting authentication token. This token
+                                should be included in the authorization header
+                                as "Authorization: bearer {token}"
+                        userId:
+                            type: integer
+                            description: The user's unique ID
+            400:
+                description: Failed login
+                schema:
+                    properties:
+                        error:
+                            type: string
+                            description: The error message
+        '''
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str)
+        parser.add_argument('pw', type=str)
+        args = parser.parse_args()
+        user = User.query.filter(User.email == args['email']).first()
+        if not bcrypt.checkpw(args['pw'], user.hashed):
+            return {'error': 'Invalid username or password'}, 400
+        # User is authenticated
+        return {'token':
+                base64.b64encode((user.email + ':' + user.hashed).encode()),
+                'userId': user.user_id}, 200
+
+
+def user_is_logged_in(user_id):
+    """Verify the authentication token in the request's headers
+
+    :param user_id: The ID  of the user that the incoming request claims to be
+    :type user_id: int
+    :return: If the request passes the authentication
+    :retype: bool
+    """
+    header = request.headers.get('Authorization')
+    try:
+        scheme, token = header.split(' ')
+    except ValueError:
+        return False
+    if scheme.lower() != 'bearer':
+        return False
+    user = User.query.filter(User.user_id == user_id).first()
+    email, hashed = base64.b64decode(token).decode().split(':')
+    return email == user.email and hashed == user.hashed
+
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
@@ -1080,7 +1184,9 @@ api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
+api.add_resource(LoginAPI, '/login')
 
+NOT_LOGGED_IN_RESPONSE = [{'error' : 'login required'}, 401]
 
 def make_pagination_reqparser():
     parser = reqparse.RequestParser(bundle_errors=True)
