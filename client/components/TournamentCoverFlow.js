@@ -17,12 +17,13 @@ const styles = StyleSheet.create({
   },
   container: {
     height: 370,
+    borderRadius: 10,
   },
   image: {
     width: 270, 
     height: 270,
     marginTop: 10, 
-    marginBottom: 10,
+    marginBottom: 10
   },
   loadingGIF: {
     width: 340, 
@@ -32,7 +33,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const server = "https://dstevens.se:5000";
 let httpJsonHeaders = {};
 let httpGetHeaders = {};
 
@@ -46,7 +46,7 @@ let loadingGIF = <Image
 {/*backgroundColor: "#131862"*/}
 export class TournamentCoverFlow extends React.Component {
   getFeatured(callback) {
-    fetch(server + '/featured', {
+    fetch(global.server + '/featured', {
         method: "GET",
         headers: httpGetHeaders
       })

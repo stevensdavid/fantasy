@@ -1,14 +1,57 @@
 import React from 'react';
-import { ExpoConfigView } from '@expo/samples';
+import {View, Text} from 'react-native';
+import { LoginForm } from '../components/LoginForm';
 
 export default class LeaguesScreen extends React.Component {
   static navigationOptions = {
-    title: 'Create League',
+    title: 'Leagues',
   };
 
+  constructor(props){
+    super(props);
+
+    this.navigationWillFocusListener = props.navigation.addListener('willFocus', () => {
+      if(this.state.token !== global.token) {
+        this.setState({
+          register: global.register,
+          token: global.token
+        })
+      }
+    })
+
+    this.setRegister = this.setRegister.bind(this);
+    this.setToken = this.setToken.bind(this);
+
+    this.state = { 
+      register: global.register,
+      token: global.token
+    };
+  }
+
+  componentWillUnmount () {
+    this.navigationWillFocusListener.remove()
+  }
+
+  setRegister(reg) {
+    global.register = reg;
+    this.setState({
+      register: reg
+    })
+  }
+
+  setToken(tok) {
+    global.token = tok;
+    this.setState({
+      token: tok
+    })
+  }
+
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
-    return <ExpoConfigView />;
+    const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
+    return (
+      <View>
+      {this.state.token ? <Text>Logged in</Text> : loginComponent}
+      </View>
+      );
   }
 }

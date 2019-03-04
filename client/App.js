@@ -4,6 +4,8 @@ import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 
 global.token = null;
+global.register = false;
+global.server = "https://dstevens.se:5000";
 
 export default class App extends React.Component {
   state = {

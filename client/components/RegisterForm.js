@@ -12,12 +12,17 @@ import {
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 
-export class LoginForm extends React.Component {
+export class RegisterForm extends React.Component {
     constructor(props) {
         super(props);
         state = {
-           email   : '',
+           email: '',
+           name: '',
+           tag: '',
+           firstname: '',
+           lastname: '',
            password: '',
+           passwordConfirm: '',
         }
     }
 
@@ -25,25 +30,34 @@ export class LoginForm extends React.Component {
         Alert.alert("Alert", "Button pressed "+viewId);
     }
 
-    tryLogin () {
-      fetch(global.server + '/login', {
-        method: "POST",
-        headers: httpGetHeaders
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        callback(responseJson);
-      })
-      .catch((error) => {
-        console.error('Fetch featured error: ' + error);
-      });
-    }
-      
-    render() {
-        return (
-            <View style={styles.container}>
+  render() {
+    return (
+        <View style={styles.container}>
+            <View style={styles.inputContainer}>
+                <TextInput style={styles.inputs}
+                    placeholder="First Name"
+                    keyboardType="default"
+                    underlineColorAndroid='transparent'
+                    onChangeText={(firstname) => this.setState({firstname})}/>
+              </View>
+
               <View style={styles.inputContainer}>
-              <Icon name= {Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} type='ionicon' color='silver'/>
+                <TextInput style={styles.inputs}
+                    placeholder="Last Name"
+                    keyboardType="default"
+                    underlineColorAndroid='transparent'
+                    onChangeText={(lastname) => this.setState({lastname})}/>
+              </View>
+
+              <View style={styles.inputContainer}>
+              <TextInput style={styles.inputs}
+                  placeholder="Tag"
+                  keyboardType="default"
+                  underlineColorAndroid='transparent'
+                  onChangeText={(tag) => this.setState({tag})}/>
+                </View>
+
+              <View style={styles.inputContainer}>
                 <TextInput style={styles.inputs}
                     placeholder="Email"
                     keyboardType="email-address"
@@ -52,29 +66,36 @@ export class LoginForm extends React.Component {
               </View>
               
               <View style={styles.inputContainer}>
-                <Icon name={Platform.OS === 'ios' ? 'ios-key' : 'md-key'} type='ionicon' color='silver'/>
                 <TextInput style={styles.inputs}
                     placeholder="Password"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
                     onChangeText={(password) => this.setState({password})}/>
               </View>
+
+              <View style={styles.inputContainer}>
+                <TextInput style={styles.inputs}
+                    placeholder="Confirm Password"
+                    secureTextEntry={true}
+                    underlineColorAndroid='transparent'
+                    onChangeText={(passwordConfirm) => this.setState({passwordConfirm})}/>
+              </View>
       
-              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(2)}>
-                <Text style={styles.loginText}>Login</Text>
+              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onClickListener('login')}>
+                <Text style={styles.loginText}>Register</Text>
               </TouchableHighlight>
       
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(true)}>
-                  <Text>Register</Text>
+              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(false)}>
+                  <Text>Back</Text>
               </TouchableHighlight>
             </View>
-          );
-    }
+    );
+  }
 }
 
 const styles = StyleSheet.create({
     container: {
-      marginTop: 250,
+      marginTop: 300,
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
