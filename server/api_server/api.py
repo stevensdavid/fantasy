@@ -1093,7 +1093,7 @@ class LoginAPI(Resource):
                                 should be included in the authorization header
                                 as "Authorization: FANTASY-TOKEN key={token}"
                         userId:
-                            type: int
+                            type: integer
                             description: The user's unique ID
             400:
                 description: Failed login
