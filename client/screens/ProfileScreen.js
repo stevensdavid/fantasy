@@ -3,6 +3,7 @@ import { View, Text} from 'react-native';
 import { LoginForm } from '../components/Profile/LoginForm';
 import { ProfileView } from '../components/Profile/ProfileView';
 import { RegisterForm } from '../components/Profile/RegisterForm';
+import { EditProfile } from '../components/Profile/EditProfile';
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -44,6 +45,7 @@ export default class ProfileScreen extends React.Component {
   }
 
   setToken(tok) {
+    this.setRegister(false)
     global.token = tok;
     this.setState({
       token: tok
@@ -60,12 +62,15 @@ export default class ProfileScreen extends React.Component {
     const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
     const profileViewComponent = <ProfileView setEditing = {this.setEditing}></ProfileView>;
     const registerComponent = <RegisterForm setRegister = {this.setRegister}></RegisterForm>;
+    const editComponent = <EditProfile setEditing = {this.setEditing}></EditProfile>
 
-    const show = this.state.token? profileViewComponent : loginComponent;
+    let show = this.state.token? profileViewComponent : loginComponent;
+    show = this.state.register ? registerComponent : show;
+    show = this.state.editing ? editComponent : show;
 
     return (
       <View>
-        {this.state.register ? registerComponent : show} 
+        {show}
       </View>
     );
   }
