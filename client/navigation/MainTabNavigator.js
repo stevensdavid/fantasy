@@ -12,7 +12,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import CreateLeagueScreen from '../screens/CreateLeagueScreen';
+import LeaguesScreen from '../screens/LeaguesScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -92,12 +92,12 @@ SettingsStack.navigationOptions = {
   ),
 };
 
-const CreateLeagueStack = createStackNavigator({
-  CreateLeague: CreateLeagueScreen,
+const LeaguesStack = createStackNavigator({
+  Leagues: LeaguesScreen,
 });
 
-CreateLeagueStack.navigationOptions = {
-  tabBarLabel: 'Create League',
+LeaguesStack.navigationOptions = {
+  tabBarLabel: 'Leagues',
   tabBarIcon: ({
     focused
   }) => ( <
@@ -105,7 +105,8 @@ CreateLeagueStack.navigationOptions = {
       focused
     }
     name = {
-      Platform.OS === 'ios' ? 'ios-add' : 'md-add'
+      Platform.OS === 'ios' ?
+      `ios-list${focused ? '-box' : ''}` : 'md-list'
     }
     />
   ),
@@ -114,7 +115,7 @@ CreateLeagueStack.navigationOptions = {
 export default createBottomTabNavigator({
   HomeStack,
   ProfileStack,
-  CreateLeagueStack,
+  LeaguesStack,
 }, {
   tabBarOptions: {
     labelStyle: {
