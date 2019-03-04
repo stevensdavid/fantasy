@@ -120,6 +120,8 @@ class Tournament(db.Model, Serializeable):
     slug = db.Column(db.String(255))
     icon_path = db.Column(db.String(255))
     banner_path = db.Column(db.String(255))
+    ext_icon_url = db.Column(db.String(255))
+    ext_banner_url = db.Column(db.String(255))
     is_featured = db.Column(db.Boolean, nullable=False)
     ends_at = db.Column(db.Integer, nullable=False)
 
