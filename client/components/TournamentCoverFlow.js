@@ -17,12 +17,13 @@ const styles = StyleSheet.create({
   },
   container: {
     height: 370,
+    borderRadius: 10,
   },
   image: {
     width: 270, 
     height: 270,
     marginTop: 10, 
-    marginBottom: 10,
+    marginBottom: 10
   },
   loadingGIF: {
     width: 340, 
