@@ -294,7 +294,7 @@ class SmashGG:
         }
         '''
         n_entrants = Event.query.filter(
-            Event.event_id == event_id).num_entrants
+            Event.event_id == event_id).first().num_entrants
         read = 0
         page = 1
         while read < n_entrants:
