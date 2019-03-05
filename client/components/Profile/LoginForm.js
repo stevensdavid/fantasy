@@ -37,11 +37,13 @@ export class LoginForm extends React.Component {
         body: JSON.stringify({email: ema, pw: pass})
       })
       .then((response) => {
-        console.log(response.token);
         if(response.status === 400) {
           Alert.alert("Alert", "Invalid username or password");
         } else if (response.status === 200) {
-          this.props.setToken(2);
+          response.json().then((respjson) => {
+            this.props.setToken(respjson.token);
+            global.userID = respjson.userId;
+          })
         }
       })
       .catch((error) => {
