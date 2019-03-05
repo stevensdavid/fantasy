@@ -19,7 +19,7 @@ export class TournamentSearch extends React.Component {
                   const newData = [];
                   respjson.map((tournamentInfo) => {
                       newData.push({
-                          key: tournamentInfo.tournament_id,
+                          key: '' + tournamentInfo.tournament_id,
                           img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : ''),
                           title: tournamentInfo.name
                       });
