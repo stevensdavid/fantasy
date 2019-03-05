@@ -15,6 +15,42 @@ import { Icon } from 'react-native-elements';
 export class ProfileView extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state={
+      email: '',
+      firstName: '',
+      lastName: '',
+      tag: '',
+      tagFontSize: 42,
+    }
+
+    this.getUserInfo();
+  }
+
+  httpGetHeaders = {};
+
+  getUserInfo() {
+    fetch(global.server + "/users/" + global.userID, {
+      method: 'GET',
+      headers: this.httpGetHeaders
+    }).then((response) => {
+      console.log(response);
+      if(response.status === 404 || response.status === 400) {
+        Alert.alert("Alert", "USER OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!");
+      } else if(response.status === 200) {
+        response.json().then((responseJSON) => {
+          this.setState({
+            email: responseJSON.email,
+            firstName: responseJSON.first_name,
+            lastName: responseJSON.last_name,
+            tag: responseJSON.tag,
+            tagFontSize: (42 * 8) / responseJSON.tag.length
+          });
+        })
+      }
+    }).catch((error) => {
+      console.error('GET user error: ' + error);
+    });
   }
 
   render() {
@@ -23,10 +59,10 @@ export class ProfileView extends React.Component {
       <View style={styles.headerContent}>
         <Icon name= 'portrait' type='material' 
               color='black' size={104}/>
-        <View>
-        <Text style={styles.headerText}
+        <View style={{marginRight: 80}}>
+        <Text style={{fontWeight: 'bold', marginLeft: 4, fontSize: this.state.tagFontSize}}
             underlineColorAndroid='transparent'>
-            #Tag
+            #{this.state.tag}
         </Text>
         <Text style={({fontSize: 14, color:'#b3002d'})}>Score: 0</Text>
         </View>
@@ -41,7 +77,7 @@ export class ProfileView extends React.Component {
                 <Text style={styles.inputs}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'>
-                    First name
+                    {this.state.firstName}
                 </Text>
               </View>
 
@@ -49,7 +85,7 @@ export class ProfileView extends React.Component {
                 <Text style={styles.inputs}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'>
-                    Last name
+                    {this.state.lastName}
                 </Text>
               </View>
 
@@ -57,7 +93,7 @@ export class ProfileView extends React.Component {
                 <Text style={styles.inputs}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'>
-                    Email
+                    {this.state.email}
                 </Text>
               </View>
               
@@ -87,7 +123,7 @@ export class ProfileView extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
+styles = StyleSheet.create({
   container: {
     marginTop: 180,
     flex: 1,
@@ -99,11 +135,6 @@ const styles = StyleSheet.create({
     margin: 35,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  headerText: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    marginLeft: 4,
   },
   textContainer: {
       borderBottomColor: '#F5FCFF',
@@ -143,4 +174,4 @@ const styles = StyleSheet.create({
   loginText: {
     color: 'white',
   }
-});
+}); 
