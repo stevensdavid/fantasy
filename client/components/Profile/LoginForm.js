@@ -54,6 +54,10 @@ export class LoginForm extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+              <View style={styles.iconContainer}>
+                <Icon name= {Platform.OS === 'ios' ? 'ios-lock' : 'md-lock'} type='ionicon' 
+                color='#2a2a2a' size={72}/>
+              </View>
               <View style={styles.inputContainer}>
               <Icon name= {Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} type='ionicon' 
               color={this.state.emailFocus ? 'black' : 'silver'}/>
@@ -124,6 +128,15 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
       height:45,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom:20,
+      width:250,
+      borderRadius:30,
+    },
+    iconContainer: {
+      height:72,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',
