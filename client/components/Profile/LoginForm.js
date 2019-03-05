@@ -37,7 +37,7 @@ export class LoginForm extends React.Component {
         body: JSON.stringify({email: ema, pw: pass})
       })
       .then((response) => {
-        console.log(response);
+        console.log(response.token);
         if(response.status === 400) {
           Alert.alert("Alert", "Invalid username or password");
         } else if (response.status === 200) {
@@ -77,7 +77,7 @@ export class LoginForm extends React.Component {
                     onChangeText={(password) => this.setState({password})}/>
               </View>
       
-              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(2)}>
+              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.tryLogin(this.state.email, this.state.password)}>
                 <Text style={styles.loginText}>Login</Text>
               </TouchableHighlight>
       
