@@ -18,6 +18,7 @@ export default class ProfileScreen extends React.Component {
         this.setState({
           register: global.register,
           token: global.token,
+          userID: global.userID,
           editing: false,
         })
       }
@@ -30,6 +31,7 @@ export default class ProfileScreen extends React.Component {
     this.state = { 
       register: global.register,
       token: global.token,
+      userID: global.userID,
       editing: false,
     };
   }
@@ -62,7 +64,7 @@ export default class ProfileScreen extends React.Component {
   render() {
     const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
     const profileViewComponent = <ProfileView setEditing = {this.setEditing} setToken = {this.setToken}></ProfileView>;
-    const registerComponent = <RegisterForm setRegister = {this.setRegister}></RegisterForm>;
+    const registerComponent = <RegisterForm setToken = {this.setToken} setRegister = {this.setRegister}></RegisterForm>;
     const editComponent = <EditProfile setEditing = {this.setEditing}></EditProfile>
 
     let show = this.state.token? profileViewComponent : loginComponent;

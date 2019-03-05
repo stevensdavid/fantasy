@@ -10,19 +10,20 @@ import {
     Alert,
     Platform
   } from 'react-native';
-import { Icon } from 'react-native-elements';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export class RegisterForm extends React.Component {
     constructor(props) {
         super(props);
-        state = {
+        this.state = {
            email: '',
            name: '',
            tag: '',
-           firstname: '',
-           lastname: '',
+           firstName: '',
+           lastName: '',
            password: '',
            passwordConfirm: '',
+           loading: false,
         }
     }
 
@@ -30,15 +31,79 @@ export class RegisterForm extends React.Component {
         Alert.alert("Alert", "Button pressed "+viewId);
     }
 
+    tryCreateUser(stateInfo) {
+      this.setState({
+        loading: true
+      });
+      if(stateInfo.password !== stateInfo.passwordConfirm) {
+        Alert.alert("Alert", "Passwords don't match!");
+        this.setState({
+          loading: false
+        });
+        return;
+      }
+      fetch(global.server + '/users', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          email: stateInfo.email,
+          firstName: stateInfo.firstName,
+          lastName: stateInfo.lastName,
+          pw: stateInfo.password,
+          tag: stateInfo.tag,
+        })
+      }).then((response) => {
+        console.log(response);
+        if(response.status === 404 || response.status === 400) {
+          Alert.alert("Alert", "Invalid input!");
+          this.setState({
+            loading: false
+          });
+          return;
+        } else if (response.status === 200) {
+          this.tryLogin(this.state.email, this.state.password)
+        }
+      })
+      .catch((error) => {
+        console.error('Login error: ' + error);
+      });
+    }
+
+    tryLogin (ema,pass) {
+      fetch(global.server + '/login', {
+        method: "POST",
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: ema, pw: pass})
+      })
+      .then((response) => {
+        if(response.status === 404 || response.status === 400) {
+          Alert.alert("Alert", "Invalid username or password");
+        } else if (response.status === 200) {
+          response.json().then((respjson) => {
+            this.setState({
+              loading: false
+            })
+            global.userID = respjson.userId;
+            this.props.setToken(respjson.token); 
+          })
+        }
+      })
+      .catch((error) => {
+        console.error('Login error: ' + error);
+      });
+    }
+
   render() {
+
     return (
         <View style={styles.container}>
+          <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
             <View style={styles.inputContainer}>
                 <TextInput style={styles.inputs}
                     placeholder="First Name"
                     keyboardType="default"
                     underlineColorAndroid='transparent'
-                    onChangeText={(firstname) => this.setState({firstname})}/>
+                    onChangeText={(firstName) => this.setState({firstName})}/>
               </View>
 
               <View style={styles.inputContainer}>
@@ -46,7 +111,7 @@ export class RegisterForm extends React.Component {
                     placeholder="Last Name"
                     keyboardType="default"
                     underlineColorAndroid='transparent'
-                    onChangeText={(lastname) => this.setState({lastname})}/>
+                    onChangeText={(lastName) => this.setState({lastName})}/>
               </View>
 
               <View style={styles.inputContainer}>
@@ -81,11 +146,11 @@ export class RegisterForm extends React.Component {
                     onChangeText={(passwordConfirm) => this.setState({passwordConfirm})}/>
               </View>
       
-              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onClickListener('login')}>
+              <TouchableHighlight disabled={this.state.loading} style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.tryCreateUser(this.state)}>
                 <Text style={styles.loginText}>Register</Text>
               </TouchableHighlight>
       
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(false)}>
+              <TouchableHighlight disabled={this.state.loading} style={styles.buttonContainer} onPress={() => this.props.setRegister(false)}>
                   <Text>Back</Text>
               </TouchableHighlight>
             </View>
@@ -100,6 +165,9 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#DCDCDC',
+    },
+    spinnerTextStyle: {
+      color: '#FFF',
     },
     inputContainer: {
         borderBottomColor: '#F5FCFF',
