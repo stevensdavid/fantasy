@@ -314,10 +314,9 @@ class SmashGG:
                 # The tournament hasn't been seeded
                 pass
             for entrant in r.json()['data']['event']['entrants']['nodes']:
-                seed = seeding[entrant['playerId']
-                               ] if entrant['playerId'] in seeding else None
-                e = Entrant(event_id=event_id,
-                            player_id=entrant['playerId'], seed=seed)
+                player_id = entrant['participants'][0]['playerId']
+                seed = seeding[player_id] if player_id in seeding else None
+                e = Entrant(event_id=event_id, player_id=player_id, seed=seed)
                 # Merge performs an UPDATE query if the row already exists
                 db.session.merge(e)
             page += 1
