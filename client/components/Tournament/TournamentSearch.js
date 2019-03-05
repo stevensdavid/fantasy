@@ -11,12 +11,10 @@ export class TournamentSearch extends React.Component {
             headers: this.httpGetHeaders
         })
         .then((response) => {
-            console.log('Got response.');
             if(response.status === 404 || response.status === 400) {
                 Alert.alert("Alert", "(404 or 400) Should not be seing this.");
               } else if (response.status === 200) {
                 response.json().then((respjson) => {
-                  console.log('Remove old data.');
                   this.setState({data: []});
                   const newData = [];
                   respjson.map((tournamentInfo) => {
@@ -29,7 +27,6 @@ export class TournamentSearch extends React.Component {
                   this.setState({
                       data: newData
                   })
-                  console.log('Done.');
                 })
               }
         })
