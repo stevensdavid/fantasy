@@ -66,10 +66,6 @@ export class ProfileView extends React.Component {
         </Text>
         <Text style={({fontSize: 14, color:'#b3002d'})}>Score: 0</Text>
         </View>
-        <TouchableHighlight style={[styles.buttonContainer]} onPress={() => this.props.setEditing(true)}>
-          <Icon name= 'edit' type='material' 
-              color='silver' size={42}/>
-        </TouchableHighlight>
       </View>
       <View style={styles.container}>
 
@@ -113,12 +109,19 @@ export class ProfileView extends React.Component {
                 </Text>
               </View>
 
+              <View style={{flexDirection: 'row'}}>
+              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setEditing(true)}>
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={styles.loginText}>Edit</Text>
+                  <Icon containerStyle={{marginLeft: 5, alignSelf:'center', alignItems:'center'}} name='edit' type='material' color='#eff' size={18}/>
+                </View>
+              </TouchableHighlight>
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(null)}>
                 <Text style={styles.loginText}>Logout</Text>
               </TouchableHighlight>
-              
-            </View>
-            </View>
+              </View>
+          </View>
+        </View>
     );
   }
 }
@@ -165,7 +168,8 @@ styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom:20,
-    width:250,
+    marginRight: 10,
+    width:100,
     borderRadius:30,
   },
   loginButton: {
