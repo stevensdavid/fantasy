@@ -4,24 +4,32 @@ import { SearchBar, Card } from 'react-native-elements';
 
 
 export class TournamentSearch extends React.Component {
-    searchTournament(term) {
+    searchAndSetTournaments = (term) => {
+        console.log(global.server + '/tournaments' + (term !='' ? ('?name=' + term) : ''));
         fetch(global.server + '/tournaments' + (term !='' ? ('?name=' + term) : ''), {
             method: "GET",
             headers: this.httpGetHeaders
         })
         .then((response) => {
+            console.log('Got response.');
             if(response.status === 404 || response.status === 400) {
                 Alert.alert("Alert", "(404 or 400) Should not be seing this.");
               } else if (response.status === 200) {
                 response.json().then((respjson) => {
-                  this.state.data = [];
+                  console.log('Remove old data.');
+                  this.setState({data: []});
+                  const newData = [];
                   respjson.map((tournamentInfo) => {
-                      this.state.data.push({
+                      newData.push({
                           key: tournamentInfo.tournament_id,
                           img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : ''),
                           title: tournamentInfo.name
                       });
                   })
+                  this.setState({
+                      data: newData
+                  })
+                  console.log('Done.');
                 })
               }
         })
@@ -30,30 +38,44 @@ export class TournamentSearch extends React.Component {
         });
     }
 
+    updateSearch = (term) => {
+        this.setState({search:  term});
+        console.log('search: ' + term);
+        this.searchAndSetTournaments(term);
+    };
+
+    componentDidMount() {
+        console.log('GrandChild did mount.');
+        this.searchAndSetTournaments('');
+    }
+
+    componentWillUnmount () {
+        this.componentDidMount.remove()
+    }
+
     constructor(props){
         super(props);
+
+        this.searchAndSetTournaments = this.searchAndSetTournaments.bind(this);
+        this.updateSearch = this.updateSearch.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
     
         this.state = { 
           search: '',
-          data: [
-            {key: '1', img_uri: 'https://smashgg.imgix.net/images/tournament/110416/image-face35c5085dd11074f02063bb8d8d58.png', title:'The Big Deal: 3D'}]
+          data: []
         };
-
-        this.searchTournament('');
     }
 
     httpGetHeaders = {};
 
     render() {
+        const { search } = this.state;
         return (
             <View>
             <SearchBar
                 placeholder="Search"
-                onChangeText={(text) => {
-                    this.setState({search: text});
-                    this.searchTournament(this.state.search);
-                }}
-                value={this.state.search}
+                onChangeText={this.updateSearch}
+                value={search}
                 containerStyle={styles.searchContainer}
                 inputContainerStyle={styles.searchInputContainer}
                 inputStyle={styles.searchInput}
