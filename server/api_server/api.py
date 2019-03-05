@@ -858,6 +858,10 @@ class EntrantsAPI(Resource):
         """Get entrants in event
         ---
         parameters:
+            -   name: event_id
+                type: integer
+                required: true
+                description: The ID of the event
             -   name: page
                 type: integer
                 required: false
