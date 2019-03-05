@@ -29,7 +29,8 @@ export default class ProfileScreen extends React.Component {
 
     this.state = { 
       register: global.register,
-      token: global.token
+      token: global.token,
+      editing: false,
     };
   }
 
