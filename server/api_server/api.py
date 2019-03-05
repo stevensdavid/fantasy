@@ -227,7 +227,7 @@ class UsersAPI(Resource):
                 salt = bcrypt.gensalt()
                 hashed = bcrypt.hashpw(args['pw'], salt)
                 user.salt = salt
-                user.hashed = hashed
+                user.pw = hashed
             db.session.commit()
             return user_schema.jsonify(user)
         return {"error": "User not found"}, 404
@@ -896,7 +896,8 @@ class EntrantsAPI(Resource):
 
 class LoginAPI(Resource):
     def post(self):
-        '''
+        '''Verify credentials and get token
+	---
         consumes:
             application/json
         parameters:
@@ -938,11 +939,11 @@ class LoginAPI(Resource):
         parser.add_argument('pw', type=str)
         args = parser.parse_args()
         user = User.query.filter(User.email == args['email']).first()
-        if not user or not bcrypt.hashpw(args['pw'], user.hashed) == user.hashed:
+        if not user or not bcrypt.hashpw(args['pw'], user.pw) == user.pw:
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
         return {'token':
-                base64.b64encode((user.email + ':' + user.hashed).encode()),
+                base64.b64encode((user.email + ':' + user.pw).encode()).decode(),
                 'userId': user.user_id}, 200
 
 
@@ -963,7 +964,7 @@ def user_is_logged_in(user_id):
         return False
     user = User.query.filter(User.user_id == user_id).first()
     email, hashed = base64.b64decode(token).decode().split(':')
-    return email == user.email and hashed == user.hashed
+    return email == user.email and hashed == user.pw
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
