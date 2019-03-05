@@ -11,6 +11,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import LeaguesScreen from '../screens/LeaguesScreen';
+import SearchScreen from '../screens/SearchScreen';
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
@@ -93,8 +94,27 @@ LeaguesStack.navigationOptions = {
   ),
 };
 
+const SearchStack = createStackNavigator({
+  Search: SearchScreen
+})
+
+SearchStack.navigationOptions = {
+  tabBarLabel: 'Search',
+  tabBarIcon: ({
+    focused
+  }) => ( <
+    TabBarIcon focused = {
+      focused
+    }
+    name = {
+      Platform.OS === 'ios' ? `ios-search` : 'md-search'
+    }
+    />
+  ),
+};
 export default createBottomTabNavigator({
   HomeStack,
+  SearchStack,
   ProfileStack,
   LeaguesStack,
 }, {

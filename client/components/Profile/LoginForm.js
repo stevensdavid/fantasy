@@ -12,12 +12,17 @@ import {
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 
+/*this.tryLogin(this.state.email, this.state.password)*/
+
 export class LoginForm extends React.Component {
     constructor(props) {
         super(props);
-        state = {
-           email   : '',
+
+        this.state = {
+           email: '',
            password: '',
+           emailFocus: false,
+           passwordFocus: false,
         }
     }
 
@@ -25,26 +30,41 @@ export class LoginForm extends React.Component {
         Alert.alert("Alert", "Button pressed "+viewId);
     }
 
-    tryLogin () {
+    tryLogin (ema,pass) {
       fetch(global.server + '/login', {
         method: "POST",
-        headers: httpGetHeaders
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: ema, pw: pass})
       })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        callback(responseJson);
+      .then((response) => {
+        if(response.status === 404 || response.status === 400) {
+          Alert.alert("Alert", "Invalid username or password");
+        } else if (response.status === 200) {
+          response.json().then((respjson) => {
+            global.userID = respjson.userId;
+            this.props.setToken(respjson.token);
+          })
+        }
       })
       .catch((error) => {
-        console.error('Fetch featured error: ' + error);
+        console.error('Login error: ' + error);
       });
     }
       
     render() {
         return (
             <View style={styles.container}>
+              <View style={styles.iconContainer}>
+                <Icon name= {Platform.OS === 'ios' ? 'ios-lock' : 'md-lock'} type='ionicon' 
+                color='#2a2a2a' size={72}/>
+              </View>
               <View style={styles.inputContainer}>
-              <Icon name= {Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} type='ionicon' color='silver'/>
-                <TextInput style={styles.inputs}
+              <Icon name= {Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} type='ionicon' 
+              color={this.state.emailFocus ? 'black' : 'silver'}/>
+                <TextInput 
+                    onFocus={() => {this.setState({emailFocus: true})}}
+                    onBlur={() => {this.setState({emailFocus: false})}}
+                    style={styles.inputs}
                     placeholder="Email"
                     keyboardType="email-address"
                     underlineColorAndroid='transparent'
@@ -52,15 +72,18 @@ export class LoginForm extends React.Component {
               </View>
               
               <View style={styles.inputContainer}>
-                <Icon name={Platform.OS === 'ios' ? 'ios-key' : 'md-key'} type='ionicon' color='silver'/>
-                <TextInput style={styles.inputs}
+                <Icon name={Platform.OS === 'ios' ? 'ios-key' : 'md-key'} type='ionicon' color={this.state.passwordFocus ? 'black' : 'silver'}/>
+                <TextInput 
+                    onFocus={() => {this.setState({passwordFocus: true})}}
+                    onBlur={() => {this.setState({passwordFocus: false})}}
+                    style={styles.inputs}
                     placeholder="Password"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
                     onChangeText={(password) => this.setState({password})}/>
               </View>
       
-              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(2)}>
+              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.tryLogin(this.state.email, this.state.password)}>
                 <Text style={styles.loginText}>Login</Text>
               </TouchableHighlight>
       
@@ -105,6 +128,15 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
       height:45,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom:20,
+      width:250,
+      borderRadius:30,
+    },
+    iconContainer: {
+      height:72,
       flexDirection: 'row',
       justifyContent: 'center',
       alignItems: 'center',

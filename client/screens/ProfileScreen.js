@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text} from 'react-native';
-import { LoginForm } from '../components/LoginForm';
-import { ProfileView } from '../components/ProfileView';
-import { RegisterForm } from '../components/RegisterForm';
+import { LoginForm } from '../components/Profile/LoginForm';
+import { ProfileView } from '../components/Profile/ProfileView';
+import { RegisterForm } from '../components/Profile/RegisterForm';
+import { EditProfile } from '../components/Profile/EditProfile';
 
 export default class ProfileScreen extends React.Component {
   static navigationOptions = {
@@ -16,17 +17,22 @@ export default class ProfileScreen extends React.Component {
       if(this.state.token !== global.token) {
         this.setState({
           register: global.register,
-          token: global.token
+          token: global.token,
+          userID: global.userID,
+          editing: false,
         })
       }
     })
 
     this.setRegister = this.setRegister.bind(this);
     this.setToken = this.setToken.bind(this);
+    this.setEditing = this.setEditing.bind(this);
 
     this.state = { 
       register: global.register,
-      token: global.token
+      token: global.token,
+      userID: global.userID,
+      editing: false,
     };
   }
 
@@ -42,22 +48,32 @@ export default class ProfileScreen extends React.Component {
   }
 
   setToken(tok) {
+    this.setRegister(false)
     global.token = tok;
     this.setState({
       token: tok
     })
   }
 
+  setEditing(edit) {
+    this.setState({
+      editing: edit
+    })
+  }
+
   render() {
     const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
-    const profileViewComponent = <ProfileView></ProfileView>;
-    const registerComponent = <RegisterForm setRegister = {this.setRegister}></RegisterForm>;
+    const profileViewComponent = <ProfileView setEditing = {this.setEditing} setToken = {this.setToken}></ProfileView>;
+    const registerComponent = <RegisterForm setToken = {this.setToken} setRegister = {this.setRegister}></RegisterForm>;
+    const editComponent = <EditProfile setEditing = {this.setEditing}></EditProfile>
 
-    const show = this.state.token? profileViewComponent : loginComponent;
+    let show = this.state.token? profileViewComponent : loginComponent;
+    show = this.state.register ? registerComponent : show;
+    show = this.state.editing ? editComponent : show;
 
     return (
       <View>
-        {this.state.register ? registerComponent : show} 
+        {show}
       </View>
     );
   }

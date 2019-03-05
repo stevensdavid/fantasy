@@ -165,7 +165,7 @@ class UsersAPI(Resource):
         user = User(tag=args['tag'],
                     first_name=args['firstName'],
                     last_name=args['lastName'],
-                    email=args['email'],
+                    email=args['email'].lower(),
                     pw=hashed,
                     salt=salt,
                     photo_path=None)
@@ -227,7 +227,7 @@ class UsersAPI(Resource):
                 salt = bcrypt.gensalt()
                 hashed = bcrypt.hashpw(args['pw'], salt)
                 user.salt = salt
-                user.hashed = hashed
+                user.pw = hashed
             db.session.commit()
             return user_schema.jsonify(user)
         return {"error": "User not found"}, 404
@@ -246,59 +246,7 @@ class EventsAPI(Resource):
             200:
                 description: The event
                 schema:
-                    id: Event
-                    properties:
-                        entrants:
-                            type: array
-                            items:
-                                type: integer
-                                description: The entrant's unique ID
-                            description: List of the entrants in the event
-                        event_id:
-                            type: integer
-                            description: The event's unique ID
-                        fantasy_leagues:
-                            type: array
-                            items:
-                                type: integer
-                                description: The fantasy league's unique ID
-                            description: >
-                                List of all fantasy leagues for the event
-                        name:
-                            type: string
-                            description: >
-                                The name of the tournament. This is 
-                                human-readable and suitable for users
-                        num_entrants:
-                            type: integer
-                            description: >
-                                The number of entrants in the tournament
-                        placements:
-                            type: array
-                            items:
-                                type: integer
-                                description: >
-                                    A list of all placements in the event. Not 
-                                    entirely certain if this is an integer. 
-                                    TODO investigate
-                        slug:
-                            type: string
-                            description: >
-                                The Smash.GG URL for the event. Users can visit 
-                                smash.gg/{slug} to see the event page.
-                        start_at:
-                            type: integer
-                            description: The timestamp at which the event starts
-                        tournament:
-                            type: integer
-                            description: >
-                                The unique ID of the tournament that this event 
-                                is part of
-                        videogame:
-                            type: integer
-                            description: >
-                                The unique ID of the video game that this event 
-                                is for
+                    import: "swagger/Event.json"
         """
         event = Event.query.filter(Event.event_id == event_id).first()
         return event_schema.jsonify(event)
@@ -326,42 +274,7 @@ class TournamentsAPI(Resource):
                     A single tournament if tournament_id is specified, else a 
                     paginated list of tournaments
                 schema:
-                    id: Tournament
-                    properties:
-                        banner_path:
-                            type: string
-                            description: >
-                                The URI of the banner image. The image itself 
-                                can be retrieved using GET /images/{banner_path}
-                        ends_at:
-                            type: integer
-                            description: >
-                                A timestamp marking the end time of the event
-                        events:
-                            type: array
-                            items:
-                                type: integer
-                                description: >
-                                    The unique ID of an event in the tournament
-                        icon_path:
-                            type: string
-                            description: >
-                                The URI of the icon image. The image itself can 
-                                be retrieved using GET /images/{icon_path}
-                        is_featured:
-                            type: boolean
-                            description: >
-                                Whether or not the tournament is featured by 
-                                Smash.GG
-                        slug:
-                            type: string
-                            description: >
-                                The Smash.GG URL for the tournament. Users can 
-                                visit smash.gg/{slug} to see the tournament 
-                                page.
-                        tournament_id:
-                            type: integer
-                            description: The unique ID for the tournament
+                    import: "swagger/Tournament.json"
         """
         if tournament_id:
             tournament = Tournament.query.filter(
@@ -401,25 +314,7 @@ class FriendsAPI(Resource):
                     id: Friends
                     type: array
                     items:
-                        properties:
-                            user_id:
-                                type: integer
-                                description: The user's unique ID
-                            tag:
-                                type: string
-                                description: The user's gamertag
-                            first_name:
-                                type: string
-                            last_name:
-                                type: string
-                            email:
-                                type: string
-                            photo_path:
-                                type: string
-                                description: >
-                                    The URI of the profile photo. The image 
-                                    itself can be retrieved using GET 
-                                    /images/{photo_path}
+                        import: "swagger/User.json"
         """
         parser = make_pagination_reqparser()
         parser.add_argument('tag', str)
@@ -440,6 +335,8 @@ class FriendsAPI(Resource):
 
         Creates symmetrical records in the database
         ---
+        consumes:
+            -   application/json
         parameters:
             -   name: user_id
                 in: path
@@ -447,22 +344,21 @@ class FriendsAPI(Resource):
                 required: true
             -   name: friendId
                 in: body
-                type: integer
                 required: true
+                schema:
+                    type: object
+                    required:
+                        -   friendId
+                    properties:
+                        friendId:
+                            type: integer
         security:
             - bearerAuth: []
         responses:
             200:
                 description: The resulting friend-pair
                 schema:
-                    id: Friends
-                    properties:
-                        user_1: 
-                            type: integer
-                            description: An echo of {user_id}
-                        user_2:
-                            type: integer
-                            description: An echo of {friendId}
+                    import: "swagger/Friends.json"
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -483,6 +379,8 @@ class FriendsAPI(Resource):
 
         Removes symmetrical records in the database
         ---
+        consumes:
+            -   application/json
         parameters:
             -   name: user_id
                 in: path
@@ -490,22 +388,21 @@ class FriendsAPI(Resource):
                 required: true
             -   name: friendId
                 in: body
-                type: integer
                 required: true
+                schema:
+                    type: object
+                    required:
+                        -   friendId
+                    properties:
+                        friendId:
+                            type: integer
         security:
             - bearerAuth: []
         responses:
             200:
                 description: The deleted friend-pair
                 schema:
-                    id: Friends
-                    properties:
-                        user_1: 
-                            type: integer
-                            description: An echo of {user_id}
-                        user_2:
-                            type: integer
-                            description: An echo of {friendId}
+                    import: "swagger/Friends.json"
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -539,7 +436,7 @@ class DatabaseVersionAPI(Resource):
         req_date = parser.parse_args(strict=True)['last_event_update']
         current_version = Constants.query.first()
         if req_date > current_version.last_event_update:
-            smashgg.get_new_events()
+            smashgg.get_new_tournaments()
             current_version.last_event_update = date.today()
             db.session.commit()
         return {'last_event_update': current_version.last_event_update}
@@ -553,48 +450,9 @@ class FeaturedTournamentsAPI(Resource):
             200:
                 description: A list of the featured tournaments
                 schema:
-                    id: FeaturedTournaments
                     type: array
                     items:
-                        properties:
-                            banner_path:
-                                type: string
-                                description: >
-                                    The URI of the banner image. The image 
-                                    itself can be retrieved using GET 
-                                    /images/{banner_path}
-                            ends_at:
-                                type: integer
-                                description: >
-                                    A timestamp marking the end time of the 
-                                    event
-                            events:
-                                type: array
-                                items:
-                                    type: integer
-                                    description: > 
-                                        The unique ID of an event in the 
-                                        tournament
-                            icon_path:
-                                type: string
-                                description: >
-                                    The URI of the icon image. The image itself 
-                                    can be retrieved using GET 
-                                    /images/{icon_path}
-                            is_featured:
-                                type: boolean
-                                description: >
-                                    Whether or not the tournament is featured by
-                                    Smash.GG
-                            slug:
-                                type: string
-                                description: >
-                                    The Smash.GG URL for the tournament. Users 
-                                    can visit smash.gg/{slug} to see the 
-                                    tournament page.
-                            tournament_id:
-                                type: integer
-                                description: The unique ID for the tournament
+                        import: "swagger/Tournament.json"
         """
         tournaments = Tournament.query.filter(
             Tournament.is_featured & (Tournament.ends_at > time.time())).all()
@@ -650,9 +508,9 @@ class DraftsAPI(Resource):
         responses:
             200:
                 schema:
-
-
-
+                    type: array
+                    items:
+                        import: "swagger/FantasyDraft.json"
         """
         if user_id:
             draft = FantasyDraft.query.filter(
@@ -666,6 +524,8 @@ class DraftsAPI(Resource):
     def post(self, league_id, user_id):
         """Add a player to the user's fantasy draft
         ---
+        consumes:
+            -   application/json
         parameters:
             -   name: league_id
                 type: integer
@@ -678,17 +538,22 @@ class DraftsAPI(Resource):
                 required: true
                 description: The unique ID of the user to draft the player for
             -   name: playerId
-                type: integer
-                in: body
-                required: true
                 description: The unique player ID of the player to draft
+                in: body
+                schema:
+                    type: object
+                    required:
+                        -   playerId
+                    properties:
+                        playerId:
+                            type: integer
         security:
             - bearerAuth: []
         responses:
             200:
                 description: The created draft entity
                 schema:
-
+                    import: "swagger/FantasyDraft.json"
             400:
                 description: Bad request
                 schema:
@@ -732,6 +597,8 @@ class DraftsAPI(Resource):
     def delete(self, league_id, user_id):
         """Remove a player from the user's fantasy draft
         ---
+        consumes:
+            -   application/json
         parameters:
             -   name: league_id
                 type: integer
@@ -742,18 +609,24 @@ class DraftsAPI(Resource):
                 type: integer
                 in: path
                 required: true
-                description: The unique ID of the user to draft the player for
+                description: The unique ID of the user to remove the player for
             -   name: playerId
-                type: integer
+                description: The unique player ID of the player to remove
                 in: body
-                required: true
-                description: The unique player ID of the player to draft
+                schema:
+                    type: object
+                    required:
+                        -   playerId
+                    properties:
+                        playerId:
+                            type: integer
         security:
             - bearerAuth: []
         responses:
             200:
                 description: The removed draft entity
                 schema:
+                    import: "swagger/FantasyDraft.json"
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -807,11 +680,7 @@ class LeagueAPI(Resource):
             200:
                 description: The fantasy leagues matching the parameters
                 schema:
-                    oneOf:
-                        -   type: array
-                            items:
-                                import: "swagger/FantasyLeague.json"
-                        -   import: "swagger/FantasyLeague.json"
+                        import: "swagger/FantasyLeague.json"
         """
         if league_id:
             league = FantasyLeague.query.filter(
@@ -862,34 +731,43 @@ class LeagueAPI(Resource):
     def post(self):
         """Create a new fantasy league
         ---
+        consumes:
+            -   application/json
         parameters:
-            -   name: eventId
+            -   name: league
+                description: The fantasy league to create
                 in: body
-                required: true
-                type: integer
-                description: > 
-                    The unique identifier of the event that the league is for
-            -   name: ownerId
-                in: body
-                required: true
-                type: integer
-                description: > 
-                    The unique identifier of the player that created the league
-            -   name: draftSize
-                in: body
-                required: true
-                type: integer
-                description: The number of players each user is allowed to draft
-            -   name: public
-                in: body
-                required: true
-                type: boolean
-                description: Whether or not the league is invite-only
-            -   name: name
-                in: body
-                required: true
-                type: string
-                description: The name of the league
+                schema:
+                    type: object
+                    required:
+                        -   eventId
+                        -   ownerId
+                        -   draftSize
+                        -   public
+                        -   name
+                    properties:
+                        eventId:
+                            type: integer
+                            description: >
+                                The unique identifier of the event that the 
+                                league is for
+                        ownerId:
+                            type: integer
+                            description: >
+                                The unique identifier of the player that created
+                                the league
+                        draftSize:
+                            type: integer
+                            description: >
+                                The number of players each user is allowed to 
+                                draft
+                        public:
+                            type: boolean
+                            description: >
+                                Whether or not the league is invite-only
+                        name:
+                            type: string
+                            description: The name of the league
         security:
             - bearerAuth: []
         responses:
@@ -919,30 +797,35 @@ class LeagueAPI(Resource):
     def put(self, league_id):
         """Update a fantasy league
         ---
+        consumes:
+            -   application/json
         parameters:
             -   name: leagueId
                 in: path
                 required: true
                 type: integer
                 description: The unique identifier of the league
-            -   name: draftSize
+            -   name: league
+                description: The updated fantasy league
                 in: body
-                required: false
-                type: integer
-                description: > 
-                    The number of players each user is allowed to draft. 
-                    If the new size is smaller than the previous size, all 
-                    drafts in the league will be deleted.
-            -   name: public
-                in: body
-                required: false
-                type: boolean
-                description: Whether or not the league is invite-only
-            -   name: name
-                in: body
-                required: false
-                type: string
-                description: The name of the league
+                schema:
+                    type: object
+                    required:
+                    properties:
+                        draftSize:
+                            type: integer
+                            description: >
+                                The number of players each user is allowed to 
+                                draft. If the new size is smaller than the 
+                                previous size, all drafts in the league will be 
+                                deleted.
+                        public:
+                            type: boolean
+                            description: >
+                                Whether or not the league is invite-only
+                        name:
+                            type: string
+                            description: The name of the league
         security:
             - bearerAuth: []
         responses:
@@ -1013,19 +896,27 @@ class EntrantsAPI(Resource):
 
 class LoginAPI(Resource):
     def post(self):
-        '''
+        '''Verify credentials and get token
+	---
+        consumes:
+            application/json
         parameters:
-            -   name: email
+            -   name: credentials
                 in: body
-                type: string
-                required: true
-            -   name: pw
-                in: body
-                type: string
-                required: true
-        respones:
+                schema:
+                    type: object
+                    required:
+                        -   email
+                        -   pw
+                    properties:
+                        email:
+                            type: string
+                        pw:
+                            type: string
+        responses:
             200:
                 schema:
+		    type: object
                     properties:
                         token:
                             type: string
@@ -1048,12 +939,12 @@ class LoginAPI(Resource):
         parser.add_argument('email', type=str)
         parser.add_argument('pw', type=str)
         args = parser.parse_args()
-        user = User.query.filter(User.email == args['email']).first()
-        if not user or not bcrypt.hashpw(args['pw'], user.hashed) == user.hashed:
+        user = User.query.filter(User.email == args['email'].lower()).first()
+        if not user or not bcrypt.hashpw(args['pw'], user.pw) == user.pw:
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
         return {'token':
-                base64.b64encode((user.email + ':' + user.hashed).encode()),
+                base64.b64encode((user.email + ':' + user.pw).encode()).decode(),
                 'userId': user.user_id}, 200
 
 
@@ -1074,7 +965,7 @@ def user_is_logged_in(user_id):
         return False
     user = User.query.filter(User.user_id == user_id).first()
     email, hashed = base64.b64decode(token).decode().split(':')
-    return email == user.email and hashed == user.hashed
+    return email == user.email and hashed == user.pw
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')

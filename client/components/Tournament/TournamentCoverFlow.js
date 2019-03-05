@@ -9,14 +9,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 30,
   },
-  centerText: {
-    alignContent: 'center',
-    textAlign: 'center',
-    color: '#000000',
-    fontSize: 21,
-  },
   container: {
-    height: 370,
     borderRadius: 10,
   },
   image: {
@@ -107,13 +100,13 @@ export class TournamentCoverFlow extends React.Component {
         <View key={tournamentInfo.tournament_id}>
         <Card containerStyle={styles.container}>
         <View>
-        <Text style={styles.centerText}>{tournamentInfo.name}</Text>
+        <Text style={{alignContent: 'center', textAlign: 'center', color: '#000000', 
+        fontSize: (this.headerFontSize * 20 / tournamentInfo.name.length)}}>{tournamentInfo.name}</Text>
         <Image
           resizeMode="cover"
           style={styles.image}
           source={{uri: tournamentInfo.ext_icon_url}}
         />
-        <Text>"Text goes here?"</Text>
         </View>
         </Card>
         <View style={{margin: 30}}>
@@ -141,6 +134,8 @@ export class TournamentCoverFlow extends React.Component {
     this.state = {
        showLoading: true,
     }
+
+    this.headerFontSize= 21;
 
     this.getFeatured(this.setFeaturedCards);
   }
