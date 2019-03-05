@@ -239,14 +239,20 @@ class SmashGG:
                       videogame_id=event['videogameId'],
                       start_at=event['startAt'])
             db.session.merge(e)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            # In all likelihood due to the videogame not being stored in the
-            # database
-            self.get_videogames()
-            db.session.commit()
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                # In all likelihood due to the videogame not being stored in the
+                # database  
+                self.get_videogames()
+                db.session.merge(e)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    # This event is for a custom game that isn't in
+                    # the SmashGG videogame database. Skip it!
+                    db.session.rollback()
 
     def get_entrants_in_event(self, event_id):
         per_page = 200
