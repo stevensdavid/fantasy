@@ -6,7 +6,7 @@ from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.exc import IntegrityError
 
 from . import db, app
-from .models import Entrant, Event, Placement, Tournament, VideoGame
+from .models import Entrant, Event, Placement, Tournament, VideoGame, Player
 
 
 class SmashGG:
@@ -279,6 +279,7 @@ class SmashGG:
                             seedNum
                             players {
                                 id
+                                gamerTag
                             }
                         }
                     }
@@ -319,9 +320,17 @@ class SmashGG:
                 e = Entrant(event_id=event_id, player_id=player_id, seed=seed)
                 # Merge performs an UPDATE query if the row already exists
                 db.session.merge(e)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    # We haven't stored details about this player
+                    db.session.rollback()
+                    p = Player(player_id=player_id,
+                               tag=entrant['participants'][0]['gamerTag'])
+                    db.session.add(p)
+                    db.session.commit()
             page += 1
             read += per_page
-        db.session.commit()
 
 
 if __name__ == "__main__":
