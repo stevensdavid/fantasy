@@ -88,7 +88,6 @@ class SmashGG:
                     VideoGame.videogame_id == game["id"]).first():
                 # This game is already in the database
                 continue
-            print(f'Getting data for {game["name"]}')
             # Download the corresponding image
             image_dir = app.config['IMAGE_DIR'] + \
                 f"/videogames/{game['id']}"
@@ -149,7 +148,6 @@ class SmashGG:
                                     'variables': gql_vars},
                               headers={"Authorization":
                                        f"Bearer {self.api_key}"})
-        print(r.json())
         self._handle_tournament_query_result(r, is_featured=True)
         # Get non-featured tournaments
         r = self.session.post('https://api.smash.gg/gql/alpha',
@@ -267,6 +265,7 @@ class SmashGG:
                     nodes {
                         participants {
                             playerId
+                            gamerTag
                         }
                     }
                 }
