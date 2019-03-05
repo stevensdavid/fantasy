@@ -165,7 +165,7 @@ class UsersAPI(Resource):
         user = User(tag=args['tag'],
                     first_name=args['firstName'],
                     last_name=args['lastName'],
-                    email=args['email'],
+                    email=args['email'].lower(),
                     pw=hashed,
                     salt=salt,
                     photo_path=None)
@@ -913,9 +913,10 @@ class LoginAPI(Resource):
                             type: string
                         pw:
                             type: string
-        respones:
+        responses:
             200:
                 schema:
+		    type: object
                     properties:
                         token:
                             type: string
@@ -938,7 +939,7 @@ class LoginAPI(Resource):
         parser.add_argument('email', type=str)
         parser.add_argument('pw', type=str)
         args = parser.parse_args()
-        user = User.query.filter(User.email == args['email']).first()
+        user = User.query.filter(User.email == args['email'].lower()).first()
         if not user or not bcrypt.hashpw(args['pw'], user.pw) == user.pw:
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
