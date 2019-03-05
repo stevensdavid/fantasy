@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text} from 'react-native';
+import {TournamentSearch} from '../components/Tournament/TournamentSearch'
 
 
-export default class ProfileScreen extends React.Component {
+export default class SearchScreen extends React.Component {
   static navigationOptions = {
     title: 'Search Tournaments',
   };
@@ -18,9 +19,7 @@ export default class ProfileScreen extends React.Component {
 
   render() {
     return (
-      <View>
-        <Text>Hi</Text>
-      </View>
+      <TournamentSearch></TournamentSearch>
     );
   }
 }
