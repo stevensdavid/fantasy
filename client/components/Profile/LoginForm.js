@@ -12,6 +12,8 @@ import {
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 
+/*this.tryLogin(this.state.email, this.state.password)*/
+
 export class LoginForm extends React.Component {
     constructor(props) {
         super(props);
@@ -28,14 +30,19 @@ export class LoginForm extends React.Component {
         Alert.alert("Alert", "Button pressed "+viewId);
     }
 
-    tryLogin () {
+    tryLogin (ema,pass) {
       fetch(global.server + '/login', {
         method: "POST",
-        headers: httpGetHeaders
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: ema, pw: pass})
       })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        callback(responseJson);
+      .then((response) => {
+        console.log(response);
+        if(response.status === 400) {
+          Alert.alert("Alert", "Invalid username or password");
+        } else if (response.status === 200) {
+          this.props.setToken(2);
+        }
       })
       .catch((error) => {
         console.error('Login error: ' + error);

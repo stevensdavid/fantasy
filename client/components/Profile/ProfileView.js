@@ -77,11 +77,10 @@ export class ProfileView extends React.Component {
                 </Text>
               </View>
 
-              {/*
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(false)}>
-                  <Text>Back</Text>
+              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(null)}>
+                <Text style={styles.loginText}>Logout</Text>
               </TouchableHighlight>
-              */}
+              
             </View>
             </View>
     );
