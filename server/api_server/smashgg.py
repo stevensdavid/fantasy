@@ -6,7 +6,7 @@ from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.exc import IntegrityError
 
 from . import db, app
-from .models import Entrant, Event, Placement, Tournament, VideoGame
+from .models import Entrant, Event, Placement, Tournament, VideoGame, Player
 
 
 class SmashGG:
@@ -88,7 +88,6 @@ class SmashGG:
                     VideoGame.videogame_id == game["id"]).first():
                 # This game is already in the database
                 continue
-            print(f'Getting data for {game["name"]}')
             # Download the corresponding image
             image_dir = app.config['IMAGE_DIR'] + \
                 f"/videogames/{game['id']}"
@@ -149,7 +148,6 @@ class SmashGG:
                                     'variables': gql_vars},
                               headers={"Authorization":
                                        f"Bearer {self.api_key}"})
-        print(r.json())
         self._handle_tournament_query_result(r, is_featured=True)
         # Get non-featured tournaments
         r = self.session.post('https://api.smash.gg/gql/alpha',
@@ -239,14 +237,20 @@ class SmashGG:
                       videogame_id=event['videogameId'],
                       start_at=event['startAt'])
             db.session.merge(e)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
-            # In all likelihood due to the videogame not being stored in the
-            # database
-            self.get_videogames()
-            db.session.commit()
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                # In all likelihood due to the videogame not being stored in the
+                # database  
+                self.get_videogames()
+                db.session.merge(e)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    # This event is for a custom game that isn't in
+                    # the SmashGG videogame database. Skip it!
+                    db.session.rollback()
 
     def get_entrants_in_event(self, event_id):
         per_page = 200
@@ -261,6 +265,7 @@ class SmashGG:
                     nodes {
                         participants {
                             playerId
+                            gamerTag
                         }
                     }
                 }
@@ -273,6 +278,7 @@ class SmashGG:
                             seedNum
                             players {
                                 id
+                                gamerTag
                             }
                         }
                     }
@@ -288,7 +294,7 @@ class SmashGG:
         }
         '''
         n_entrants = Event.query.filter(
-            Event.event_id == event_id).num_entrants
+            Event.event_id == event_id).first().num_entrants
         read = 0
         page = 1
         while read < n_entrants:
@@ -302,21 +308,28 @@ class SmashGG:
                                            f"Bearer {self.api_key}"})
             seeding = {}
             try:
-                for seed in r.json()['data']['event']['phases']['nodes'][0]:
+                for seed in r.json()['data']['event']['phases'][0]['paginatedSeeds']['nodes']:
                     seeding[seed['players'][0]] = seed['seedNum']
             except (KeyError, IndexError):
                 # The tournament hasn't been seeded
                 pass
             for entrant in r.json()['data']['event']['entrants']['nodes']:
-                seed = seeding[entrant['playerId']
-                               ] if entrant['playerId'] in seeding else None
-                e = Entrant(event_id=event_id,
-                            player_id=entrant['playerId'], seed=seed)
+                player_id = entrant['participants'][0]['playerId']
+                seed = seeding[player_id] if player_id in seeding else None
+                e = Entrant(event_id=event_id, player_id=player_id, seed=seed)
                 # Merge performs an UPDATE query if the row already exists
                 db.session.merge(e)
+                try:
+                    db.session.commit()
+                except IntegrityError:
+                    # We haven't stored details about this player
+                    db.session.rollback()
+                    p = Player(player_id=player_id,
+                               tag=entrant['participants'][0]['gamerTag'])
+                    db.session.add(p)
+                    db.session.commit()
             page += 1
             read += per_page
-        db.session.commit()
 
 
 if __name__ == "__main__":
