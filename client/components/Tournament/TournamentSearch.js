@@ -20,7 +20,7 @@ export class TournamentSearch extends React.Component {
                   respjson.map((tournamentInfo) => {
                       newData.push({
                           key: '' + tournamentInfo.tournament_id,
-                          img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : ''),
+                          img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
                           title: tournamentInfo.name
                       });
                   })
