@@ -94,9 +94,6 @@ export class TournamentCoverFlow extends React.Component {
   }
   */
   
-  viewTournament = (tourID) => {
-    return <TournamentView tournamentID={tourID}></TournamentView>
-  };
 
   setFeaturedCards(featuredJSON) {
   featuredJSON.map( tournamentInfo => {
@@ -139,7 +136,7 @@ export class TournamentCoverFlow extends React.Component {
 
     this.getFeatured = this.getFeatured.bind(this);
     this.setFeaturedCards = this.setFeaturedCards.bind(this);
-    this.viewTournament = this.viewTournament.bind(this);
+    this.clearViewTournament = this.clearViewTournament.bind(this);
 
     this.state = {
       showLoading: true,
@@ -150,6 +147,12 @@ export class TournamentCoverFlow extends React.Component {
     this.headerFontSize= 21;
   }
 
+  clearViewTournament() {
+    this.setState({
+      viewTournament: false,
+      tournamentID: null,
+    });
+  }
 
   render() {
     if(!this.state.viewTournament) {
@@ -160,8 +163,8 @@ export class TournamentCoverFlow extends React.Component {
       </Carousel>
       </View>)
     }else {
-      return <TournamentView tournamentID={this.state.tournamentID}></TournamentView>
+      return <TournamentView clearViewTournament={this.clearViewTournament} tournamentID={this.state.tournamentID}></TournamentView>
     }
-    
+
   }
 }
