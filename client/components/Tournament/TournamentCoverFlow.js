@@ -95,20 +95,14 @@ export class TournamentCoverFlow extends React.Component {
   */
   
   viewTournament = (tourID) => {
-    this.setState({
-      viewTournament: true,
-      tournamentID: tourID,
-      show: (
-        <TournamentView tournamentID={tourID}></TournamentView>
-      )
-    })
+    return <TournamentView tournamentID={tourID}></TournamentView>
   };
 
   setFeaturedCards(featuredJSON) {
   featuredJSON.map( tournamentInfo => {
       featuredCards.push([
       <View key={tournamentInfo.tournament_id}>
-      <TouchableHighlight onPress={() => this.viewTournament(tournamentInfo.tournament_id)}>
+      <TouchableHighlight onPress={() => this.setState({viewTournament: true, tournamentID: tournamentInfo.tournament_id})}>
       <Card containerStyle={styles.container}>
       <View>
       <Image
@@ -134,23 +128,10 @@ export class TournamentCoverFlow extends React.Component {
     this.setState({
       showLoading: false
     });
-    this.renderCoverFlow();
   }
 
   componentDidMount() {
-    this.renderCoverFlow();
     this.getFeatured(this.setFeaturedCards);
-  }
-
-
-  renderCoverFlow = () => {
-    this.setState({
-      show: (
-        <Carousel sneak={30} pageStyle={ {borderRadius: 20}}>
-        {this.state.showLoading ? loadingGIF : featuredCards}
-        </Carousel>
-        )
-    });
   }
 
   constructor(props){
@@ -158,21 +139,29 @@ export class TournamentCoverFlow extends React.Component {
 
     this.getFeatured = this.getFeatured.bind(this);
     this.setFeaturedCards = this.setFeaturedCards.bind(this);
-    this.renderCoverFlow = this.renderCoverFlow.bind(this);
+    this.viewTournament = this.viewTournament.bind(this);
 
     this.state = {
       showLoading: true,
       viewingTournament: false,
       tournamentID: null,
-      show: null,
     }
+
     this.headerFontSize= 21;
   }
 
 
   render() {
-    return (
-      (this.state.show)
-    );
+    if(!this.state.viewTournament) {
+      return (
+      <View>
+      <Carousel sneak={30} pageStyle={ {borderRadius: 20}}>
+      {this.state.showLoading ? loadingGIF : featuredCards}
+      </Carousel>
+      </View>)
+    }else {
+      return <TournamentView tournamentID={this.state.tournamentID}></TournamentView>
+    }
+    
   }
 }
