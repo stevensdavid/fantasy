@@ -55,16 +55,19 @@ export class RegisterForm extends React.Component {
       }).then((response) => {
         console.log(response);
         if(response.status === 404 || response.status === 400) {
-          Alert.alert("Alert", "Invalid input!");
           this.setState({
             loading: false
           });
+          Alert.alert("Alert", "Invalid input!");
           return;
         } else if (response.status === 200) {
           this.tryLogin(this.state.email, this.state.password)
         }
       })
       .catch((error) => {
+        this.setState({
+          loading: false
+        });
         console.error('Login error: ' + error);
       });
     }
@@ -77,7 +80,14 @@ export class RegisterForm extends React.Component {
       })
       .then((response) => {
         if(response.status === 404 || response.status === 400) {
-          Alert.alert("Alert", "Invalid username or password");
+          Alert.alert(
+            'Invalid input!',
+            'Please check your input.',
+            [
+              {text: 'OK', onPress: () => this.setState({loading: false})}
+            ],
+            { cancelable: false }
+          )
         } else if (response.status === 200) {
           response.json().then((respjson) => {
             this.setState({
@@ -89,6 +99,9 @@ export class RegisterForm extends React.Component {
         }
       })
       .catch((error) => {
+        this.setState({
+          loading: false
+        });
         console.error('Login error: ' + error);
       });
     }

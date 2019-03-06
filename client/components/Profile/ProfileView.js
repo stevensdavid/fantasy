@@ -40,8 +40,14 @@ export class ProfileView extends React.Component {
       headers: this.httpGetHeaders
     }).then((response) => {
       if(response.status === 404 || response.status === 400) {
-        Alert.alert("Alert", "USER OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!");
-        this.setState({loading: false});
+        Alert.alert(
+          'ERROR!',
+          'USER OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
+          [
+            {text: 'OK', onPress: () => this.setState({loading: false})}
+          ],
+          { cancelable: false }
+        )
       } else if(response.status === 200) {
         response.json().then((responseJSON) => {
           this.setState({

@@ -41,7 +41,14 @@ export class LoginForm extends React.Component {
       })
       .then((response) => {
         if(response.status === 404 || response.status === 400) {
-          Alert.alert("Alert", "Invalid username or password");
+          Alert.alert(
+            'Invalid input!',
+            'Wrong username or password.',
+            [
+              {text: 'OK', onPress: () => this.setState({loading: false})}
+            ],
+            { cancelable: false }
+          )
         } else if (response.status === 200) {
           response.json().then((respjson) => {
             this.setState({loading: false});
@@ -49,7 +56,6 @@ export class LoginForm extends React.Component {
             this.props.setToken(respjson.token);
           })
         }
-        this.setState({loading: false});
       })
       .catch((error) => {
         console.error('Login error: ' + error);
