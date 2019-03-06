@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableHighlight } from 'react-native';
 import Carousel from "react-native-carousel-control";
-import { Card} from 'react-native-elements'
+import { Card} from 'react-native-elements';
+import {TournamentView} from '../Tournament/TournamentView';
 
 const styles = StyleSheet.create({
   bigBlue: {
@@ -26,7 +27,6 @@ const styles = StyleSheet.create({
   }
 });
 
-let httpJsonHeaders = {};
 let httpGetHeaders = {};
 
 var featuredCards = [];
@@ -93,60 +93,86 @@ export class TournamentCoverFlow extends React.Component {
     })
   }
   */
+  
+  viewTournament = (tourID) => {
+    this.setState({
+      viewTournament: true,
+      tournamentID: tourID,
+      show: (
+        <TournamentView tournamentID={tourID}></TournamentView>
+      )
+    })
+  };
 
-    setFeaturedCards(featuredJSON) {
-    featuredJSON.map( tournamentInfo => {
-        featuredCards.push([
-        <View key={tournamentInfo.tournament_id}>
-        <Card containerStyle={styles.container}>
-        <View>
-        <Text style={{alignContent: 'center', textAlign: 'center', color: '#000000', 
-        fontSize: (this.headerFontSize * 20 / tournamentInfo.name.length)}}>{tournamentInfo.name}</Text>
-        <Image
-          resizeMode="cover"
-          style={styles.image}
-          source={{uri: tournamentInfo.ext_icon_url}}
-        />
-        </View>
-        </Card>
-        <View style={{margin: 30}}>
-        <Text>Etiam lacinia iaculis tincidunt. Nam varius, est non accumsan consectetur, ex orci vestibulum felis, non dictum est sapien vitae nulla. Phasellus nibh quam, consequat ac nisl ut, vulputate ornare tellus. Quisque euismod feugiat urna vitae tincidunt. Ut iaculis ornare lacus a posuere. Suspendisse potenti. Duis id accumsan diam. Nam ut lacus quis neque cursus sollicitudin eget fermentum nisl. Vestibulum non orci ac urna mattis pulvinar sit amet consequat ex. Curabitur non purus a dolor iaculis ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent mattis vel elit non consectetur.
+  setFeaturedCards(featuredJSON) {
+  featuredJSON.map( tournamentInfo => {
+      featuredCards.push([
+      <View key={tournamentInfo.tournament_id}>
+      <TouchableHighlight onPress={() => this.viewTournament(tournamentInfo.tournament_id)}>
+      <Card containerStyle={styles.container}>
+      <View>
+      <Image
+        resizeMode="cover"
+        style={styles.image}
+        source={{uri: tournamentInfo.ext_icon_url}}
+      />
+      <Text style={{alignContent: 'center', textAlign: 'center', color: '#000000', 
+      fontSize: (this.headerFontSize * 20 / tournamentInfo.name.length)}}>{tournamentInfo.name}</Text>
+      </View>
+      </Card>
+      </TouchableHighlight>
+      <View style={{margin: 30}}>
+      <Text>Etiam lacinia iaculis tincidunt. Nam varius, est non accumsan consectetur, ex orci vestibulum felis, non dictum est sapien vitae nulla. Phasellus nibh quam, consequat ac nisl ut, vulputate ornare tellus. Quisque euismod feugiat urna vitae tincidunt. Ut iaculis ornare lacus a posuere. Suspendisse potenti. Duis id accumsan diam. Nam ut lacus quis neque cursus sollicitudin eget fermentum nisl. Vestibulum non orci ac urna mattis pulvinar sit amet consequat ex. Curabitur non purus a dolor iaculis ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent mattis vel elit non consectetur.
 
-        Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer et felis vitae lacus congue semper ac et diam. Aliquam erat volutpat. Aliquam pharetra eget leo eget pulvinar. Donec magna metus, eleifend vestibulum nisl nec, tincidunt tincidunt nulla. Vestibulum at rutrum velit, quis convallis nibh. Suspendisse at porta eros. Aenean blandit velit sed libero ullamcorper dictum. Fusce non mauris tellus. Etiam tincidunt lorem magna, eu tincidunt diam pretium eu. Sed volutpat tortor et ante hendrerit feugiat iaculis quis quam.
-        
-        Maecenas et nisi ante. Donec convallis eros ligula, eu tincidunt urna volutpat porttitor. Nunc vel consectetur felis, ac hendrerit nisl. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus scelerisque ex non tincidunt aliquet. Morbi vulputate risus quam, ac fermentum mi mollis id. Quisque eget fermentum nunc.</Text>
-        </View>
-        </View>
-        ])
-      })
-      this.setState({
-        showLoading: false
-      })
-    }
+      Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer et felis vitae lacus congue semper ac et diam. Aliquam erat volutpat. Aliquam pharetra eget leo eget pulvinar. Donec magna metus, eleifend vestibulum nisl nec, tincidunt tincidunt nulla. Vestibulum at rutrum velit, quis convallis nibh. Suspendisse at porta eros. Aenean blandit velit sed libero ullamcorper dictum. Fusce non mauris tellus. Etiam tincidunt lorem magna, eu tincidunt diam pretium eu. Sed volutpat tortor et ante hendrerit feugiat iaculis quis quam.
+      
+      Maecenas et nisi ante. Donec convallis eros ligula, eu tincidunt urna volutpat porttitor. Nunc vel consectetur felis, ac hendrerit nisl. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus scelerisque ex non tincidunt aliquet. Morbi vulputate risus quam, ac fermentum mi mollis id. Quisque eget fermentum nunc.</Text>
+      </View>
+      </View>
+      ])
+    })
+    this.setState({
+      showLoading: false
+    });
+    this.renderCoverFlow();
+  }
 
+  componentDidMount() {
+    this.renderCoverFlow();
+    this.getFeatured(this.setFeaturedCards);
+  }
+
+
+  renderCoverFlow = () => {
+    this.setState({
+      show: (
+        <Carousel sneak={30} pageStyle={ {borderRadius: 20}}>
+        {this.state.showLoading ? loadingGIF : featuredCards}
+        </Carousel>
+        )
+    });
+  }
 
   constructor(props){
     super(props);
 
     this.getFeatured = this.getFeatured.bind(this);
     this.setFeaturedCards = this.setFeaturedCards.bind(this);
+    this.renderCoverFlow = this.renderCoverFlow.bind(this);
 
     this.state = {
-       showLoading: true,
+      showLoading: true,
+      viewingTournament: false,
+      tournamentID: null,
+      show: null,
     }
-
     this.headerFontSize= 21;
-
-    this.getFeatured(this.setFeaturedCards);
   }
+
 
   render() {
     return (
-      <View>
-      <Carousel sneak={30} pageStyle={ {borderRadius: 20}}>
-      {this.state.showLoading ? loadingGIF : featuredCards}
-      </Carousel>
-      </View>
+      (this.state.show)
     );
   }
 }
