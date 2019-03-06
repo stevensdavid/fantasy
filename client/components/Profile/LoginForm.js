@@ -11,6 +11,7 @@ import {
     Platform
   } from 'react-native';
 import { Icon } from 'react-native-elements';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 /*this.tryLogin(this.state.email, this.state.password)*/
 
@@ -23,6 +24,7 @@ export class LoginForm extends React.Component {
            password: '',
            emailFocus: false,
            passwordFocus: false,
+           loading: false,
         }
     }
 
@@ -31,6 +33,7 @@ export class LoginForm extends React.Component {
     }
 
     tryLogin (ema,pass) {
+      this.setState({loading: true});
       fetch(global.server + '/login', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
@@ -41,19 +44,23 @@ export class LoginForm extends React.Component {
           Alert.alert("Alert", "Invalid username or password");
         } else if (response.status === 200) {
           response.json().then((respjson) => {
+            this.setState({loading: false});
             global.userID = respjson.userId;
             this.props.setToken(respjson.token);
           })
         }
+        this.setState({loading: false});
       })
       .catch((error) => {
         console.error('Login error: ' + error);
+        this.setState({loading: false});
       });
     }
       
     render() {
         return (
             <View style={styles.container}>
+              <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
               <View style={styles.iconContainer}>
                 <Icon name= {Platform.OS === 'ios' ? 'ios-lock' : 'md-lock'} type='ionicon' 
                 color='#2a2a2a' size={72}/>
@@ -113,6 +120,9 @@ const styles = StyleSheet.create({
         marginBottom:20,
         flexDirection: 'row',
         alignItems:'center'
+    },
+    spinnerTextStyle: {
+      color: '#FFF',
     },
     inputs:{
         height:45,

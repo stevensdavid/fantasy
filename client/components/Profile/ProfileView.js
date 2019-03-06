@@ -11,6 +11,7 @@ import {
     Platform
   } from 'react-native';
 import { Icon } from 'react-native-elements';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 export class ProfileView extends React.Component {
   constructor(props) {
@@ -22,21 +23,25 @@ export class ProfileView extends React.Component {
       lastName: '',
       tag: '',
       tagFontSize: 42,
+      loading: false
     }
+  }
 
+  componentDidMount() {
     this.getUserInfo();
   }
 
   httpGetHeaders = {};
 
   getUserInfo() {
+    this.setState({loading: true});
     fetch(global.server + "/users/" + global.userID, {
       method: 'GET',
       headers: this.httpGetHeaders
     }).then((response) => {
-      console.log(response);
       if(response.status === 404 || response.status === 400) {
         Alert.alert("Alert", "USER OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!");
+        this.setState({loading: false});
       } else if(response.status === 200) {
         response.json().then((responseJSON) => {
           this.setState({
@@ -46,16 +51,19 @@ export class ProfileView extends React.Component {
             tag: responseJSON.tag,
             tagFontSize: (42 * 8) / responseJSON.tag.length
           });
+          this.setState({loading: false});
         })
       }
     }).catch((error) => {
       console.error('GET user error: ' + error);
+      this.setState({loading: false});
     });
   }
 
   render() {
     return (
       <View>
+      <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
       <View style={styles.headerContent}>
         <Icon name= 'portrait' type='material' 
               color='black' size={104}/>
@@ -149,6 +157,9 @@ styles = StyleSheet.create({
       marginBottom:20,
       flexDirection: 'row',
       alignItems:'center'
+  },
+  spinnerTextStyle: {
+    color: '#FFF',
   },
   inputs:{
       height:45,
