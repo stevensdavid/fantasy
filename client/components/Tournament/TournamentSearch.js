@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, FlatList, Text, Image, Alert } from 'react-native';
+import { StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHighlight } from 'react-native';
 import { SearchBar, Card } from 'react-native-elements';
+import {TournamentView} from '../Tournament/TournamentView';
 
 
 export class TournamentSearch extends React.Component {
@@ -59,7 +60,9 @@ export class TournamentSearch extends React.Component {
     
         this.state = { 
           search: '',
-          data: []
+          data: [],
+          viewingTournament: false,
+          tourID: null
         };
     }
 
@@ -67,34 +70,40 @@ export class TournamentSearch extends React.Component {
 
     render() {
         const { search } = this.state;
-        return (
-            <View>
-            <SearchBar
-                placeholder="Search"
-                onChangeText={this.updateSearch}
-                value={search}
-                containerStyle={styles.searchContainer}
-                inputContainerStyle={styles.searchInputContainer}
-                inputStyle={styles.searchInput}
-                placeholderTextColor="#b3002d"
-            />
-            <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <FlatList
-                data={this.state.data}
-                renderItem={({item}) => 
-                    <Card containerStyle={styles.cardContainer}>
-                    <View style={{flexDirection: 'row'}}>
-                        <Image
-                            resizeMode="cover"
-                            style={styles.image}
-                            source={{uri: item.img_uri}}/>
-                        <Text style={styles.headerText}>{item.title}</Text>                     
-                    </View>
-                    </Card>}
-            />
-            </ScrollView>
-            </View>
-        );
+
+        if(!this.state.viewingTournament) {
+        return(
+        <View>
+        <SearchBar
+            placeholder="Search"
+            onChangeText={this.updateSearch}
+            value={search}
+            containerStyle={styles.searchContainer}
+            inputContainerStyle={styles.searchInputContainer}
+            inputStyle={styles.searchInput}
+            placeholderTextColor="#b3002d"
+        />
+        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <FlatList
+            data={this.state.data}
+            renderItem={({item}) => 
+                <TouchableHighlight onPress={() => this.setState({tourID: item.key, viewingTournament: true})}>
+                <Card containerStyle={styles.cardContainer}>
+                <View style={{flexDirection: 'row'}}>
+                    <Image
+                        resizeMode="cover"
+                        style={styles.image}
+                        source={{uri: item.img_uri}}/>
+                    <Text style={styles.headerText}>{item.title}</Text>                     
+                </View>
+                </Card>
+                </TouchableHighlight>}
+        />
+        </ScrollView>
+        </View>)
+        } else {
+            return <TournamentView tournamentID={this.state.tourID}></TournamentView>
+        }
     }
 }
 
