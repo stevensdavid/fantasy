@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHighlight } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHighlight } from 'react-native';
 import { Card } from 'react-native-elements';
 
 /*Takes the following props:
@@ -16,6 +16,9 @@ export class ScrollableListContainer extends React.Component {
 
     render() {
         return (
+        (this.props.loading? (
+            <ActivityIndicator animating={this.props.loading} size="large" color="#b3002d" />
+        ): (
         <ScrollView style={styles.container} contentContainerStyle={this.props.style}>
         <FlatList
             data={this.props.data}
@@ -35,7 +38,8 @@ export class ScrollableListContainer extends React.Component {
                 </Card>
                 </TouchableHighlight>}
         />
-        </ScrollView>)
+        </ScrollView>
+        )))
     }
 }
 
