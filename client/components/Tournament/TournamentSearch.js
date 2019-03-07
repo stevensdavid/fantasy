@@ -52,7 +52,7 @@ export class TournamentSearch extends React.Component {
     viewTournament(key) {
         this.setState({
             tourID: key,
-            viewTournament: true,
+            viewingTournament: true,
         });
     }
 
