@@ -109,8 +109,8 @@ class SmashGG:
                                      display_name=game['displayName'],
                                      photo_path=(
                                          '/'.join(image_path.split('/')[-3:])
-                                         if image_path is not None else None
-            )))
+                                         if image_path is not None else None),
+                                     ext_photo_url=game['images'][0]['url']))
         db.session.commit()
 
     def get_new_tournaments(self):
@@ -242,7 +242,7 @@ class SmashGG:
             except IntegrityError:
                 db.session.rollback()
                 # In all likelihood due to the videogame not being stored in the
-                # database  
+                # database
                 self.get_videogames()
                 db.session.merge(e)
                 try:

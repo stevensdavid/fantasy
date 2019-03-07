@@ -179,6 +179,7 @@ class VideoGame(db.Model, Serializeable):
     name = db.Column(db.String(255), nullable=False)
     display_name = db.Column(db.String(255), nullable=False)
     photo_path = db.Column(db.String(255))
+    ext_photo_url = db.Column(db.String(255))
 
     @staticmethod
     def constructor_params():
