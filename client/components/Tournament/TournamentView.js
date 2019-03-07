@@ -4,6 +4,7 @@ import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, Touc
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
+import {EventView} from '../Event/EventView';
 
 
 export class TournamentView extends React.Component {
@@ -21,12 +22,14 @@ export class TournamentView extends React.Component {
           eventData: [],
           viewingEvent: false,
           eventID: null,
+          loadingEvents: true,
         };
 
         this.fetchEvent = this.fetchEvent.bind(this);
         this.viewEvent = this.viewEvent.bind(this);
         this.clearViewEvent = this.clearViewEvent.bind(this);
         this.fetchTournamentEvents = this.fetchTournamentEvents.bind(this);
+        this.clearViewEvent = this.clearViewEvent.bind(this);
     }
     
     httpGetHeaders = {};
@@ -71,6 +74,7 @@ export class TournamentView extends React.Component {
 
     fetchTournamentEvents() {
         const newData = [];
+        this.setState({loadingEvents: true});
         this.state.events.forEach(eventID => {
             this.fetchEvent(eventID).then((eventInfo) => {
                 fetch(global.server + '/videogame/' + eventInfo.videogame, {
@@ -82,7 +86,7 @@ export class TournamentView extends React.Component {
                             'ERROR!',
                             'VIDEOGAME ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
                             [
-                            {text: 'OK', onPress: () => this.setState({loading: false})}
+                            {text: 'OK', onPress: () => this.setState({loadingEvents: false})}
                             ],
                             { cancelable: false }
                         )
@@ -97,13 +101,16 @@ export class TournamentView extends React.Component {
                                 description: desc,
                             });
                             this.setState({
-                                eventData: newData
+                                eventData: newData,
+                                loadingEvents: false,
                             })
                         })
                         }
+                }).catch((error) => {
+                    console.error('GET events error: ' + error);
+                    this.setState({loadingEvents: false});
                 });
-            });
-            
+            });   
         });
     }
 
@@ -115,7 +122,7 @@ export class TournamentView extends React.Component {
             if(response.status === 404 || response.status === 400) {
             Alert.alert(
                 'ERROR!',
-                'TOURNAMENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
+                'EVENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
                 [
                 {text: 'OK', onPress: () => this.setState({loading: false})}
                 ],
@@ -146,7 +153,8 @@ export class TournamentView extends React.Component {
     }
 
     render() {
-        return (
+            if(!this.state.viewingEvent) {
+            return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -163,7 +171,8 @@ export class TournamentView extends React.Component {
                 <ScrollableListContainer 
                 data={this.state.eventData} 
                 onItemClick={(key) => this.viewEvent(key)}
-                style={{maxHeight: 420, borderWidth: 2, margin: 4}} />
+                style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
+                loading={this.state.loadingEvents}/>
                 <View style={styles.textView}>
                 <Text>Etiam lacinia iaculis tincidunt. Nam varius, est non accumsan consectetur, ex orci vestibulum felis, non dictum est sapien vitae nulla. Phasellus nibh quam, consequat ac nisl ut, vulputate ornare tellus. Quisque euismod feugiat urna vitae tincidunt. Ut iaculis ornare lacus a posuere. Suspendisse potenti. Duis id accumsan diam. Nam ut lacus quis neque cursus sollicitudin eget fermentum nisl. Vestibulum non orci ac urna mattis pulvinar sit amet consequat ex. Curabitur non purus a dolor iaculis ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent mattis vel elit non consectetur.
 
@@ -173,8 +182,10 @@ export class TournamentView extends React.Component {
                 </Text>
                 </View>
                 </ScrollView>
-            </View>
-        );
+            </View>)
+            } else {
+                return (<EventView clearViewEvent={this.clearViewEvent} eventID={this.state.eventID} />)
+            } 
     }
 }
 
@@ -185,9 +196,6 @@ const styles = StyleSheet.create({
     bannerImage: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').width / 2, 
-    },
-    contentContainer: {
-
     },
     iconImage: {
         width: 120,

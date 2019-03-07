@@ -1,18 +1,20 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHighlight } from 'react-native';
-import { SearchBar, Card } from 'react-native-elements';
+import { ActivityIndicator, StyleSheet, View, Alert } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import { TournamentView } from '../Tournament/TournamentView';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 
 export class TournamentSearch extends React.Component {
     searchAndSetTournaments = (term) => {
+        this.setState({loading: true});
         fetch(global.server + '/tournaments' + (term !='' ? ('?name=' + term) : ''), {
             method: "GET",
             headers: this.httpGetHeaders
         })
         .then((response) => {
             if(response.status === 404 || response.status === 400) {
+                this.setState({loading: false});
                 Alert.alert("Alert", "(404 or 400) Should not be seing this.");
               } else if (response.status === 200) {
                 response.json().then((respjson) => {
@@ -28,12 +30,14 @@ export class TournamentSearch extends React.Component {
                       });
                   })
                   this.setState({
-                      data: newData
+                      data: newData,
+                      loading: false,
                   })
                 })
               }
         })
         .catch((error) => {
+            this.setState({loading: true});
             console.error('Fetch featured error: ' + error);
         });
     }
@@ -79,6 +83,7 @@ export class TournamentSearch extends React.Component {
           data: [],
           viewingTournament: false,
           tourID: null,
+          loading: false,
         };
     }
 
@@ -99,7 +104,8 @@ export class TournamentSearch extends React.Component {
             />
             <ScrollableListContainer 
                 data={this.state.data} 
-                onItemClick={(key) => this.viewTournament(key)}>
+                onItemClick={(key) => this.viewTournament(key)}
+                loading={this.state.loading}>
             </ScrollableListContainer>
         </View>)
         } else {
