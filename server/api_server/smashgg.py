@@ -93,24 +93,26 @@ class SmashGG:
                 f"/videogames/{game['id']}"
             if not os.path.exists(image_dir):
                 os.makedirs(image_dir)
-            image_path = image_dir + '/image.png'
-            if not os.path.exists(image_path):
-                try:
-                    image = requests.get(game['images'][0]['url'])
-                    if image.status_code == requests.codes.ok:
-                        with open(image_path, 'w+b') as file:
-                            file.write(image.content)
-                    else:
-                        image_path = None
-                except IndexError:
+            try:
+                image_url = game['images'][0]['url']
+                image_path = image_dir + '/image.png'
+            except IndexError:
+                image_url = None
+                image_path = None
+            if image_url and not os.path.exists(image_path):
+                image = requests.get(image_url)
+                if image.status_code == requests.codes.ok:
+                    with open(image_path, 'w+b') as file:
+                        file.write(image.content)
+                else:
                     image_path = None
             db.session.add(VideoGame(videogame_id=game['id'],
                                      name=game['name'],
                                      display_name=game['displayName'],
                                      photo_path=(
                                          '/'.join(image_path.split('/')[-3:])
-                                         if image_path is not None else None
-            )))
+                                         if image_path is not None else None),
+                                     ext_photo_url=image_url))
         db.session.commit()
 
     def get_new_tournaments(self):
@@ -242,7 +244,7 @@ class SmashGG:
             except IntegrityError:
                 db.session.rollback()
                 # In all likelihood due to the videogame not being stored in the
-                # database  
+                # database
                 self.get_videogames()
                 db.session.merge(e)
                 try:

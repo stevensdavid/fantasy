@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "properties": {
+    "last_event_update": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "last_event_update"
+  ]
+}

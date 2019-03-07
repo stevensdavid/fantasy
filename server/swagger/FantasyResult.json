@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "league": {
+      "type": "string",
+      "nullable": true
+    },
+    "user": {
+      "type": "string",
+      "nullable": true
+    },
+    "score": {
+      "type": "integer",
+      "format": "int32",
+      "nullable": true
+    }
+  }
+}

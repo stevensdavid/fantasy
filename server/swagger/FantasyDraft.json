@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "player": {
+      "type": "string",
+      "nullable": true
+    },
+    "league": {
+      "type": "string",
+      "nullable": true
+    },
+    "user": {
+      "type": "string",
+      "nullable": true
+    }
+  }
+}
