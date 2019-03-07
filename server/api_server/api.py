@@ -954,6 +954,23 @@ class LoginAPI(Resource):
                 base64.b64encode((user.email + ':' + user.pw).encode()).decode(),
                 'userId': user.user_id}, 200
 
+class VideoGameAPI(Resource):
+    def get(self, videogame_id):
+        '''Get a videogame
+        ---
+        parameters:
+            -   in: path
+                name: videogame_id
+                type: integer
+                required: true
+        responses:
+            200:
+                schema:
+                    import: "swagger/VideoGame.json"
+        '''
+        game = VideoGame.query.filter(VideoGame.videogame_id == videogame_id).first()
+        return video_game_schema.jsonify(game)
+
 
 def user_is_logged_in(user_id):
     """Verify the authentication token in the request's headers
@@ -986,6 +1003,7 @@ api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 api.add_resource(LoginAPI, '/login')
+api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
 
 NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
 
