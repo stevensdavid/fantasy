@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHighlight } from 'react-native';
-import { SearchBar, Card } from 'react-native-elements';
-import { TournamentView } from '../Tournament/TournamentView';
+import { Card } from 'react-native-elements';
 
 /*Takes the following props:
     data: array with objects each containing {key, img_url, text}
@@ -9,13 +8,14 @@ import { TournamentView } from '../Tournament/TournamentView';
 
 */
 
-export class TournamentSearch extends React.Component {
+export class ScrollableListContainer extends React.Component {
 
     constructor(props){
         super(props);
     }
 
     render() {
+        return (
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <FlatList
             data={this.props.data}
@@ -32,7 +32,7 @@ export class TournamentSearch extends React.Component {
                 </Card>
                 </TouchableHighlight>}
         />
-        </ScrollView>
+        </ScrollView>)
     }
 }
 

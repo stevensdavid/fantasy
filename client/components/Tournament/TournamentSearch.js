@@ -22,7 +22,7 @@ export class TournamentSearch extends React.Component {
                       newData.push({
                           key: '' + tournamentInfo.tournament_id,
                           img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
-                          title: tournamentInfo.name
+                          text: tournamentInfo.name
                       });
                   })
                   this.setState({
