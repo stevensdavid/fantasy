@@ -19,10 +19,12 @@ export class TournamentSearch extends React.Component {
                   this.setState({data: []});
                   const newData = [];
                   respjson.map((tournamentInfo) => {
+                      const date = new Date(tournamentInfo.ends_at*1000);
                       newData.push({
                           key: '' + tournamentInfo.tournament_id,
                           img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
-                          text: tournamentInfo.name
+                          title: tournamentInfo.name,
+                          description: 'Number of events:' + tournamentInfo.events.length + "\nEnds at: " + date.toDateString(),
                       });
                   })
                   this.setState({
