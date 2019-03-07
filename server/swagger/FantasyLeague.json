@@ -1,0 +1,45 @@
+{
+  "type": "object",
+  "properties": {
+    "public": {
+      "type": "boolean"
+    },
+    "fantasy_results": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 45
+    },
+    "league_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "draft_size": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "owner": {
+      "type": "string",
+      "nullable": true
+    },
+    "fantasy_drafts": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "event": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "required": [
+    "draft_size",
+    "name",
+    "public"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "properties": {
+    "photo_path": {
+      "type": "string",
+      "nullable": true,
+      "maxLength": 255
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "events": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "videogame_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "display_name": {
+      "type": "string",
+      "maxLength": 255
+    }
+  },
+  "required": [
+    "display_name",
+    "name"
+  ]
+}

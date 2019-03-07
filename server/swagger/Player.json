@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "properties": {
+    "placements": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "player_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "tag": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "fantasy_drafts": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "entrants": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ranking": {
+      "type": "integer",
+      "format": "int32",
+      "nullable": true
+    }
+  },
+  "required": [
+    "tag"
+  ]
+}

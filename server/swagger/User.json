@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "first_name": {
+      "type": "string",
+      "nullable": true,
+      "maxLength": 50
+    },
+    "tag": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "fantasy_results": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "photo_path": {
+      "type": "string",
+      "nullable": true,
+      "maxLength": 255
+    },
+    "user_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "email": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "fantasy_drafts": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "fantasy_leagues": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "last_name": {
+      "type": "string",
+      "nullable": true,
+      "maxLength": 50
+    }
+  },
+  "required": [
+    "email",
+    "tag"
+  ]
+}

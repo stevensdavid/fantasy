@@ -1,0 +1,18 @@
+{
+  "type": "object",
+  "properties": {
+    "seed": {
+      "type": "integer",
+      "format": "int32",
+      "nullable": true
+    },
+    "player": {
+      "type": "string",
+      "nullable": true
+    },
+    "event": {
+      "type": "string",
+      "nullable": true
+    }
+  }
+}

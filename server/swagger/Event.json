@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "properties": {
+    "placements": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "event_id": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "tournament": {
+      "type": "string",
+      "nullable": true
+    },
+    "entrants": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "name": {
+      "type": "string",
+      "nullable": true,
+      "maxLength": 255
+    },
+    "num_entrants": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "fantasy_leagues": {
+      "type": "string",
+      "items": {
+        "type": "string"
+      }
+    },
+    "start_at": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "slug": {
+      "type": "string",
+      "nullable": true,
+      "maxLength": 255
+    },
+    "videogame": {
+      "type": "string",
+      "nullable": true
+    }
+  },
+  "required": [
+    "num_entrants",
+    "start_at"
+  ]
+}
