@@ -41,7 +41,7 @@ export class TournamentView extends React.Component {
             response.json().then((tournamentInfo) => {
                 this.setState({
                     title: tournamentInfo.name,
-                    banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'http://www.indigo-press.com/wp-content/uploads/2014/01/no-banner.jpg'),
+                    banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
                     icon_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
                 });
                 this.setState({loading: false});
@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     bannerImage: {
+        width: Dimensions.get('window').width,
         height: Dimensions.get('window').width / 2, 
     },
     iconImage: {
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         marginLeft: 10,
-        marginRight: 70,
+        marginRight: 150,
         fontSize: 21,
         fontWeight: 'bold',
     },
