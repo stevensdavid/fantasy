@@ -16,7 +16,10 @@ export class TournamentView extends React.Component {
           title: '',
           banner_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
           icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
+          events: [],
         };
+
+        this.fetchEvent = this.fetchEvent.bind(this);
     }
     
     httpGetHeaders = {};
@@ -43,6 +46,7 @@ export class TournamentView extends React.Component {
                     title: tournamentInfo.name,
                     banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
                     icon_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
+                    events: tournamentInfo.events
                 });
                 this.setState({loading: false});
             })
@@ -55,6 +59,33 @@ export class TournamentView extends React.Component {
 
     componentDidMount() {
         this.setTournamentInfo()
+    }
+
+    fetchEvent(eventID) {
+        fetch(global.server + "/events/" + eventID, {
+            method: 'GET',
+            headers: this.httpGetHeaders
+        }).then((response) => {
+            console.log(response);
+            if(response.status === 404 || response.status === 400) {
+            Alert.alert(
+                'ERROR!',
+                'TOURNAMENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
+                [
+                {text: 'OK', onPress: () => this.setState({loading: false})}
+                ],
+                { cancelable: false }
+            )
+            } else if(response.status === 200) {
+            response.json().then((eventInfo) => {
+                return eventInfo
+                //this.setState({loading: false});
+            })
+            }
+        }).catch((error) => {
+            console.error('GET user error: ' + error);
+            //this.setState({loading: false});
+        });
     }
 
     render() {
