@@ -3,9 +3,9 @@ import { StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHi
 import { Card } from 'react-native-elements';
 
 /*Takes the following props:
-    data: array with objects each containing {key, img_url, title, description(optional)}
-    onItemClick(key): function which handles the key of a clicked item.
-    style: object holding React native css.(optional)
+    data: Array with objects each containing {key, img_url, title, description(optional)}
+    onItemClick(key): Function which handles the key of a clicked item.
+    style: Object holding React Native CSS(optional).
 */
 
 export class ScrollableListContainer extends React.Component {

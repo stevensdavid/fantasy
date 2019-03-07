@@ -163,7 +163,7 @@ export class TournamentView extends React.Component {
                 <ScrollableListContainer 
                 data={this.state.eventData} 
                 onItemClick={(key) => this.viewEvent(key)}
-                style={{height: 320, borderWidth: 2, margin: 4}} />
+                style={{maxHeight: 420, borderWidth: 2, margin: 4}} />
                 <View style={styles.textView}>
                 <Text>Etiam lacinia iaculis tincidunt. Nam varius, est non accumsan consectetur, ex orci vestibulum felis, non dictum est sapien vitae nulla. Phasellus nibh quam, consequat ac nisl ut, vulputate ornare tellus. Quisque euismod feugiat urna vitae tincidunt. Ut iaculis ornare lacus a posuere. Suspendisse potenti. Duis id accumsan diam. Nam ut lacus quis neque cursus sollicitudin eget fermentum nisl. Vestibulum non orci ac urna mattis pulvinar sit amet consequat ex. Curabitur non purus a dolor iaculis ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent mattis vel elit non consectetur.
 
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
         marginLeft: 10,
         marginRight: 150,
-        fontSize: 21,
+        fontSize: 26,
         fontWeight: 'bold',
     },
     textView: {
