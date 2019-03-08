@@ -905,7 +905,7 @@ class EntrantsAPI(Resource):
 class LoginAPI(Resource):
     def post(self):
         '''Verify credentials and get token
-	---
+        ---
         consumes:
             application/json
         parameters:
@@ -924,7 +924,7 @@ class LoginAPI(Resource):
         responses:
             200:
                 schema:
-		    type: object
+                    type: object
                     properties:
                         token:
                             type: string
@@ -952,8 +952,10 @@ class LoginAPI(Resource):
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
         return {'token':
-                base64.b64encode((user.email + ':' + user.pw).encode()).decode(),
+                base64.b64encode(
+                    (user.email + ':' + user.pw).encode()).decode(),
                 'userId': user.user_id}, 200
+
 
 class VideoGameAPI(Resource):
     def get(self, videogame_id):
@@ -969,7 +971,8 @@ class VideoGameAPI(Resource):
                 schema:
                     import: "swagger/VideoGame.json"
         '''
-        game = VideoGame.query.filter(VideoGame.videogame_id == videogame_id).first()
+        game = VideoGame.query.filter(
+            VideoGame.videogame_id == videogame_id).first()
         return video_game_schema.jsonify(game)
 
 
@@ -992,6 +995,7 @@ def user_is_logged_in(user_id):
     email, hashed = base64.b64decode(token).decode().split(':')
     return email == user.email and hashed == user.pw
 
+
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
@@ -1008,6 +1012,7 @@ api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
 
 NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
 
+
 def make_pagination_reqparser():
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument('page', type=int)
@@ -1021,12 +1026,13 @@ def shutdown_session(exception=None):
 
 
 def main():
-    if 'FANTASY_PROD' in os.environ.keys() and os.environ['FANTASY_PROD'] == 'y':
-	    app.run(host='0.0.0.0',
-                    ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
-                                 '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+    if ('FANTASY_PROD' in os.environ.keys()
+            and os.environ['FANTASY_PROD'] == 'y'):
+        app.run(host='0.0.0.0',
+                ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
+                             '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
     else:
-         app.run(debug=True)
+        app.run(debug=True)
 
 
 if __name__ == '__main__':
