@@ -110,11 +110,10 @@ export class LoginForm extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      marginTop: 250,
-      flex: 1,
+      marginTop:120,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#DCDCDC',
+      backgroundColor: 'transparent',
     },
     inputContainer: {
         borderBottomColor: '#F5FCFF',
@@ -134,7 +133,6 @@ const styles = StyleSheet.create({
         height:45,
         marginLeft:16,
         borderBottomColor: '#FFFFFF',
-        flex:1,
     },
     inputIcon:{
       width:30,
