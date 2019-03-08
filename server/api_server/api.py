@@ -236,6 +236,25 @@ class UsersAPI(Resource):
         return {"error": "User not found"}, 404
 
 
+class PlayerAPI(Resource):
+    def get(self, player_id):
+        '''Get information about a player
+        ---
+        parameters:
+            -   name: player_id
+                in: path
+                type: integer
+                required: true
+        responses:
+            200:
+                description: The player in question
+                schema:
+                    import: "swagger/Player.json"
+        '''
+        player = Player.query.filter_by(player_id=player_id).first()
+        return player_schema.jsonify(player)
+
+
 class EventsAPI(Resource):
     def get(self, event_id):
         """Get event information
@@ -1026,6 +1045,7 @@ api.add_resource(LeagueAPI, '/leagues/<int:league_id>', '/leagues')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 api.add_resource(LoginAPI, '/login')
 api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
+api.add_resource(PlayerAPI, '/players/<int:player_id>')
 
 NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
 
