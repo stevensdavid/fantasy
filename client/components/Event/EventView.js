@@ -139,6 +139,8 @@ export class EventView extends React.Component {
                     </TouchableHighlight>
                 </ImageBackground>
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
+                <Text style={styles.headerText}>{this.state.eventInfo.tournamentName}</Text>
+                <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
                 <View style={styles.iconImageContainer}>
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.eventInfo.icon_uri}}/>
                     <Text style={styles.headerText}>{this.state.eventInfo.name}</Text>
@@ -154,8 +156,7 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         justifyContent:'center',
         alignItems:'center',
-        marginLeft: 10,
-        marginRight: 150,
+        margin:10,
         fontSize: 26,
         fontWeight: 'bold',
     },
@@ -163,8 +164,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     iconImage: {
-        width: 120,
-        height: 120,
+        width: 102,
+        height: 135,
         marginRight: 10,
         marginLeft: 4,
         borderWidth: 2,
