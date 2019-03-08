@@ -1057,12 +1057,6 @@ def routine_update():
     db.session.commit()
 
 
-def run_schedule():
-    while True:
-        schedule.run_pending()
-        time.sleep(30*60)
-
-
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
             and os.environ['FANTASY_PROD'] == 'y'):
