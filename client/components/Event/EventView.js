@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         margin:10,
+        marginRight:120,
         fontSize: 26,
         fontWeight: 'bold',
     },
