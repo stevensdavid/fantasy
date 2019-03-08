@@ -1026,6 +1026,9 @@ def shutdown_session(exception=None):
 
 
 def routine_update():
+    current_time = time.strftime("%d/%b/%Y %H:%M:%S",
+                                 time.localtime(time.time()))
+    print(f'[{current_time}] Performing routine database update')
     smashgg.get_new_tournaments()
     constants = Constants.query.first()
     # Get all events that start after the last update and have a league
