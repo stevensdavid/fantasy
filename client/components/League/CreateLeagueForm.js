@@ -22,6 +22,35 @@ export class CreateLeagueForm extends React.Component {
             isPublic: false,
             draftSize: 5
         }
+        console.log(this.state)
+    }
+
+    createLeague(stateInfo) {
+        fetch(global.server + '/leagues', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'bearer '+global.token},
+            body: JSON.stringify({
+                eventId: stateInfo.eventId,
+                isSnake: stateInfo.isSnake,
+                name: stateInfo.name,
+                public: stateInfo.isPublic,
+                draftSize: stateInfo.draftSize,
+                ownerId: global.userID
+            })
+        }).then((res) => {
+            console.log(res);
+            if(res.status === 404 || res.status === 400){
+                Alert.alert("Alert", "Invalid input!");
+                return;
+            } else if (res.status === 200){
+                // Switch screen
+                Alert.alert("Success!")
+            } else if (res.status === 500){
+                console.error('Create league server error, state: ' + this.state)
+            }
+        }).catch((error) => {
+            console.error('Create league error: ' + error)
+        });
     }
 
     render() {
@@ -58,7 +87,7 @@ export class CreateLeagueForm extends React.Component {
                     />
                 </View>
 
-                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onClickListener('Edit')}>
+                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.createLeague(this.state)}>
                     <Text style={styles.loginText}>Create</Text>
                 </TouchableHighlight>
             </View>
