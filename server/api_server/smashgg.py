@@ -310,8 +310,9 @@ class SmashGG:
                                            f"Bearer {self.api_key}"})
             seeding = {}
             try:
-                for seed in r.json()['data']['event']['phases'][0]['paginatedSeeds']['nodes']:
-                    seeding[seed['players'][0]] = seed['seedNum']
+                for seed in r.json()['data']['event']['phases'][0][
+                        'paginatedSeeds']['nodes']:
+                    seeding[seed['players'][0]['playerId']] = seed['seedNum']
             except (KeyError, IndexError):
                 # The tournament hasn't been seeded
                 pass
