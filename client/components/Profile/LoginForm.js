@@ -110,8 +110,7 @@ export class LoginForm extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      marginTop: 250,
-      flex: 1,
+
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#DCDCDC',
