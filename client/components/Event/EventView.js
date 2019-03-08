@@ -156,8 +156,6 @@ export class EventView extends React.Component {
         const newData = [];
         entrants.forEach(element => {
             this.fetchPlayerInfo(element.player_id).then((playerInfo) => {
-                console.log(playerInfo.player_id);
-                console.log(playerInfo.tag);
                 newData.push({
                     key: '' + playerInfo.player_id,
                     title: playerInfo.tag,
