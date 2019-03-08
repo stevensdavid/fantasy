@@ -1034,6 +1034,8 @@ def routine_update():
     if not constants:
         constants = Constants(last_event_update=0)
         db.session.add(constants)
+        db.session.commit()
+        constants = Constants.query.first()
     # Get all events that start after the last update and have a league
     events_new_attendants = Event.query.filter(
         Event.start_at > constants.last_event_update,
