@@ -1046,7 +1046,7 @@ def routine_update():
     # league
     events_new_results = Event.query.filter(
         Event.start_at > time.time(),
-        Event.tournament.ends_at > constants.last_event_update,
+        Event.tournament.has(Tournament.ends_at > constants.last_event_update),
         FantasyLeague.query.filter(
             FantasyLeague.event_id == Event.event_id).exists()
     ).all()
@@ -1061,7 +1061,7 @@ def main():
     if ('FANTASY_PROD' in os.environ.keys()
             and os.environ['FANTASY_PROD'] == 'y'):
         scheduler = BackgroundScheduler()
-        scheduler.add_job(func=routine_update, trigger="interval", seconds=10)
+        scheduler.add_job(func=routine_update, trigger="interval", seconds=60*60)
         scheduler.start()
         app.run(host='0.0.0.0',
                 use_reloader=False,
