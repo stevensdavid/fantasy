@@ -7,6 +7,7 @@ import io
 import os
 import time
 from datetime import date
+from threading import Thread
 
 import bcrypt
 import schedule
@@ -1053,12 +1054,21 @@ def routine_update():
     constants.last_event_update = time.time()
     db.session.commit()
 
-schedule.every(1).hours.do(routine_update)
+
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(30*60)
+
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
             and os.environ['FANTASY_PROD'] == 'y'):
+        schedule.every(1).hours.do(routine_update)
+        t = Thread(target=run_schedule)
+        t.start()
         app.run(host='0.0.0.0',
+                use_reloader=False,
                 ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
                              '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
     else:
