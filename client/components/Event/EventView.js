@@ -139,11 +139,11 @@ export class EventView extends React.Component {
                     </TouchableHighlight>
                 </ImageBackground>
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
-                <Text style={styles.headerText}>{this.state.eventInfo.tournamentName}</Text>
+                <Text style={styles.headerTournamentText}>{this.state.eventInfo.tournamentName}</Text>
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
                 <View style={styles.iconImageContainer}>
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.eventInfo.icon_uri}}/>
-                    <Text style={styles.headerText}>{this.state.eventInfo.name}</Text>
+                    <Text style={styles.headerVideogameText}>{this.state.eventInfo.name}</Text>
                 </View>
                 </ScrollView>
             </View>
@@ -152,12 +152,20 @@ export class EventView extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    headerText: {
+    headerVideogameText: {
         alignSelf:'center',
         justifyContent:'center',
         alignItems:'center',
         margin:10,
         marginRight:120,
+        fontSize: 26,
+        fontWeight: 'bold',
+    },
+    headerTournamentText: {
+        alignSelf:'center',
+        justifyContent:'center',
+        alignItems:'center',
+        margin:10,
         fontSize: 26,
         fontWeight: 'bold',
     },
