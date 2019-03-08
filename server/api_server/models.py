@@ -10,7 +10,7 @@ class Serializeable():
 
 class Constants(db.Model, Serializeable):
     __tablename__ = "Constants"
-    last_event_update = db.Column(db.Date, primary_key=True)
+    last_event_update = db.Column(db.Integer, primary_key=True)
 
     @staticmethod
     def constructor_params():
