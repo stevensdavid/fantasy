@@ -1025,6 +1025,33 @@ def shutdown_session(exception=None):
     db.session.remove()
 
 
+def routine_update():
+    smashgg.get_new_tournaments()
+    constants = Constants.query.first()
+    # Get all events that start after the last update and have a league
+    events_new_attendants = Event.query.filter(
+        Event.start_at > constants.last_event_update
+        & FantasyLeague.query.filter(
+            FantasyLeague.event_id == Event.event_id).exists()
+    ).all()
+    for event in events_new_attendants:
+        smashgg.get_entrants_in_event(event.event_id)
+    # Get all events that have started, end after the last update and have a
+    # league
+    events_new_results = Event.query.filter(
+        Event.start_at > time.time()
+        & Event.tournament.ends_at > constants.last_event_update
+        & FantasyLeague.query.filter(
+            FantasyLeague.event_id == Event.event_id).exists()
+    ).all()
+    for event in events_new_results:
+        smashgg.update_standing(event.event_id)
+    # Update the timestamp
+    constants.last_event_update = time.time()
+    db.session.commit()
+
+schedule.every(6).hours.do(routine_update)
+
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
             and os.environ['FANTASY_PROD'] == 'y'):
