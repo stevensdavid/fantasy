@@ -748,6 +748,7 @@ class LeagueAPI(Resource):
                         -   draftSize
                         -   public
                         -   name
+                        -   isSnake
                     properties:
                         eventId:
                             type: integer
@@ -771,6 +772,8 @@ class LeagueAPI(Resource):
                         name:
                             type: string
                             description: The name of the league
+                        isSnake:
+                            type: boolean
         security:
             - bearerAuth: []
         responses:
@@ -785,6 +788,7 @@ class LeagueAPI(Resource):
         parser.add_argument('draftSize', type=int)
         parser.add_argument('public', type=bool)
         parser.add_argument('name', type=str)
+        parser.add_argument('isSnake', type=bool)
         args = parser.parse_args(strict=True)
         if not user_is_logged_in(args['ownerId']):
             return NOT_LOGGED_IN_RESPONSE
@@ -792,7 +796,8 @@ class LeagueAPI(Resource):
                                owner_id=args['ownerId'],
                                draft_size=args['draftSize'],
                                public=args['public'],
-                               name=args['name'])
+                               name=args['name'],
+                               is_snake=args['isSnake'])
         db.session.add(league)
         db.session.commit()
         return fantasy_league_schema.jsonify(league)

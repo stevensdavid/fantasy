@@ -4,6 +4,9 @@
     "public": {
       "type": "boolean"
     },
+    "is_snake": {
+      "type": "boolean"
+    },
     "fantasy_results": {
       "type": "string",
       "items": {
@@ -40,6 +43,7 @@
   "required": [
     "draft_size",
     "name",
-    "public"
+    "public",
+    "is_snake"
   ]
 }
