@@ -135,8 +135,9 @@ class Entrant(db.Model, Serializeable):
     event = db.relationship('Event', backref=db.backref('entrants', lazy=True))
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
+    # Players should not be lazy-loaded
     player = db.relationship(
-        'Player', backref=db.backref('entrants', lazy=True))
+        'Player', backref=db.backref('entrants'))
     seed = db.Column(db.Integer)
 
     def __repr__(self):
