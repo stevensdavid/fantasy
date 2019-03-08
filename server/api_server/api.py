@@ -1,30 +1,31 @@
 """
 Main module for the restful Flask API. 
 """
+import base64
 import inspect
 import io
 import os
 import time
 from datetime import date
-import bcrypt
-import base64
 
-from flask import (Flask, make_response, safe_join, send_file,
-                   send_from_directory, request)
+import bcrypt
+import schedule
+from flask import (Flask, make_response, request, safe_join, send_file,
+                   send_from_directory)
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
 from . import api, app, db
-from .marshmallow_schemas import (ConstantsSchema, EventSchema,
+from .marshmallow_schemas import (ConstantsSchema, EntrantSchema, EventSchema,
                                   FantasyDraftSchema, FantasyLeagueSchema,
                                   FantasyResultSchema, FriendsSchema,
                                   PlayerSchema, TournamentSchema, UserSchema,
-                                  VideoGameSchema, EntrantSchema)
-from .models import (Constants, Event, FantasyDraft, FantasyLeague,
+                                  VideoGameSchema)
+from .models import (Constants, Entrant, Event, FantasyDraft, FantasyLeague,
                      FantasyResult, Friends, Player, Tournament, User,
-                     VideoGame, Entrant)
+                     VideoGame)
 from .smashgg import SmashGG
 
 smashgg = SmashGG()
