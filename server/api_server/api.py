@@ -696,6 +696,7 @@ class LeagueAPI(Resource):
         parser = make_pagination_reqparser()
         parser.add_argument('eventId', type=int)
         parser.add_argument('userId', type=int)
+        parser.add_argument('requirePublic', type=bool)
         args = parser.parse_args(strict=True)
         allowed_privacies = [True] if args['requirePublic'] else [False, True]
         if args['eventId']:
