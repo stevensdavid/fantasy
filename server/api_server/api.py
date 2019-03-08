@@ -4,13 +4,14 @@ Main module for the restful Flask API.
 import base64
 import inspect
 import io
+import logging
 import os
 import time
 from datetime import date
 from threading import Thread
 
 import bcrypt
-import schedule
+from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (Flask, make_response, request, safe_join, send_file,
                    send_from_directory)
 from flask_restful import Api, Resource, reqparse
@@ -1030,10 +1031,13 @@ def routine_update():
     app.logger.info('Performing routine database update')
     smashgg.get_new_tournaments()
     constants = Constants.query.first()
+    if not constants:
+        constants = Constants(last_event_update=0)
+        db.session.add(constants)
     # Get all events that start after the last update and have a league
     events_new_attendants = Event.query.filter(
-        Event.start_at > constants.last_event_update
-        & FantasyLeague.query.filter(
+        Event.start_at > constants.last_event_update,
+        FantasyLeague.query.filter(
             FantasyLeague.event_id == Event.event_id).exists()
     ).all()
     for event in events_new_attendants:
@@ -1041,9 +1045,9 @@ def routine_update():
     # Get all events that have started, end after the last update and have a
     # league
     events_new_results = Event.query.filter(
-        Event.start_at > time.time()
-        & Event.tournament.ends_at > constants.last_event_update
-        & FantasyLeague.query.filter(
+        Event.start_at > time.time(),
+        Event.tournament.ends_at > constants.last_event_update,
+        FantasyLeague.query.filter(
             FantasyLeague.event_id == Event.event_id).exists()
     ).all()
     for event in events_new_results:
@@ -1062,9 +1066,9 @@ def run_schedule():
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
             and os.environ['FANTASY_PROD'] == 'y'):
-        schedule.every(1).hours.do(routine_update)
-        t = Thread(target=run_schedule)
-        t.start()
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(func=routine_update, trigger="interval", seconds=10)
+        scheduler.start()
         app.run(host='0.0.0.0',
                 use_reloader=False,
                 ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
