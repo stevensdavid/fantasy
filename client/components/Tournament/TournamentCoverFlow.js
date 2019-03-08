@@ -96,6 +96,9 @@ export class TournamentCoverFlow extends React.Component {
   
 
   setFeaturedCards(featuredJSON) {
+    if(this.mounted === false) {
+      return;
+    }
   featuredJSON.map( tournamentInfo => {
       featuredCards.push([
       <View key={tournamentInfo.tournament_id}>
@@ -121,7 +124,12 @@ export class TournamentCoverFlow extends React.Component {
   }
 
   componentDidMount() {
+    this.mounted = true;
     this.getFeatured(this.setFeaturedCards);
+  }
+
+  componentWillMount() {
+    this.mounted = false;
   }
 
   constructor(props){
@@ -130,6 +138,8 @@ export class TournamentCoverFlow extends React.Component {
     this.getFeatured = this.getFeatured.bind(this);
     this.setFeaturedCards = this.setFeaturedCards.bind(this);
     this.clearViewTournament = this.clearViewTournament.bind(this);
+
+    this.mounted = false;
 
     this.state = {
       showLoading: true,
@@ -141,6 +151,9 @@ export class TournamentCoverFlow extends React.Component {
   }
 
   clearViewTournament() {
+    if(this.mounted === false) {
+      return;
+    }
     this.setState({
       viewTournament: false,
       tournamentID: null,
