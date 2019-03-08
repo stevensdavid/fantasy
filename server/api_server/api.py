@@ -252,6 +252,9 @@ class EventsAPI(Resource):
                     import: "swagger/Event.json"
         """
         event = Event.query.filter(Event.event_id == event_id).first()
+        if event and not event.entrants:
+            smashgg.get_entrants_in_event(event_id)
+            event = Event.query.filter(Event.event_id == event_id).first()
         return event_schema.jsonify(event)
 
 
@@ -282,7 +285,7 @@ class TournamentsAPI(Resource):
         if tournament_id:
             tournament = Tournament.query.filter(
                 Tournament.tournament_id == tournament_id).first()
-            if not tournament.events:
+            if tournament and not tournament.events:
                 print(f'Getting events for tournament {tournament_id}')
                 smashgg.get_events_in_tournament(tournament_id)
                 # Rerun query, this time we will have events
