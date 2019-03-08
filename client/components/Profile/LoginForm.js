@@ -53,7 +53,9 @@ export class LoginForm extends React.Component {
           response.json().then((respjson) => {
             this.setState({loading: false});
             global.userID = respjson.userId;
+            // TODO: Remove one of these two
             this.props.setToken(respjson.token);
+            global.token = respjson.token;
           })
         }
       })
