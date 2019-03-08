@@ -1053,7 +1053,7 @@ def routine_update():
     constants.last_event_update = time.time()
     db.session.commit()
 
-schedule.every(6).hours.do(routine_update)
+schedule.every(1).hours.do(routine_update)
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
