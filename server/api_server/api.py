@@ -679,6 +679,10 @@ class LeagueAPI(Resource):
                 type: boolean
                 description: Only return public fantasy leagues
                 default: false
+            -   name: userId
+                in: query
+                required: false
+                type: integer
         responses:
             200:
                 description: The fantasy leagues matching the parameters
@@ -691,12 +695,14 @@ class LeagueAPI(Resource):
             return fantasy_league_schema.jsonify(league)
         parser = make_pagination_reqparser()
         parser.add_argument('eventId', type=int)
+        parser.add_argument('userId', type=int)
         args = parser.parse_args(strict=True)
-        # users = User.query.filter(User.tag.like(f'%{args["tag"]}%')).paginate(
-        #     page=args['page'], per_page=args['perPage']).items
         allowed_privacies = [True] if args['requirePublic'] else [False, True]
         if args['eventId']:
             leagues = FantasyLeague.query.filter(
+                FantasyLeague.fantasy_drafts.any(
+                    FantasyDraft.user_id == args['userId']
+                ) if args['userId'] else True,
                 FantasyLeague.event_id == args['eventId'],
                 FantasyLeague.public.in_(allowed_privacies)
             ).paginate(page=args['page'], per_page=args['perPage']).items
