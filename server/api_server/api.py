@@ -1,30 +1,33 @@
 """
 Main module for the restful Flask API. 
 """
+import base64
 import inspect
 import io
+import logging
 import os
 import time
 from datetime import date
-import bcrypt
-import base64
+from threading import Thread
 
-from flask import (Flask, make_response, safe_join, send_file,
-                   send_from_directory, request)
+import bcrypt
+from apscheduler.schedulers.background import BackgroundScheduler
+from flask import (Flask, make_response, request, safe_join, send_file,
+                   send_from_directory)
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
 from . import api, app, db
-from .marshmallow_schemas import (ConstantsSchema, EventSchema,
+from .marshmallow_schemas import (ConstantsSchema, EntrantSchema, EventSchema,
                                   FantasyDraftSchema, FantasyLeagueSchema,
                                   FantasyResultSchema, FriendsSchema,
                                   PlayerSchema, TournamentSchema, UserSchema,
-                                  VideoGameSchema, EntrantSchema)
-from .models import (Constants, Event, FantasyDraft, FantasyLeague,
+                                  VideoGameSchema)
+from .models import (Constants, Entrant, Event, FantasyDraft, FantasyLeague,
                      FantasyResult, Friends, Player, Tournament, User,
-                     VideoGame, Entrant)
+                     VideoGame)
 from .smashgg import SmashGG
 
 smashgg = SmashGG()
@@ -233,6 +236,25 @@ class UsersAPI(Resource):
         return {"error": "User not found"}, 404
 
 
+class PlayerAPI(Resource):
+    def get(self, player_id):
+        '''Get information about a player
+        ---
+        parameters:
+            -   name: player_id
+                in: path
+                type: integer
+                required: true
+        responses:
+            200:
+                description: The player in question
+                schema:
+                    import: "swagger/Player.json"
+        '''
+        player = Player.query.filter_by(player_id=player_id).first()
+        return player_schema.jsonify(player)
+
+
 class EventsAPI(Resource):
     def get(self, event_id):
         """Get event information
@@ -249,6 +271,9 @@ class EventsAPI(Resource):
                     import: "swagger/Event.json"
         """
         event = Event.query.filter(Event.event_id == event_id).first()
+        if event and not event.entrants:
+            smashgg.get_entrants_in_event(event_id)
+            event = Event.query.filter(Event.event_id == event_id).first()
         return event_schema.jsonify(event)
 
 
@@ -279,7 +304,7 @@ class TournamentsAPI(Resource):
         if tournament_id:
             tournament = Tournament.query.filter(
                 Tournament.tournament_id == tournament_id).first()
-            if not tournament.events:
+            if tournament and not tournament.events:
                 print(f'Getting events for tournament {tournament_id}')
                 smashgg.get_events_in_tournament(tournament_id)
                 # Rerun query, this time we will have events
@@ -676,6 +701,10 @@ class LeagueAPI(Resource):
                 type: boolean
                 description: Only return public fantasy leagues
                 default: false
+            -   name: userId
+                in: query
+                required: false
+                type: integer
         responses:
             200:
                 description: The fantasy leagues matching the parameters
@@ -688,12 +717,15 @@ class LeagueAPI(Resource):
             return fantasy_league_schema.jsonify(league)
         parser = make_pagination_reqparser()
         parser.add_argument('eventId', type=int)
+        parser.add_argument('userId', type=int)
+        parser.add_argument('requirePublic', type=bool)
         args = parser.parse_args(strict=True)
-        # users = User.query.filter(User.tag.like(f'%{args["tag"]}%')).paginate(
-        #     page=args['page'], per_page=args['perPage']).items
         allowed_privacies = [True] if args['requirePublic'] else [False, True]
         if args['eventId']:
             leagues = FantasyLeague.query.filter(
+                FantasyLeague.fantasy_drafts.any(
+                    FantasyDraft.user_id == args['userId']
+                ) if args['userId'] else True,
                 FantasyLeague.event_id == args['eventId'],
                 FantasyLeague.public.in_(allowed_privacies)
             ).paginate(page=args['page'], per_page=args['perPage']).items
@@ -745,6 +777,7 @@ class LeagueAPI(Resource):
                         -   draftSize
                         -   public
                         -   name
+                        -   isSnake
                     properties:
                         eventId:
                             type: integer
@@ -768,6 +801,8 @@ class LeagueAPI(Resource):
                         name:
                             type: string
                             description: The name of the league
+                        isSnake:
+                            type: boolean
         security:
             - bearerAuth: []
         responses:
@@ -782,6 +817,7 @@ class LeagueAPI(Resource):
         parser.add_argument('draftSize', type=int)
         parser.add_argument('public', type=bool)
         parser.add_argument('name', type=str)
+        parser.add_argument('isSnake', type=bool)
         args = parser.parse_args(strict=True)
         if not user_is_logged_in(args['ownerId']):
             return NOT_LOGGED_IN_RESPONSE
@@ -789,7 +825,8 @@ class LeagueAPI(Resource):
                                owner_id=args['ownerId'],
                                draft_size=args['draftSize'],
                                public=args['public'],
-                               name=args['name'])
+                               name=args['name'],
+                               is_snake=args['isSnake'])
         db.session.add(league)
         db.session.commit()
         return fantasy_league_schema.jsonify(league)
@@ -904,7 +941,7 @@ class EntrantsAPI(Resource):
 class LoginAPI(Resource):
     def post(self):
         '''Verify credentials and get token
-	---
+        ---
         consumes:
             application/json
         parameters:
@@ -923,7 +960,7 @@ class LoginAPI(Resource):
         responses:
             200:
                 schema:
-		    type: object
+                    type: object
                     properties:
                         token:
                             type: string
@@ -951,8 +988,10 @@ class LoginAPI(Resource):
             return {'error': 'Invalid username or password'}, 400
         # User is authenticated
         return {'token':
-                base64.b64encode((user.email + ':' + user.pw).encode()).decode(),
+                base64.b64encode(
+                    (user.email + ':' + user.pw).encode()).decode(),
                 'userId': user.user_id}, 200
+
 
 class VideoGameAPI(Resource):
     def get(self, videogame_id):
@@ -968,7 +1007,8 @@ class VideoGameAPI(Resource):
                 schema:
                     import: "swagger/VideoGame.json"
         '''
-        game = VideoGame.query.filter(VideoGame.videogame_id == videogame_id).first()
+        game = VideoGame.query.filter(
+            VideoGame.videogame_id == videogame_id).first()
         return video_game_schema.jsonify(game)
 
 
@@ -991,6 +1031,7 @@ def user_is_logged_in(user_id):
     email, hashed = base64.b64decode(token).decode().split(':')
     return email == user.email and hashed == user.pw
 
+
 api.add_resource(DatabaseVersionAPI, '/event_version')
 api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
@@ -1000,12 +1041,14 @@ api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
 api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
-api.add_resource(LeagueAPI, '/leagues/<int:league_id>')
+api.add_resource(LeagueAPI, '/leagues/<int:league_id>', '/leagues')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 api.add_resource(LoginAPI, '/login')
 api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
+api.add_resource(PlayerAPI, '/players/<int:player_id>')
 
 NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
+
 
 def make_pagination_reqparser():
     parser = reqparse.RequestParser(bundle_errors=True)
@@ -1019,13 +1062,48 @@ def shutdown_session(exception=None):
     db.session.remove()
 
 
+def routine_update():
+    app.logger.info('Performing routine database update')
+    smashgg.get_new_tournaments()
+    constants = Constants.query.first()
+    if not constants:
+        constants = Constants(last_event_update=0)
+        db.session.add(constants)
+    # Get all events that start after the last update and have a league
+    events_new_attendants = Event.query.filter(
+        Event.start_at > constants.last_event_update,
+        FantasyLeague.query.filter(
+            FantasyLeague.event_id == Event.event_id).exists()
+    ).all()
+    for event in events_new_attendants:
+        smashgg.get_entrants_in_event(event.event_id)
+    # Get all events that have started, end after the last update and have a
+    # league
+    events_new_results = Event.query.filter(
+        Event.start_at > time.time(),
+        Event.tournament.has(Tournament.ends_at > constants.last_event_update),
+        FantasyLeague.query.filter(
+            FantasyLeague.event_id == Event.event_id).exists()
+    ).all()
+    for event in events_new_results:
+        smashgg.update_standing(event.event_id)
+    # Update the timestamp
+    constants.last_event_update = time.time()
+    db.session.commit()
+
+
 def main():
-    if 'FANTASY_PROD' in os.environ.keys() and os.environ['FANTASY_PROD'] == 'y':
-	    app.run(host='0.0.0.0',
-                    ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
-                                 '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+    if ('FANTASY_PROD' in os.environ.keys()
+            and os.environ['FANTASY_PROD'] == 'y'):
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(func=routine_update, trigger="interval", seconds=60*60)
+        scheduler.start()
+        app.run(host='0.0.0.0',
+                use_reloader=False,
+                ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
+                             '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
     else:
-         app.run(debug=True)
+        app.run(debug=True)
 
 
 if __name__ == '__main__':

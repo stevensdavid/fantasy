@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 import { LoginForm } from '../components/Profile/LoginForm';
+import { CreateLeagueForm } from '../components/League/CreateLeagueForm';
 
 export default class LeaguesScreen extends React.Component {
   static navigationOptions = {
@@ -50,7 +51,7 @@ export default class LeaguesScreen extends React.Component {
     const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
     return (
       <View>
-      {this.state.token ? <Text>Logged in</Text> : loginComponent}
+      {this.state.token ? <CreateLeagueForm /> : loginComponent}
       </View>
       );
   }
