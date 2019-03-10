@@ -280,7 +280,6 @@ class SmashGG:
                             seedNum
                             players {
                                 id
-                                gamerTag
                             }
                         }
                     }
@@ -315,8 +314,7 @@ class SmashGG:
                     seeding[seed['players'][0]['id']] = seed['seedNum']
             except (KeyError, IndexError):
                 # The tournament hasn't been seeded
-                pass
-            # print(seeding)
+                print(f"Event {event_id}  hasn't been seeded")
             for entrant in r.json()['data']['event']['entrants']['nodes']:
                 player_id = entrant['participants'][0]['playerId']
                 seed = seeding[player_id] if player_id in seeding else None
