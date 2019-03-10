@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View, ScrollView, ImageBackground, Text, Image, Alert, TouchableHighlight, Dimensions } from 'react-native';
 import { Icon, Card } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 export class EventView extends React.Component {
 
@@ -13,6 +14,8 @@ export class EventView extends React.Component {
             eventInfo: {},
             icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
             eventID: null,
+            playerData: [],
+            loadingPlayers: true,
         };
 
         this.fetchEventInfo = this.fetchEventInfo.bind(this);
@@ -42,7 +45,6 @@ export class EventView extends React.Component {
                 { cancelable: false }
             )
             } else if(response.status === 200) {
-                console.log(response);
                 response.json().then((eventJSON) => {
                     this.fetchVideogameInfo(eventJSON.videogame).then((videogameInfo) => {
                         this.fetchTournamentInfo(eventJSON.tournament).then((tournamentInfo) => {
@@ -64,6 +66,7 @@ export class EventView extends React.Component {
                                 },
                                 loading: false,
                             });
+                            this.fetchPlayers(this.state.eventInfo.entrants);
                         }).catch((error) => {
                             console.error('GET tournament within event info error: ' + error);
                             this.setState({loading: false});
@@ -95,7 +98,6 @@ export class EventView extends React.Component {
                 { cancelable: false }
             )
             } else if(response.status === 200) {
-                console.log(response);
                 return response.json();
             }
         }).catch((error) => {
@@ -119,12 +121,50 @@ export class EventView extends React.Component {
                 { cancelable: false }
             )
             } else if(response.status === 200) {
-                console.log(response);
                 return response.json();
             }
         }).catch((error) => {
             console.error('GET tournament error: ' + error);
             this.setState({loading: false});
+        });
+    }
+
+    fetchPlayerInfo(playerID) {
+        return fetch(global.server + "/players/" + playerID, {
+            method: 'GET',
+            headers: this.httpGetHeaders
+        }).then((response) => {
+            if(response.status === 404 || response.status === 400) {
+            Alert.alert(
+                'ERROR!',
+                'PLAYER ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
+                [
+                {text: 'OK', onPress: () => this.setState({loading: false})}
+                ],
+                { cancelable: false }
+            )
+            } else if(response.status === 200) {
+                return response.json();
+            }
+        }).catch((error) => {
+            console.error('GET tournament error: ' + error);
+            this.setState({loading: false});
+        });
+    }
+
+    fetchPlayers(entrants) {
+        const newData = [];
+        entrants.forEach(element => {
+            this.fetchPlayerInfo(element.player_id).then((playerInfo) => {
+                newData.push({
+                    key: '' + playerInfo.player_id,
+                    title: playerInfo.tag,
+                });
+                this.setState({
+                    playerData: newData,
+                    loadingPlayers: false,
+                })
+            });
         });
     }
 
@@ -144,6 +184,12 @@ export class EventView extends React.Component {
                 <View style={styles.iconImageContainer}>
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.eventInfo.icon_uri}}/>
                     <Text style={styles.headerVideogameText}>{this.state.eventInfo.name}</Text>
+                </View>
+                <View>
+                    <ScrollableListContainer 
+                    data={this.state.playerData} 
+                    style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
+                    loading={this.state.loadingPlayers}/>
                 </View>
                 </ScrollView>
             </View>

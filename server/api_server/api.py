@@ -236,6 +236,25 @@ class UsersAPI(Resource):
         return {"error": "User not found"}, 404
 
 
+class PlayerAPI(Resource):
+    def get(self, player_id):
+        '''Get information about a player
+        ---
+        parameters:
+            -   name: player_id
+                in: path
+                type: integer
+                required: true
+        responses:
+            200:
+                description: The player in question
+                schema:
+                    import: "swagger/Player.json"
+        '''
+        player = Player.query.filter_by(player_id=player_id).first()
+        return player_schema.jsonify(player)
+
+
 class EventsAPI(Resource):
     def get(self, event_id):
         """Get event information
@@ -252,6 +271,9 @@ class EventsAPI(Resource):
                     import: "swagger/Event.json"
         """
         event = Event.query.filter(Event.event_id == event_id).first()
+        if event and not event.entrants:
+            smashgg.get_entrants_in_event(event_id)
+            event = Event.query.filter(Event.event_id == event_id).first()
         return event_schema.jsonify(event)
 
 
@@ -282,7 +304,7 @@ class TournamentsAPI(Resource):
         if tournament_id:
             tournament = Tournament.query.filter(
                 Tournament.tournament_id == tournament_id).first()
-            if not tournament.events:
+            if tournament and not tournament.events:
                 print(f'Getting events for tournament {tournament_id}')
                 smashgg.get_events_in_tournament(tournament_id)
                 # Rerun query, this time we will have events
@@ -1023,6 +1045,7 @@ api.add_resource(LeagueAPI, '/leagues/<int:league_id>', '/leagues')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 api.add_resource(LoginAPI, '/login')
 api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
+api.add_resource(PlayerAPI, '/players/<int:player_id>')
 
 NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
 
@@ -1046,6 +1069,8 @@ def routine_update():
     if not constants:
         constants = Constants(last_event_update=0)
         db.session.add(constants)
+        db.session.commit()
+        constants = Constants.query.first()
     # Get all events that start after the last update and have a league
     events_new_attendants = Event.query.filter(
         Event.start_at > constants.last_event_update,

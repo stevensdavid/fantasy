@@ -77,6 +77,9 @@ export class TournamentView extends React.Component {
         this.setState({loadingEvents: true});
         this.state.events.forEach(eventID => {
             this.fetchEvent(eventID).then((eventInfo) => {
+                if(!eventInfo.videogame) {
+                    return;
+                }
                 fetch(global.server + '/videogame/' + eventInfo.videogame, {
                     method: 'GET',
                     httpGetHeaders2: this.httpGetHeaders2

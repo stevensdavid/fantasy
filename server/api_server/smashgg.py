@@ -26,7 +26,7 @@ class SmashGG:
             event_id {int} -- The ID of the event to update standings for
         """
         n_entrants = Event.query.filter(
-            Event.event_id == event_id).num_entrants
+            Event.event_id == event_id).first().num_entrants
         per_page = 200
         gql_query = '''
         query EventStandings($eventId: Int!, $page: Int!, $perPage: Int!) {
