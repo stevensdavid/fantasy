@@ -33,7 +33,7 @@ export default class EditProfile extends React.Component {
 
     clean(obj) {
       for (var propName in obj) { 
-        if (obj[propName] === null || obj[propName] === undefined) {
+        if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '') {
           delete obj[propName];
         }
       }
@@ -43,6 +43,16 @@ export default class EditProfile extends React.Component {
       this.setState({
         loading: true
       });
+
+      let user = {
+        email: userInfo.email,
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        pw: userInfo.password,
+        tag: userInfo.tag
+      };
+      this.clean(user);
+
       if(userInfo.password !== userInfo.passwordConfirm) {
         Alert.alert(
           'Alert',
@@ -56,20 +66,23 @@ export default class EditProfile extends React.Component {
           loading: false
         });
         return;
+      } else if (user.length === 0) {
+        Alert.alert(
+          'Alert',
+          "Empty input",
+          [
+          {text: 'OK', onPress: () => this.setState({loading: false})}
+          ],
+          { cancelable: false }
+        );
+        return;
       }
 
       //Valid info, let's update
-      user = {
-          email: userInfo.email,
-          firstName: userInfo.firstName,
-          lastName: userInfo.lastName,
-          pw: userInfo.password,
-          tag: userInfo.tag
-      }
       fetch(global.server + '/users/' + global.userID, {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(this.clean(user))
+        body: JSON.stringify(user)
       }).then((response) => {
         console.log(response);
         this.setState({loading: false});
