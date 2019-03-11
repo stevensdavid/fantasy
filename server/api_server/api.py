@@ -188,19 +188,16 @@ class UsersAPI(Resource):
                 required: true
             -   in: body
                 name: user
-                description: The user to create
+                description: The user to edit
                 schema:
                     type: object
                     required:
-                        -   tag
-                        -   email
-                        -   pw
                     properties:
                         tag:
                             type: string
-                        firstName:
+                        first_name:
                             type: string
-                        lastName:
+                        last_name:
                             type: string
                         email:
                             type: string
@@ -217,8 +214,11 @@ class UsersAPI(Resource):
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
         parser = reqparse.RequestParser()
-        for arg, datatype in User.constructor_params().items():
-            parser.add_argument(arg, type=datatype)
+        parser.add_argument('tag', type=str)
+        parser.add_argument('first_name', type=str)
+        parser.add_argument('last_name', type=str)
+        parser.add_argument('email', type=str)
+        parser.add_argument('pw', type=str)
         user = User.query.filter(User.user_id == user_id).first()
         if user is not None:
             args = parser.parse_args(strict=True)
@@ -853,7 +853,7 @@ class LeagueAPI(Resource):
                     type: object
                     required:
                     properties:
-                        draftSize:
+                        draft_size:
                             type: integer
                             description: >
                                 The number of players each user is allowed to 
@@ -877,7 +877,7 @@ class LeagueAPI(Resource):
         """
         parser = reqparse.RequestParser()
         parser.add_argument('leagueId', type=int)
-        parser.add_argument('draftSize', type=int)
+        parser.add_argument('draft_size', type=int)
         parser.add_argument('public', type=inputs.boolean)
         parser.add_argument('name', type=str)
         league = FantasyLeague.query.filter(FantasyLeague.league_id
@@ -1182,7 +1182,7 @@ def user_is_logged_in(user_id):
     header = request.headers.get('Authorization')
     try:
         scheme, token = header.split(' ')
-    except ValueError:
+    except (ValueError, AttributeError):
         return False
     if scheme.lower() != 'bearer':
         return False
