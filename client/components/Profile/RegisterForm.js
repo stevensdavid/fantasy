@@ -140,6 +140,7 @@ export class RegisterForm extends React.Component {
                     placeholder="Email"
                     keyboardType="email-address"
                     underlineColorAndroid='transparent'
+                    autoCapitalize="none"
                     onChangeText={(email) => this.setState({email})}/>
               </View>
               
@@ -148,6 +149,7 @@ export class RegisterForm extends React.Component {
                     placeholder="Password"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
+                    autoCapitalize="none"
                     onChangeText={(password) => this.setState({password})}/>
               </View>
 
@@ -156,6 +158,7 @@ export class RegisterForm extends React.Component {
                     placeholder="Confirm Password"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
+                    autoCapitalize="none"
                     onChangeText={(passwordConfirm) => this.setState({passwordConfirm})}/>
               </View>
       

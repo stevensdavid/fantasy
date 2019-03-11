@@ -82,6 +82,7 @@ export class LoginForm extends React.Component {
                     style={styles.inputs}
                     placeholder="Email"
                     keyboardType="email-address"
+                    autoCapitalize="none"
                     underlineColorAndroid='transparent'
                     onChangeText={(email) => this.setState({email})}/>
               </View>
@@ -93,6 +94,7 @@ export class LoginForm extends React.Component {
                     onBlur={() => {this.setState({passwordFocus: false})}}
                     style={styles.inputs}
                     placeholder="Password"
+                    autoCapitalize="none"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
                     onChangeText={(password) => this.setState({password})}/>

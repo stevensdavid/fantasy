@@ -62,6 +62,7 @@ export class EditProfile extends React.Component {
                     placeholder="Email"
                     keyboardType="email-address"
                     underlineColorAndroid='transparent'
+                    autoCapitalize="none"
                     onChangeText={(email) => this.setState({email})}/>
               </View>
               
@@ -70,6 +71,7 @@ export class EditProfile extends React.Component {
                     placeholder="Password"
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
+                    autoCapitalize="none"
                     onChangeText={(password) => this.setState({password})}/>
               </View>
 
@@ -77,6 +79,7 @@ export class EditProfile extends React.Component {
                 <TextInput style={styles.inputs}
                     placeholder="Confirm Password"
                     secureTextEntry={true}
+                    autoCapitalize="none"
                     underlineColorAndroid='transparent'
                     onChangeText={(passwordConfirm) => this.setState({passwordConfirm})}/>
               </View>
