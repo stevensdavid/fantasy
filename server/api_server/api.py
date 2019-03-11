@@ -188,13 +188,10 @@ class UsersAPI(Resource):
                 required: true
             -   in: body
                 name: user
-                description: The user to create
+                description: The user to edit
                 schema:
                     type: object
                     required:
-                        -   tag
-                        -   email
-                        -   pw
                     properties:
                         tag:
                             type: string
@@ -217,8 +214,11 @@ class UsersAPI(Resource):
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
         parser = reqparse.RequestParser()
-        for arg, datatype in User.constructor_params().items():
-            parser.add_argument(arg, type=datatype)
+        parser.add_argument('tag', type=str)
+        parser.add_argument('firstName', type=str)
+        parser.add_argument('lastName', type=str)
+        parser.add_argument('email', type=str)
+        parser.add_argument('pw', type=str)
         user = User.query.filter(User.user_id == user_id).first()
         if user is not None:
             args = parser.parse_args(strict=True)
