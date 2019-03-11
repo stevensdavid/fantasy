@@ -5,6 +5,9 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 export default class EventView extends React.Component {
+    static navigationOptions = {
+        title: 'Event',
+    };
 
     constructor(props){
         super(props);

@@ -10,6 +10,10 @@ import {
   import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class EditProfile extends React.Component {
+  static navigationOptions = {
+    title: 'Edit Profile',
+  };
+  
     constructor(props) {
         super(props);
         this.state = {

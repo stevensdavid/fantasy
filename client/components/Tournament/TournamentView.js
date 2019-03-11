@@ -8,6 +8,10 @@ import {EventView} from '../Event/EventView';
 
 
 export default class TournamentView extends React.Component {
+    static navigationOptions = {
+        title: 'Tournament',
+    };
+    
     constructor(props){
         super(props);
 
