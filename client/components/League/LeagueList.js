@@ -1,45 +1,66 @@
 import React from 'react';
-import {View} from 'react-native'
+import { View } from 'react-native'
 import { ScrollableListContainer } from '../Container/ScrollableListContainer'
 
 export class LeagueList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: [],
+            loading: false
+        }
+        this.setLeagues = this.setLeagues.bind(this);
+        this.componentDidUpdate = this.componentDidUpdate.bind(this);
+    }
+
+    /*componentDidMount() {
+        this.setLeagues();
+    }*/
+
+    componentDidUpdate(prevProps) {
+        if (this.props.leagues !== prevProps.leagues) {
+            this.setState({loading: true})
+            this.setLeagues().then(newData => {
+                this.setState({ data: newData });
+                this.setState({loading: false})
+                console.log('LeagueList.componentDidUpdate is done: ' + JSON.stringify(this.state.data))
+            }).catch(err => console.log(err));
         }
     }
 
-    componentDidMount() {
-        console.log('LeagueList setting data: ' + this.props.leagues)
-        for (league of this.props.leagues) {
-            console.log(league)
-            let event;
-            fetch(global.server + '/events/' + league.event, { method: 'GET' }).then(res => {
-                return res.json();
-            }).then(event_obj => {
-                event = event_obj;
-                return fetch(global.server + '/tournaments/' + event.tournament, { method: 'GET' })
-            }).then(res => {
-                return res.json();
-            }).then(tournament_obj => {
-                this.setState({
-                    data: this.state.data.concat([{
-                        key: league.league_id,
-                        title: league.name,
-                        description: tournament_obj.name + ': ' + event.name,
-                        img_url: tournament_obj.ext_icon_url
-                    }])
-                });
-            }).catch(err => console.error(err));
-        }
-        console.log('LeagueList done setting data: ' + this.state.data);
+    async setLeagues() {
+        console.log('LeagueList setting data: ' + JSON.stringify(this.props.leagues))
+
+        const newData = await Promise.all(this.props.leagues.map(async league => {
+            console.log('Handling league ' + league.league_id)
+            try {
+                let res = await fetch(global.server + '/events/' + league.event, { method: 'GET' });
+                let event = await res.json();
+                res = await fetch(global.server + '/tournaments/' + event.tournament, { method: 'GET' });
+                let tournament = await res.json();
+                return {
+                    key: league.league_id.toString(),
+                    title: league.name,
+                    description: tournament.name + ': ' + event.name,
+                    img_url: tournament.ext_icon_url
+                }
+            } catch (err){
+                console.log(err);
+                return
+            }
+        }))
+        console.log('LeagueList.setLeagues done setting data, newData is ' + JSON.stringify(newData))
+        return this.state.data.concat(newData);
     }
 
     render() {
         return (
             <View>
-                <ScrollableListContainer data={this.state.data} onItemClick={key => { }} //style={null}
+                <ScrollableListContainer
+                    data={this.state.data}
+                    onItemClick={key => { }}
+                    //style={null}
+                    loading={this.state.loading}
                 />
             </View>
         );

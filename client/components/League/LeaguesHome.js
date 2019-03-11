@@ -12,8 +12,9 @@ export class LeaguesHome extends React.Component {
     super(props);
     this.state = {
       leagues: [],
-      loading: false
+      loading: true
     }
+    this.componentDidMount = this.componentDidMount.bind(this);
   }
 
   componentDidMount() {
@@ -22,12 +23,12 @@ export class LeaguesHome extends React.Component {
     // const url = new URL(global.server + '/leagues'),
     //   params = { userId: global.userId }
     // Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-    fetch(global.server + '/leagues?userId=' + global.userId, { method: 'GET' }).then(response => {
+    fetch(global.server + '/leagues?userId=' + global.userID, { method: 'GET' }).then(response => {
       return response.json();
     }).then(obj => {
       this.setState({ leagues: obj });
       this.setState({ loading: false })
-      console.log('Mounted LeaguesHome leagues: ' + this.state.leagues)
+      console.log('Mounted LeaguesHome leagues: ' + JSON.stringify(obj));
     }).catch(err => {
       console.error('GET leagues error: ' + err);
       this.setState({ loading: false });
