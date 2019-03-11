@@ -178,6 +178,18 @@ export default class EventView extends React.Component {
     }
 
     render() {
+        const HideAbleView = (props) => {
+            const { children, hide, style } = props;
+            if (hide) {
+              return null;
+            }
+            return (
+              <View {...this.props} style={style}>
+                { children }
+              </View>
+            );
+          };
+
         return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
@@ -190,13 +202,13 @@ export default class EventView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.eventInfo.icon_uri}}/>
                     <Text style={styles.headerVideogameText}>{this.state.eventInfo.name}</Text>
                 </View>
-                <View style={{display: (this.state.hasEntrants ? "" : "none")}}>
+                <HideAbleView hide={!this.state.hasEntrants}>
                     <Text style={{fontSize: 40, alignSelf:'center'}}>Entrants</Text>
                     <ScrollableListContainer 
                     data={this.state.playerData} 
                     style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
                     loading={this.state.loadingPlayers}/>
-                </View>
+                </HideAbleView>
                 </ScrollView>
             </View>
         )

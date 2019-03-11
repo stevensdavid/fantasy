@@ -149,6 +149,18 @@ export default class TournamentView extends React.Component {
     }
 
     render() {
+        const HideAbleView = (props) => {
+            const { children, hide, style } = props;
+            if (hide) {
+              return null;
+            }
+            return (
+              <View {...this.props} style={style}>
+                { children }
+              </View>
+            );
+          };
+
         return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
@@ -159,14 +171,14 @@ export default class TournamentView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.icon_uri}}/>
                     <Text style={styles.headerText}>{this.state.title}</Text>
                 </View>
-                <View style={{display: (this.state.events ? "default" : "none")}}>
+                <HideAbleView hide={!this.state.events}>
                 <Text style={{fontSize: 40, alignSelf:'center'}}>Events</Text>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
                 onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key})}
                 style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
                 loading={this.state.loadingEvents}/>
-                </View>
+                </HideAbleView>
                 <View style={styles.textView}>
                 <Text>Etiam lacinia iaculis tincidunt. Nam varius, est non accumsan consectetur, ex orci vestibulum felis, non dictum est sapien vitae nulla. Phasellus nibh quam, consequat ac nisl ut, vulputate ornare tellus. Quisque euismod feugiat urna vitae tincidunt. Ut iaculis ornare lacus a posuere. Suspendisse potenti. Duis id accumsan diam. Nam ut lacus quis neque cursus sollicitudin eget fermentum nisl. Vestibulum non orci ac urna mattis pulvinar sit amet consequat ex. Curabitur non purus a dolor iaculis ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent mattis vel elit non consectetur.
 
