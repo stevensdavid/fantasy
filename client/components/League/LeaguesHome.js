@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   StyleSheet,
-  ScrollView
+  ScrollView,
+  View,
 } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 
