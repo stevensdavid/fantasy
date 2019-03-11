@@ -31,6 +31,7 @@ export default class EditProfile extends React.Component {
         this.reload =  this.props.navigation.getParam("reload", -1);
     }
 
+    //Help functions
     clean(obj) {
       for (var propName in obj) { 
         if (obj[propName] === null || obj[propName] === undefined || obj[propName] === '') {
@@ -39,6 +40,14 @@ export default class EditProfile extends React.Component {
       }
     }
 
+    size = function(obj) {
+      var size = 0, key;
+      for (key in obj) {
+          if (obj.hasOwnProperty(key)) size++;
+      }
+      return size;
+  };
+
     tryEdit(userInfo) {
       this.setState({
         loading: true
@@ -46,11 +55,12 @@ export default class EditProfile extends React.Component {
 
       let user = {
         email: userInfo.email,
-        firstName: userInfo.firstName,
-        lastName: userInfo.lastName,
+        first_name: userInfo.firstName,
+        last_name: userInfo.lastName,
         pw: userInfo.password,
         tag: userInfo.tag
       };
+
       this.clean(user);
 
       if(userInfo.password !== userInfo.passwordConfirm) {
@@ -66,7 +76,7 @@ export default class EditProfile extends React.Component {
           loading: false
         });
         return;
-      } else if (user.length === 0) {
+      } else if (this.size(user) == 0) {
         Alert.alert(
           'Alert',
           "Empty input",
@@ -79,17 +89,19 @@ export default class EditProfile extends React.Component {
       }
 
       //Valid info, let's update
+      console.log(JSON.stringify(user));
       fetch(global.server + '/users/' + global.userID, {
         method: 'PUT',
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json',
+                  'Authorization': 'bearer ' + global.token},
         body: JSON.stringify(user)
       }).then((response) => {
-        console.log(response);
         this.setState({loading: false});
+        console.log(response);
         if(response.status === 404 || response.status === 400) { 
           Alert.alert(
             'Alert',
-            "Email's already taken",
+            "Something went wrong",
             [
             {text: 'OK', onPress: () => this.setState({loading: false})}
             ],
@@ -122,7 +134,7 @@ export default class EditProfile extends React.Component {
                     placeholder="First Name"
                     keyboardType="default"
                     underlineColorAndroid='transparent'
-                    onChangeText={(firstname) => this.setState({firstname})}/>
+                    onChangeText={(firstname) => this.setState({firstName: firstname})}/>
               </View>
 
               <View style={styles.inputContainer}>
@@ -130,7 +142,7 @@ export default class EditProfile extends React.Component {
                     placeholder="Last Name"
                     keyboardType="default"
                     underlineColorAndroid='transparent'
-                    onChangeText={(lastname) => this.setState({lastname})}/>
+                    onChangeText={(lastname) => this.setState({lastName: lastname})}/>
               </View>
 
               <View style={styles.inputContainer}>
@@ -138,7 +150,7 @@ export default class EditProfile extends React.Component {
                   placeholder="Tag"
                   keyboardType="default"
                   underlineColorAndroid='transparent'
-                  onChangeText={(tag) => this.setState({tag})}/>
+                  onChangeText={(t) => this.setState({tag: t})}/>
                 </View>
 
               <View style={styles.inputContainer}>
@@ -147,7 +159,7 @@ export default class EditProfile extends React.Component {
                     keyboardType="email-address"
                     underlineColorAndroid='transparent'
                     autoCapitalize="none"
-                    onChangeText={(email) => this.setState({email})}/>
+                    onChangeText={(e_mail) => this.setState({email: e_mail})}/>
               </View>
               
               <View style={styles.inputContainer}>
@@ -156,7 +168,7 @@ export default class EditProfile extends React.Component {
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'
                     autoCapitalize="none"
-                    onChangeText={(password) => this.setState({password})}/>
+                    onChangeText={(pass) => this.setState({password: pass})}/>
               </View>
 
               <View style={styles.inputContainer}>
@@ -165,7 +177,7 @@ export default class EditProfile extends React.Component {
                     secureTextEntry={true}
                     autoCapitalize="none"
                     underlineColorAndroid='transparent'
-                    onChangeText={(passwordConfirm) => this.setState({passwordConfirm})}/>
+                    onChangeText={(passConfirm) => this.setState({passwordConfirm: passConfirm})}/>
               </View>
       
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.tryEdit(this.state)}>

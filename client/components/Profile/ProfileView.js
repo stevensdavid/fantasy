@@ -30,7 +30,7 @@ export class ProfileView extends React.Component {
   }
 
   reloadInfo() {
-    this.getUserInfo;
+    this.getUserInfo();
   } 
 
   componentDidMount() {
