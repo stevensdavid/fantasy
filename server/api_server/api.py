@@ -1182,7 +1182,7 @@ def user_is_logged_in(user_id):
     header = request.headers.get('Authorization')
     try:
         scheme, token = header.split(' ')
-    except ValueError:
+    except (ValueError, AttributeError):
         return False
     if scheme.lower() != 'bearer':
         return False
