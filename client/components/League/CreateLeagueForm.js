@@ -28,7 +28,7 @@ export class CreateLeagueForm extends React.Component {
     createLeague(stateInfo) {
         fetch(global.server + '/leagues', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'bearer '+global.token},
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'bearer ' + global.token },
             body: JSON.stringify({
                 eventId: stateInfo.eventId,
                 isSnake: stateInfo.isSnake,
@@ -37,19 +37,32 @@ export class CreateLeagueForm extends React.Component {
                 draftSize: stateInfo.draftSize,
                 ownerId: global.userID
             })
-        }).then((res) => {
-            console.log(res);
-            if(res.status === 404 || res.status === 400){
+        }).then(res => {
+            if (res.status === 404 || res.status === 400) {
                 Alert.alert("Alert", "Invalid input!");
-                return;
-            } else if (res.status === 200){
-                // Switch screen
-                Alert.alert("Success!")
-            } else if (res.status === 500){
-                console.error('Create league server error, state: ' + this.state)
+                throw 'Invalid input';
+            } else if (res.status === 200) {
+                return res.json();
+            } else if (res.status === 500) {
+                throw 'Create league server error';
             }
-        }).catch((error) => {
-            console.error('Create league error: ' + error)
+        }).then(obj => {
+            return fetch(global.server + '/fantasy_participants', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'bearer ' + global.token },
+                body: JSON.stringify({
+                    userId: global.userID,
+                    leagueId: obj.league_id
+                })
+            });
+        }).then(participant_res => {
+            if (participant_res.status == 200) {
+                Alert.alert("Success!");
+            } else {
+                throw ('Add league owner to league error');
+            }
+        }).catch(error => {
+            console.error('Create league error: ' + error);
         });
     }
 
