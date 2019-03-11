@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, TouchableHighlight, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, Dimensions } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
@@ -159,6 +159,7 @@ export default class TournamentView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.icon_uri}}/>
                     <Text style={styles.headerText}>{this.state.title}</Text>
                 </View>
+                <Text style={{fontSize: 40, alignSelf:'center'}}>Events</Text>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
                 onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key})}

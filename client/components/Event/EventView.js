@@ -189,6 +189,7 @@ export default class EventView extends React.Component {
                     <Text style={styles.headerVideogameText}>{this.state.eventInfo.name}</Text>
                 </View>
                 <View>
+                    <Text style={{fontSize: 40, alignSelf:'center'}}>Entrants</Text>
                     <ScrollableListContainer 
                     data={this.state.playerData} 
                     style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
