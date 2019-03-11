@@ -735,8 +735,8 @@ class LeagueAPI(Resource):
                 FantasyLeague.fantasy_results.any(
                     FantasyResult.user_id == args['userId']
                 ) if args['userId'] else True
-                ).paginate(page=args['page'],
-                                             per_page=args['perPage']).items
+            ).paginate(page=args['page'],
+                       per_page=args['perPage']).items
         return fantasy_leagues_schema.jsonify(leagues)
 
     def delete(self, league_id):
@@ -1016,6 +1016,141 @@ class VideoGameAPI(Resource):
         return video_game_schema.jsonify(game)
 
 
+class FantasyResultAPI(Resource):
+    def get(self):
+        '''Get fantasy results
+        ---
+        parameters:
+            -   in: query
+                name: userId
+                type: integer
+                required: false
+                description: >
+                    Get all results for a specific user. If this parameter is
+                    unfilled, the other one must have a value.
+            -   in: query
+                name: leagueId
+                type: integer
+                required: false
+                description: >
+                    Get all results for a specific league. If this parameter is
+                    unfilled, the other one must have a value.
+        responses:
+            200:
+                description: The fantasy results
+                schema:
+                    type: array
+                    items:
+                        import: "swagger/FantasyResult.json"
+            400:
+                description: >
+                    Bad request, likely due to not specifying any of the query
+                    parameters.
+        '''
+        parser = reqparse.RequestParser()
+        parser.add_argument('userId', type=int)
+        parser.add_argument('leagueId', type=int)
+        args = parser.parse_args(strict=True)
+        if not args['userId'] and not args['leagueId']:
+            return {'error': 'Both userId and leagueId are unspecified'}, 400
+        results = FantasyResult.query.filter(
+            FantasyResult.league_id == args['leagueId']
+            if args['leagueId'] else True,
+            FantasyResult.user_id == args['userId']
+            if args['userId'] else True
+        ).all()
+        return fantasy_results_schema.jsonify(results)
+
+    def post(self):
+        '''Add a user to a fantasy league
+        ---
+        consumes:
+            application/json
+        parameters:
+            -   in: body
+                schema:
+                    type: object
+                    required:
+                        -   userId
+                        -   leagueId
+                    properties:
+                        userId:
+                            type: integer
+                            description: The ID of the user to add
+                        leagueId:
+                            type: integer
+                            description: The ID of the league to add the user to
+        responses:
+            200:
+                description: The user was successfully added to the league
+                schema:
+                    import: "swagger/FantasyResult.json"
+            400:
+                description: Bad request
+        '''
+        parser = reqparse.RequestParser()
+        parser.add_argument('userId', type=int)
+        parser.add_argument('leagueId', type=int)
+        args = parser.parse_args(strict=True)
+        # Participation is marked by presence of a FantasyResult entity
+        fantasy_result = FantasyResult(user_id=args['userId'],
+                                       league_id=args['leagueId'])
+        db.session.add(fantasy_result)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'User or league not found'}, 400
+        return fantasy_result_schema.jsonify(fantasy_result)
+
+    def delete(self):
+        '''Remove a user from a fantasy league
+        ---
+        consumes:
+            application/json
+        parameters:
+            -   in: body
+                schema:
+                    type: object
+                    required:
+                        -   userId
+                        -   leagueId
+                    properties:
+                        userId:
+                            type: integer
+                            description: The ID of the user to remove
+                        leagueId:
+                            type: integer
+                            description: >
+                                The ID of the league to remove the user from
+        responses:
+            200:
+                description: The user was successfully removed to the league
+                schema:
+                    import: "swagger/FantasyResult.json"
+            400:
+                description: Bad request
+        '''
+        parser = reqparse.RequestParser()
+        parser.add_argument('userId', type=int)
+        parser.add_argument('leagueId', type=int)
+        args = parser.parse_args(strict=True)
+        # Participation is marked by presence of a FantasyResult entity
+        fantasy_result = FantasyResult.query.filter(
+            FantasyResult.user_id == args['userId'],
+            FantasyResult.league_id == args['leagueId']).first()
+        db.session.delete(fantasy_result)
+        # Remove all drafts by the user
+        FantasyDraft.filter(FantasyDraft.league_id == args['leagueId'],
+                            FantasyDraft.user_id == args['userId']).delete()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'User or league not found'}, 400
+        return fantasy_result_schema.jsonify(fantasy_result)
+
+
 def user_is_logged_in(user_id):
     """Verify the authentication token in the request's headers
 
@@ -1050,6 +1185,7 @@ api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
 api.add_resource(LoginAPI, '/login')
 api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
 api.add_resource(PlayerAPI, '/players/<int:player_id>')
+api.add_resource(FantasyResultAPI, '/fantasy_participants')
 
 NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
 
@@ -1102,7 +1238,8 @@ def main():
     if ('FANTASY_PROD' in os.environ.keys()
             and os.environ['FANTASY_PROD'] == 'y'):
         scheduler = BackgroundScheduler()
-        scheduler.add_job(func=routine_update, trigger="interval", seconds=60*60)
+        scheduler.add_job(func=routine_update,
+                          trigger="interval", seconds=60*60)
         scheduler.start()
         app.run(host='0.0.0.0',
                 use_reloader=False,
