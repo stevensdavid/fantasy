@@ -8,10 +8,9 @@ export class LeagueList extends React.Component {
         this.state = {
             data: []
         }
-        this.setData();
     }
 
-    setData() {
+    componentDidMount() {
         console.log('LeagueList setting data: ' + this.props.leagues)
         for (league of this.props.leagues) {
             console.log(league)
@@ -24,12 +23,14 @@ export class LeagueList extends React.Component {
             }).then(res => {
                 return res.json();
             }).then(tournament_obj => {
-                this.state = this.state.data.concat([{
-                    key: league.league_id,
-                    title: league.name,
-                    description: tournament_obj.name + ': ' + event.name,
-                    img_url: tournament_obj.ext_icon_url
-                }])
+                this.setState({
+                    data: this.state.data.concat([{
+                        key: league.league_id,
+                        title: league.name,
+                        description: tournament_obj.name + ': ' + event.name,
+                        img_url: tournament_obj.ext_icon_url
+                    }])
+                });
             }).catch(err => console.error(err));
         }
         console.log('LeagueList done setting data: ' + this.state.data);
