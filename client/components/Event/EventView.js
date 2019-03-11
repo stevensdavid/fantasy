@@ -69,7 +69,11 @@ export default class EventView extends React.Component {
                                 },
                                 loading: false,
                             });
-                            this.fetchPlayers(this.state.eventInfo.entrants);
+                            if(this.state.eventInfo.entrants === undefined || this.state.eventInfo.entrants.length == 0) {
+                                this.setState({loadingPlayers: false})
+                            } else {
+                                this.fetchPlayers(this.state.eventInfo.entrants);
+                            }
                         }).catch((error) => {
                             console.error('GET tournament within event info error: ' + error);
                             this.setState({loading: false});
