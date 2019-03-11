@@ -7,7 +7,7 @@ import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 import {EventView} from '../Event/EventView';
 
 
-export class TournamentView extends React.Component {
+export default class TournamentView extends React.Component {
     constructor(props){
         super(props);
 
@@ -20,16 +20,12 @@ export class TournamentView extends React.Component {
           icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
           events: [],
           eventData: [],
-          viewingEvent: false,
-          eventID: null,
           loadingEvents: true,
         };
 
         this.fetchEvent = this.fetchEvent.bind(this);
-        this.viewEvent = this.viewEvent.bind(this);
-        this.clearViewEvent = this.clearViewEvent.bind(this);
         this.fetchTournamentEvents = this.fetchTournamentEvents.bind(this);
-        this.clearViewEvent = this.clearViewEvent.bind(this);
+        this.tournamentID =  this.props.navigation.getParam("tournamentID", -1);
     }
     
     httpGetHeaders = {};
@@ -37,7 +33,7 @@ export class TournamentView extends React.Component {
 
     setTournamentInfo() {
         this.setState({loading: true});
-        fetch(global.server + "/tournaments/" + this.props.tournamentID, {
+        fetch(global.server + "/tournaments/" + this.tournamentID, {
             method: 'GET',
             headers: this.httpGetHeaders
         }).then((response) => {
@@ -140,32 +136,12 @@ export class TournamentView extends React.Component {
         });
     }
 
-    viewEvent(key) {
-        this.setState({
-            viewingEvent: true,
-            eventID: key,
-        });
-        
-    }
-
-    clearViewEvent() {
-        this.setState({
-          viewingEvent: false,
-          eventID: null,
-        });
-    }
-
     render() {
-            if(!this.state.viewingEvent) {
-            return (
+        return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-                <ImageBackground resizeMode="cover" style={styles.bannerImage} source={{uri: this.state.banner_uri}}>
-                    <TouchableHighlight style={[styles.buttonContainer, styles.backButton]} onPress={() => this.props.clearViewTournament()}>
-                        <Icon containerStyle={{alignSelf:'center', alignItems:'center'}} name='keyboard-arrow-left' type='material' color='#eff' size={58}/>
-                    </TouchableHighlight>
-                </ImageBackground>
+                <ImageBackground resizeMode="cover" style={styles.bannerImage} source={{uri: this.state.banner_uri}} />
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
                 <View style={styles.iconImageContainer}>
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.icon_uri}}/>
@@ -173,7 +149,7 @@ export class TournamentView extends React.Component {
                 </View>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
-                onItemClick={(key) => this.viewEvent(key)}
+                onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key})}
                 style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
                 loading={this.state.loadingEvents}/>
                 <View style={styles.textView}>
@@ -186,9 +162,6 @@ export class TournamentView extends React.Component {
                 </View>
                 </ScrollView>
             </View>)
-            } else {
-                return (<EventView clearViewEvent={this.clearViewEvent} eventID={this.state.eventID} />)
-            } 
     }
 }
 

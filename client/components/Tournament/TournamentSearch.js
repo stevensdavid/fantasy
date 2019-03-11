@@ -54,34 +54,16 @@ export class TournamentSearch extends React.Component {
     componentWillUnmount () {
         this.componentDidMount.remove()
     }
-
-    viewTournament(key) {
-        this.setState({
-            tourID: key,
-            viewingTournament: true,
-        });
-    }
-
-    clearViewTournament() {
-        this.setState({
-          viewingTournament: false,
-          tourID: null,
-        });
-      }
-
     constructor(props){
         super(props);
 
         this.searchAndSetTournaments = this.searchAndSetTournaments.bind(this);
         this.updateSearch = this.updateSearch.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.clearViewTournament = this.clearViewTournament.bind(this);
-        this.viewTournament = this.viewTournament.bind(this);
     
         this.state = { 
           search: '',
           data: [],
-          viewingTournament: false,
           tourID: null,
           loading: false,
         };
@@ -90,27 +72,23 @@ export class TournamentSearch extends React.Component {
     httpGetHeaders = {};
 
     render() {
-        if(!this.state.viewingTournament) {
         return(
-        <View>
-            <SearchBar
-                placeholder="Search"
-                onChangeText={this.updateSearch}
-                value={this.state.search}
-                containerStyle={styles.searchContainer}
-                inputContainerStyle={styles.searchInputContainer}
-                inputStyle={styles.searchInput}
-                placeholderTextColor="#b3002d"
-            />
-            <ScrollableListContainer 
-                data={this.state.data} 
-                onItemClick={(key) => this.viewTournament(key)}
-                loading={this.state.loading}>
-            </ScrollableListContainer>
-        </View>)
-        } else {
-            return <TournamentView clearViewTournament={this.clearViewTournament} tournamentID={this.state.tourID}></TournamentView>
-        }
+            <View>
+                <SearchBar
+                    placeholder="Search"
+                    onChangeText={this.updateSearch}
+                    value={this.state.search}
+                    containerStyle={styles.searchContainer}
+                    inputContainerStyle={styles.searchInputContainer}
+                    inputStyle={styles.searchInput}
+                    placeholderTextColor="#b3002d"
+                />
+                <ScrollableListContainer 
+                    data={this.state.data} 
+                    onItemClick={(key) => this.props.navigation.push("Tournament", {tournamentID: key})}
+                    loading={this.state.loading}>
+                </ScrollableListContainer>
+            </View>)
     }
 }
 

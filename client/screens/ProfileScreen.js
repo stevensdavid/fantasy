@@ -16,23 +16,17 @@ export default class ProfileScreen extends React.Component {
     this.navigationWillFocusListener = props.navigation.addListener('willFocus', () => {
       if(this.state.token !== global.token) {
         this.setState({
-          register: global.register,
           token: global.token,
           userID: global.userID,
-          editing: false,
         })
       }
     })
 
-    this.setRegister = this.setRegister.bind(this);
     this.setToken = this.setToken.bind(this);
-    this.setEditing = this.setEditing.bind(this);
 
     this.state = { 
-      register: global.register,
       token: global.token,
       userID: global.userID,
-      editing: false,
     };
   }
 
@@ -40,36 +34,18 @@ export default class ProfileScreen extends React.Component {
     this.navigationWillFocusListener.remove()
   }
 
-  setRegister(reg) {
-    global.register = reg;
-    this.setState({
-      register: reg
-    })
-  }
-
   setToken(tok) {
-    this.setRegister(false)
     global.token = tok;
     this.setState({
       token: tok
     })
   }
 
-  setEditing(edit) {
-    this.setState({
-      editing: edit
-    })
-  }
-
   render() {
-    const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
-    const profileViewComponent = <ProfileView setEditing = {this.setEditing} setToken = {this.setToken}></ProfileView>;
-    const registerComponent = <RegisterForm setToken = {this.setToken} setRegister = {this.setRegister}></RegisterForm>;
-    const editComponent = <EditProfile setEditing = {this.setEditing}></EditProfile>
+    const loginComponent = <LoginForm navigation={this.props.navigation} setToken = {this.setToken}></LoginForm>;
+    const profileViewComponent = <ProfileView navigation={this.props.navigation} setToken = {this.setToken}></ProfileView>;
 
     let show = this.state.token? profileViewComponent : loginComponent;
-    show = this.state.register ? registerComponent : show;
-    show = this.state.editing ? editComponent : show;
 
     return (
       <View>

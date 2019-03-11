@@ -4,7 +4,7 @@ import { Icon, Card } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
-export class EventView extends React.Component {
+export default class EventView extends React.Component {
 
     constructor(props){
         super(props);
@@ -13,7 +13,6 @@ export class EventView extends React.Component {
             loading: false,
             eventInfo: {},
             icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
-            eventID: null,
             playerData: [],
             loadingPlayers: true,
         };
@@ -21,6 +20,7 @@ export class EventView extends React.Component {
         this.fetchEventInfo = this.fetchEventInfo.bind(this);
         this.fetchVideogameInfo = this.fetchVideogameInfo.bind(this);
         this.fetchTournamentInfo = this.fetchTournamentInfo.bind(this);
+        this.eventID =  this.props.navigation.getParam("eventID", -1);
     }
 
     componentDidMount() {
@@ -31,7 +31,7 @@ export class EventView extends React.Component {
 
     fetchEventInfo() {
         this.setState({loading: true});
-        fetch(global.server + "/events/" + this.props.eventID, {
+        fetch(global.server + "/events/" + this.eventID, {
             method: 'GET',
             headers: this.httpGetHeaders
         }).then((response) => {
@@ -173,11 +173,7 @@ export class EventView extends React.Component {
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-                <ImageBackground resizeMode="cover" style={styles.bannerImage} source={{uri: this.state.eventInfo.banner_uri}}>
-                    <TouchableHighlight style={[styles.buttonContainer, styles.backButton]} onPress={() => this.props.clearViewEvent()}>
-                        <Icon containerStyle={{alignSelf:'center', alignItems:'center'}} name='keyboard-arrow-left' type='material' color='#eff' size={58}/>
-                    </TouchableHighlight>
-                </ImageBackground>
+                <ImageBackground resizeMode="cover" style={styles.bannerImage} source={{uri: this.state.eventInfo.banner_uri}} />
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
                 <Text style={styles.headerTournamentText}>{this.state.eventInfo.tournamentName}</Text>
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>

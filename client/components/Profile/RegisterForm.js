@@ -12,7 +12,7 @@ import {
   } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 
-export class RegisterForm extends React.Component {
+export default class RegisterForm extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -165,10 +165,6 @@ export class RegisterForm extends React.Component {
               <TouchableHighlight disabled={this.state.loading} style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.tryCreateUser(this.state)}>
                 <Text style={styles.loginText}>Register</Text>
               </TouchableHighlight>
-      
-              <TouchableHighlight disabled={this.state.loading} style={styles.buttonContainer} onPress={() => this.props.setRegister(false)}>
-                  <Text>Back</Text>
-              </TouchableHighlight>
             </View>
     );
   }
@@ -176,11 +172,10 @@ export class RegisterForm extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      marginTop: 300,
+      marginTop: 20,
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#DCDCDC',
     },
     spinnerTextStyle: {
       color: '#FFF',

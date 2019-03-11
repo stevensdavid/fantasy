@@ -12,12 +12,18 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import LeaguesScreen from '../screens/LeaguesScreen';
 import SearchScreen from '../screens/SearchScreen';
+import TournamentView from '../components/Tournament/TournamentView';
+import EventView from '../components/Event/EventView';
+import RegisterView from '../components/Profile/RegisterForm';
+import EditProfileView from '../components/Profile/EditProfile';
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+  Tournament: TournamentView,
+  Event: EventView,
 });
 
 HomeStack.navigationOptions = {
@@ -36,27 +42,10 @@ HomeStack.navigationOptions = {
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
-});
-
-LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
-  tabBarIcon: ({
-    focused
-  }) => ( <
-    TabBarIcon focused = {
-      focused
-    }
-    name = {
-      Platform.OS === 'ios' ? 'ios-link' : 'md-link'
-    }
-    />
-  ),
-};
-
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
+  Register: RegisterView,
+  EditProfile: EditProfileView
 });
 
 ProfileStack.navigationOptions = {
@@ -95,7 +84,9 @@ LeaguesStack.navigationOptions = {
 };
 
 const SearchStack = createStackNavigator({
-  Search: SearchScreen
+  Search: SearchScreen,
+  Tournament: TournamentView,
+  Event: EventView
 })
 
 SearchStack.navigationOptions = {
@@ -112,6 +103,7 @@ SearchStack.navigationOptions = {
     />
   ),
 };
+
 export default createBottomTabNavigator({
   HomeStack,
   SearchStack,

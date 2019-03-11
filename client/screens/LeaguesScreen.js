@@ -48,7 +48,7 @@ export default class LeaguesScreen extends React.Component {
   }
 
   render() {
-    const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
+    const loginComponent = <LoginForm setToken = {this.setToken} navigation={this.props.navigation}></LoginForm>;
     return (
       <View>
       {this.state.token ? <LeaguesHome /> : loginComponent}

@@ -12,7 +12,7 @@ import {
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 
-export class EditProfile extends React.Component {
+export default class EditProfile extends React.Component {
     constructor(props) {
         super(props);
         state = {
@@ -87,10 +87,6 @@ export class EditProfile extends React.Component {
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onClickListener('Edit')}>
                 <Text style={styles.loginText}>Edit</Text>
               </TouchableHighlight>
-      
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setEditing(false)}>
-                  <Text>Back</Text>
-              </TouchableHighlight>
             </View>
     );
   }
@@ -98,11 +94,10 @@ export class EditProfile extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-      marginTop: 300,
+      marginTop: 20,
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#DCDCDC',
     },
     inputContainer: {
         borderBottomColor: '#F5FCFF',
