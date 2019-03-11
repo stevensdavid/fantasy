@@ -102,7 +102,7 @@ export class TournamentCoverFlow extends React.Component {
   featuredJSON.map( tournamentInfo => {
       featuredCards.push([
       <View key={tournamentInfo.tournament_id}>
-      <TouchableHighlight onPress={() => this.setState({viewTournament: true, tournamentID: tournamentInfo.tournament_id})}>
+      <TouchableHighlight onPress={() => this.props.navigation.navigate("Tournament", {tournamentID: tournamentInfo.tournament_id})}>
       <Card containerStyle={styles.container}>
       <View>
       <Image
@@ -137,32 +137,18 @@ export class TournamentCoverFlow extends React.Component {
 
     this.getFeatured = this.getFeatured.bind(this);
     this.setFeaturedCards = this.setFeaturedCards.bind(this);
-    this.clearViewTournament = this.clearViewTournament.bind(this);
 
     this.mounted = false;
 
     this.state = {
       showLoading: true,
-      viewingTournament: false,
-      tournamentID: null,
     }
 
     this.headerFontSize= 21;
   }
 
-  clearViewTournament() {
-    if(this.mounted === false) {
-      return;
-    }
-    this.setState({
-      viewTournament: false,
-      tournamentID: null,
-    });
-  }
-
   render() {
-    if(!this.state.viewTournament) {
-      return (
+    return (
       <View>
       <Carousel sneak={30} pageStyle={ {borderRadius: 20}}>
       {this.state.showLoading ? loadingGIF : featuredCards}
@@ -179,9 +165,6 @@ export class TournamentCoverFlow extends React.Component {
       Maecenas et nisi ante. Donec convallis eros ligula, eu tincidunt urna volutpat porttitor. Nunc vel consectetur felis, ac hendrerit nisl. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus scelerisque ex non tincidunt aliquet. Morbi vulputate risus quam, ac fermentum mi mollis id. Quisque eget fermentum nunc.</Text>
       </View>*/}
       </View>)
-    }else {
-      return <TournamentView clearViewTournament={this.clearViewTournament} tournamentID={this.state.tournamentID}></TournamentView>
-    }
 
   }
 }

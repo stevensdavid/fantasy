@@ -12,12 +12,14 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import LeaguesScreen from '../screens/LeaguesScreen';
 import SearchScreen from '../screens/SearchScreen';
+import TournamentView from '../components/Tournament/TournamentView';
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
+  Tournament: TournamentView
 });
 
 HomeStack.navigationOptions = {
@@ -36,11 +38,12 @@ HomeStack.navigationOptions = {
   ),
 };
 
-const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+/*
+const TournamentStack = createStackNavigator({
+  Tournament: TournamentView,
 });
 
-LinksStack.navigationOptions = {
+TournamentStack.navigationOptions = {
   tabBarLabel: 'Links',
   tabBarIcon: ({
     focused
@@ -53,7 +56,7 @@ LinksStack.navigationOptions = {
     }
     />
   ),
-};
+};*/
 
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
@@ -112,6 +115,7 @@ SearchStack.navigationOptions = {
     />
   ),
 };
+
 export default createBottomTabNavigator({
   HomeStack,
   SearchStack,
