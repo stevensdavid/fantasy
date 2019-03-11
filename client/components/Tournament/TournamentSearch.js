@@ -90,27 +90,23 @@ export class TournamentSearch extends React.Component {
     httpGetHeaders = {};
 
     render() {
-        if(!this.state.viewingTournament) {
         return(
-        <View>
-            <SearchBar
-                placeholder="Search"
-                onChangeText={this.updateSearch}
-                value={this.state.search}
-                containerStyle={styles.searchContainer}
-                inputContainerStyle={styles.searchInputContainer}
-                inputStyle={styles.searchInput}
-                placeholderTextColor="#b3002d"
-            />
-            <ScrollableListContainer 
-                data={this.state.data} 
-                onItemClick={(key) => this.viewTournament(key)}
-                loading={this.state.loading}>
-            </ScrollableListContainer>
-        </View>)
-        } else {
-            return <TournamentView clearViewTournament={this.clearViewTournament} tournamentID={this.state.tourID}></TournamentView>
-        }
+            <View>
+                <SearchBar
+                    placeholder="Search"
+                    onChangeText={this.updateSearch}
+                    value={this.state.search}
+                    containerStyle={styles.searchContainer}
+                    inputContainerStyle={styles.searchInputContainer}
+                    inputStyle={styles.searchInput}
+                    placeholderTextColor="#b3002d"
+                />
+                <ScrollableListContainer 
+                    data={this.state.data} 
+                    onItemClick={(key) => this.props.navigation.push("Tournament", {tournamentID: key})}
+                    loading={this.state.loading}>
+                </ScrollableListContainer>
+            </View>)
     }
 }
 

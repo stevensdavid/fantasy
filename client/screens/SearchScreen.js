@@ -19,7 +19,7 @@ export default class SearchScreen extends React.Component {
 
   render() {
     return (
-      <TournamentSearch></TournamentSearch>
+      <TournamentSearch navigation={this.props.navigation}></TournamentSearch>
     );
   }
 }

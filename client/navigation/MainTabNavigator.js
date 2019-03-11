@@ -40,26 +40,6 @@ HomeStack.navigationOptions = {
   ),
 };
 
-/*
-const TournamentStack = createStackNavigator({
-  Tournament: TournamentView,
-});
-
-TournamentStack.navigationOptions = {
-  tabBarLabel: 'Links',
-  tabBarIcon: ({
-    focused
-  }) => ( <
-    TabBarIcon focused = {
-      focused
-    }
-    name = {
-      Platform.OS === 'ios' ? 'ios-link' : 'md-link'
-    }
-    />
-  ),
-};*/
-
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
 });
@@ -100,7 +80,9 @@ LeaguesStack.navigationOptions = {
 };
 
 const SearchStack = createStackNavigator({
-  Search: SearchScreen
+  Search: SearchScreen,
+  Tournament: TournamentView,
+  Event: EventView
 })
 
 SearchStack.navigationOptions = {
