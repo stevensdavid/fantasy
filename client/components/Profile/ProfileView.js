@@ -124,7 +124,7 @@ export class ProfileView extends React.Component {
               </View>
 
               <View style={{flexDirection: 'row'}}>
-              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setEditing(true)}>
+              <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.navigation.navigate("EditProfile")}>
                 <View style={{flexDirection: 'row'}}>
                   <Text style={styles.loginText}>Edit</Text>
                   <Icon containerStyle={{marginLeft: 5, alignSelf:'center', alignItems:'center'}} name='edit' type='material' color='#eff' size={18}/>

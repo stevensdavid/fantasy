@@ -62,14 +62,10 @@ export default class ProfileScreen extends React.Component {
   }
 
   render() {
-    const loginComponent = <LoginForm setToken = {this.setToken} setRegister = {this.setRegister}></LoginForm>;
-    const profileViewComponent = <ProfileView setEditing = {this.setEditing} setToken = {this.setToken}></ProfileView>;
-    const registerComponent = <RegisterForm setToken = {this.setToken} setRegister = {this.setRegister}></RegisterForm>;
-    const editComponent = <EditProfile setEditing = {this.setEditing}></EditProfile>
+    const loginComponent = <LoginForm navigation={this.props.navigation} setToken = {this.setToken}></LoginForm>;
+    const profileViewComponent = <ProfileView navigation={this.props.navigation} setToken = {this.setToken}></ProfileView>;
 
     let show = this.state.token? profileViewComponent : loginComponent;
-    show = this.state.register ? registerComponent : show;
-    show = this.state.editing ? editComponent : show;
 
     return (
       <View>

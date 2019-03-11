@@ -102,7 +102,7 @@ export class LoginForm extends React.Component {
                 <Text style={styles.loginText}>Login</Text>
               </TouchableHighlight>
       
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.setRegister(true)}>
+              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.navigation.navigate("Register")}>
                   <Text>Register</Text>
               </TouchableHighlight>
             </View>
