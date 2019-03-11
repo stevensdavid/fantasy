@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, Text, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Carousel from "react-native-carousel-control";
 import { Card} from 'react-native-elements';
 import {TournamentView} from '../Tournament/TournamentView';
@@ -102,7 +102,7 @@ export class TournamentCoverFlow extends React.Component {
   featuredJSON.map( tournamentInfo => {
       featuredCards.push([
       <View key={tournamentInfo.tournament_id}>
-      <TouchableHighlight onPress={() => this.props.navigation.navigate("Tournament", {tournamentID: tournamentInfo.tournament_id})}>
+      <TouchableOpacity onPress={() => this.props.navigation.navigate("Tournament", {tournamentID: tournamentInfo.tournament_id})}>
       <Card containerStyle={styles.container}>
       <View>
       <Image
@@ -114,7 +114,7 @@ export class TournamentCoverFlow extends React.Component {
       fontSize: (this.headerFontSize * 20 / tournamentInfo.name.length)}}>{tournamentInfo.name}</Text>
       </View>
       </Card>
-      </TouchableHighlight>
+      </TouchableOpacity>
       </View>
       ])
     })
