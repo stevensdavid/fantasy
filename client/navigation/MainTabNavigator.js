@@ -13,13 +13,15 @@ import ProfileScreen from '../screens/ProfileScreen';
 import LeaguesScreen from '../screens/LeaguesScreen';
 import SearchScreen from '../screens/SearchScreen';
 import TournamentView from '../components/Tournament/TournamentView';
+import EventView from '../components/Event/EventView';
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
-  Tournament: TournamentView
+  Tournament: TournamentView,
+  Event: EventView
 });
 
 HomeStack.navigationOptions = {

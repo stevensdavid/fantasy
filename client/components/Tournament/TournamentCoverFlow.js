@@ -118,9 +118,12 @@ export class TournamentCoverFlow extends React.Component {
       </View>
       ])
     })
-    this.setState({
-      showLoading: false
-    });
+    if(this.mounted === true) {
+      this.setState({
+        showLoading: false
+      });
+    }
+    
   }
 
   componentDidMount() {

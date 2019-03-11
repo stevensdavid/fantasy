@@ -20,17 +20,11 @@ export default class TournamentView extends React.Component {
           icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
           events: [],
           eventData: [],
-          viewingEvent: false,
-          eventID: null,
           loadingEvents: true,
         };
 
         this.fetchEvent = this.fetchEvent.bind(this);
-        this.viewEvent = this.viewEvent.bind(this);
-        this.clearViewEvent = this.clearViewEvent.bind(this);
         this.fetchTournamentEvents = this.fetchTournamentEvents.bind(this);
-        this.clearViewEvent = this.clearViewEvent.bind(this);
-
         this.tournamentID =  this.props.navigation.getParam("tournamentID", -1);
     }
     
@@ -142,24 +136,8 @@ export default class TournamentView extends React.Component {
         });
     }
 
-    viewEvent(key) {
-        this.setState({
-            viewingEvent: true,
-            eventID: key,
-        });
-        
-    }
-
-    clearViewEvent() {
-        this.setState({
-          viewingEvent: false,
-          eventID: null,
-        });
-    }
-
     render() {
-            if(!this.state.viewingEvent) {
-            return (
+        return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
@@ -171,7 +149,7 @@ export default class TournamentView extends React.Component {
                 </View>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
-                onItemClick={(key) => this.viewEvent(key)}
+                onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key})}
                 style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
                 loading={this.state.loadingEvents}/>
                 <View style={styles.textView}>
@@ -184,9 +162,6 @@ export default class TournamentView extends React.Component {
                 </View>
                 </ScrollView>
             </View>)
-            } else {
-                return (<EventView clearViewEvent={this.clearViewEvent} eventID={this.state.eventID} />)
-            } 
     }
 }
 
