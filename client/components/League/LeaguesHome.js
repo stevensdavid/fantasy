@@ -5,6 +5,7 @@ import {
   View,
 } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
+import { LeagueList } from './LeagueList'
 
 export class LeaguesHome extends React.Component {
   constructor(props) {
@@ -15,29 +16,29 @@ export class LeaguesHome extends React.Component {
     }
   }
 
-  setLeagues() {
+  componentDidMount() {
     this.setState({ loading: true })
-    const url = new URL(global.server + '/leagues'),
-      params = { userId: global.userId }
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
-    fetch(url, { method: 'GET' }).then(response => {
+    // apparently this isn't supported yet
+    // const url = new URL(global.server + '/leagues'),
+    //   params = { userId: global.userId }
+    // Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+    fetch(global.server + '/leagues?userId=' + global.userId, { method: 'GET' }).then(response => {
       return response.json();
     }).then(obj => {
       this.setState({ leagues: obj });
       this.setState({ loading: false })
+      console.log('Mounted LeaguesHome leagues: ' + this.state.leagues)
     }).catch(err => {
       console.error('GET leagues error: ' + err);
       this.setState({ loading: false });
-    })
+    });
   }
 
   render() {
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.loading} textContent={'Loading'} textStyle={styles.spinnerTextStyle} />
-        <ScrollView>
-
-        </ScrollView>
+        <LeagueList leagues={this.state.leagues}/>
       </View>
     );
   }
