@@ -54,34 +54,16 @@ export class TournamentSearch extends React.Component {
     componentWillUnmount () {
         this.componentDidMount.remove()
     }
-
-    viewTournament(key) {
-        this.setState({
-            tourID: key,
-            viewingTournament: true,
-        });
-    }
-
-    clearViewTournament() {
-        this.setState({
-          viewingTournament: false,
-          tourID: null,
-        });
-      }
-
     constructor(props){
         super(props);
 
         this.searchAndSetTournaments = this.searchAndSetTournaments.bind(this);
         this.updateSearch = this.updateSearch.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.clearViewTournament = this.clearViewTournament.bind(this);
-        this.viewTournament = this.viewTournament.bind(this);
     
         this.state = { 
           search: '',
           data: [],
-          viewingTournament: false,
           tourID: null,
           loading: false,
         };
