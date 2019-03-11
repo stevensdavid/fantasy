@@ -159,7 +159,7 @@ export default class TournamentView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.icon_uri}}/>
                     <Text style={styles.headerText}>{this.state.title}</Text>
                 </View>
-                <View style={{display: (this.state.events ? "" : "none")}}>
+                <View style={{display: (this.state.events ? "initial" : "none")}}>
                 <Text style={{fontSize: 40, alignSelf:'center'}}>Events</Text>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
