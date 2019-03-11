@@ -195,9 +195,9 @@ class UsersAPI(Resource):
                     properties:
                         tag:
                             type: string
-                        firstName:
+                        first_name:
                             type: string
-                        lastName:
+                        last_name:
                             type: string
                         email:
                             type: string
@@ -215,8 +215,8 @@ class UsersAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         parser = reqparse.RequestParser()
         parser.add_argument('tag', type=str)
-        parser.add_argument('firstName', type=str)
-        parser.add_argument('lastName', type=str)
+        parser.add_argument('first_name', type=str)
+        parser.add_argument('last_name', type=str)
         parser.add_argument('email', type=str)
         parser.add_argument('pw', type=str)
         user = User.query.filter(User.user_id == user_id).first()
@@ -853,7 +853,7 @@ class LeagueAPI(Resource):
                     type: object
                     required:
                     properties:
-                        draftSize:
+                        draft_size:
                             type: integer
                             description: >
                                 The number of players each user is allowed to 
@@ -877,7 +877,7 @@ class LeagueAPI(Resource):
         """
         parser = reqparse.RequestParser()
         parser.add_argument('leagueId', type=int)
-        parser.add_argument('draftSize', type=int)
+        parser.add_argument('draft_size', type=int)
         parser.add_argument('public', type=inputs.boolean)
         parser.add_argument('name', type=str)
         league = FantasyLeague.query.filter(FantasyLeague.league_id
