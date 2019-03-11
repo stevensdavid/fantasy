@@ -26,6 +26,8 @@ export class LoginForm extends React.Component {
            passwordFocus: false,
            loading: false,
         }
+
+        this.tryLogin = this.tryLogin.bind(this);
     }
 
     onClickListener = (viewId) => {
@@ -104,7 +106,7 @@ export class LoginForm extends React.Component {
                 <Text style={styles.loginText}>Login</Text>
               </TouchableHighlight>
       
-              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.navigation.navigate("Register")}>
+              <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.navigation.navigate("Register", {tryLogin: this.tryLogin})}>
                   <Text>Register</Text>
               </TouchableHighlight>
             </View>

@@ -5,6 +5,9 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 export default class EventView extends React.Component {
+    static navigationOptions = {
+        title: 'Event',
+    };
 
     constructor(props){
         super(props);
@@ -13,8 +16,9 @@ export default class EventView extends React.Component {
             loading: false,
             eventInfo: {},
             icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
-            playerData: [],
+            playerData: null,
             loadingPlayers: true,
+            hasEntrants: false,
         };
 
         this.fetchEventInfo = this.fetchEventInfo.bind(this);
@@ -65,8 +69,13 @@ export default class EventView extends React.Component {
                                     banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
                                 },
                                 loading: false,
+                                hasEntrants: eventJSON.entrants !== undefined && eventJSON.entrants.length  > 0,
                             });
-                            this.fetchPlayers(this.state.eventInfo.entrants);
+                            if(this.state.eventInfo.entrants === undefined || this.state.eventInfo.entrants.length == 0) {
+                                this.setState({loadingPlayers: false})
+                            } else {
+                                this.fetchPlayers(this.state.eventInfo.entrants);
+                            }
                         }).catch((error) => {
                             console.error('GET tournament within event info error: ' + error);
                             this.setState({loading: false});
@@ -181,7 +190,8 @@ export default class EventView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.eventInfo.icon_uri}}/>
                     <Text style={styles.headerVideogameText}>{this.state.eventInfo.name}</Text>
                 </View>
-                <View>
+                <View style={{display: (this.state.hasEntrants ? "" : "none")}}>
+                    <Text style={{fontSize: 40, alignSelf:'center'}}>Entrants</Text>
                     <ScrollableListContainer 
                     data={this.state.playerData} 
                     style={{maxHeight: 420, borderWidth: 2, margin: 4}} 

@@ -13,6 +13,9 @@ import {
 import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class RegisterForm extends React.Component {
+  static navigationOptions = {
+    title: 'Register',
+  };
     constructor(props) {
         super(props);
         this.state = {
@@ -25,6 +28,8 @@ export default class RegisterForm extends React.Component {
            passwordConfirm: '',
            loading: false,
         }
+
+      this.tryLogin =  this.props.navigation.getParam("tryLogin", -1);
     }
 
     onClickListener = (viewId) => {
@@ -36,10 +41,14 @@ export default class RegisterForm extends React.Component {
         loading: true
       });
       if(stateInfo.password !== stateInfo.passwordConfirm) {
-        Alert.alert("Alert", "Passwords don't match!");
-        this.setState({
-          loading: false
-        });
+        Alert.alert(
+          'Alert',
+          "Passwords don't match",
+          [
+          {text: 'OK', onPress: () => this.setState({loading: false})}
+          ],
+          { cancelable: false }
+        );
         return;
       }
       fetch(global.server + '/users', {
@@ -58,10 +67,18 @@ export default class RegisterForm extends React.Component {
           this.setState({
             loading: false
           });
-          Alert.alert("Alert", "Invalid input!");
+          Alert.alert(
+            'Alert',
+            "Email's already taken",
+            [
+            {text: 'OK', onPress: () => this.setState({loading: false})}
+            ],
+            { cancelable: false }
+          );
           return;
         } else if (response.status === 200) {
-          this.tryLogin(this.state.email, this.state.password)
+          this.tryLogin(this.state.email, this.state.password);
+          this.props.navigation.goBack();
         }
       })
       .catch((error) => {
@@ -72,7 +89,7 @@ export default class RegisterForm extends React.Component {
       });
     }
 
-    tryLogin (ema,pass) {
+    /*tryLogin (ema,pass) {
       fetch(global.server + '/login', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
@@ -94,7 +111,8 @@ export default class RegisterForm extends React.Component {
               loading: false
             })
             global.userID = respjson.userId;
-            this.props.setToken(respjson.token); 
+            this.setToken(respjson.token); 
+            this.props.navigation.goBack();
           })
         }
       })
@@ -104,7 +122,7 @@ export default class RegisterForm extends React.Component {
         });
         console.error('Login error: ' + error);
       });
-    }
+    }*/
 
   render() {
 

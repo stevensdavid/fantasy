@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, TouchableHighlight, Dimensions } from 'react-native';
+import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, Dimensions } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
@@ -8,6 +8,10 @@ import {EventView} from '../Event/EventView';
 
 
 export default class TournamentView extends React.Component {
+    static navigationOptions = {
+        title: 'Tournament',
+    };
+    
     constructor(props){
         super(props);
 
@@ -18,7 +22,7 @@ export default class TournamentView extends React.Component {
           title: '',
           banner_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
           icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
-          events: [],
+          events: null,
           eventData: [],
           loadingEvents: true,
         };
@@ -74,7 +78,15 @@ export default class TournamentView extends React.Component {
         this.state.events.forEach(eventID => {
             this.fetchEvent(eventID).then((eventInfo) => {
                 if(!eventInfo.videogame) {
-                    return;
+                    newData.push({
+                        key: '' + eventInfo.event_id,
+                        img_uri: 'https://cdn.cwsplatform.com/assets/no-photo-available.png',
+                        title: eventInfo.name,
+                    });
+                    this.setState({
+                        eventData: newData,
+                        loadingEvents: false,
+                    })
                 }
                 fetch(global.server + '/videogame/' + eventInfo.videogame, {
                     method: 'GET',
@@ -147,11 +159,14 @@ export default class TournamentView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.icon_uri}}/>
                     <Text style={styles.headerText}>{this.state.title}</Text>
                 </View>
+                <View style={{display: (this.state.events ? "" : "none")}}>
+                <Text style={{fontSize: 40, alignSelf:'center'}}>Events</Text>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
                 onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key})}
                 style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
                 loading={this.state.loadingEvents}/>
+                </View>
                 <View style={styles.textView}>
                 <Text>Etiam lacinia iaculis tincidunt. Nam varius, est non accumsan consectetur, ex orci vestibulum felis, non dictum est sapien vitae nulla. Phasellus nibh quam, consequat ac nisl ut, vulputate ornare tellus. Quisque euismod feugiat urna vitae tincidunt. Ut iaculis ornare lacus a posuere. Suspendisse potenti. Duis id accumsan diam. Nam ut lacus quis neque cursus sollicitudin eget fermentum nisl. Vestibulum non orci ac urna mattis pulvinar sit amet consequat ex. Curabitur non purus a dolor iaculis ullamcorper. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Praesent mattis vel elit non consectetur.
 

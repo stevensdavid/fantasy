@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View, ScrollView, FlatList, Text, Image, Alert, TouchableHighlight } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, ScrollView, FlatList, Text, Image, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 
 /*Takes the following props:
@@ -23,7 +23,7 @@ export class ScrollableListContainer extends React.Component {
         <FlatList
             data={this.props.data}
             renderItem={({item}) => 
-                <TouchableHighlight onPress={() =>  {this.props.onItemClick ? this.props.onItemClick(item.key) : {}}}>
+                <TouchableOpacity onPress={() =>  {this.props.onItemClick ? this.props.onItemClick(item.key) : {}}}>
                 <Card containerStyle={styles.cardContainer}>
                 <View style={{flexDirection: 'row'}}>
                     {item.img_uri ? (
@@ -40,7 +40,7 @@ export class ScrollableListContainer extends React.Component {
                     </View>                    
                 </View>
                 </Card>
-                </TouchableHighlight>}
+                </TouchableOpacity>}
         />
         </ScrollView>
         )))
