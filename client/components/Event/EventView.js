@@ -16,8 +16,9 @@ export default class EventView extends React.Component {
             loading: false,
             eventInfo: {},
             icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
-            playerData: [],
+            playerData: null,
             loadingPlayers: true,
+            hasEntrants: false,
         };
 
         this.fetchEventInfo = this.fetchEventInfo.bind(this);
@@ -68,6 +69,7 @@ export default class EventView extends React.Component {
                                     banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
                                 },
                                 loading: false,
+                                hasEntrants: eventJSON.entrants !== undefined && eventJSON.entrants.length  > 0,
                             });
                             if(this.state.eventInfo.entrants === undefined || this.state.eventInfo.entrants.length == 0) {
                                 this.setState({loadingPlayers: false})
@@ -188,7 +190,7 @@ export default class EventView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.eventInfo.icon_uri}}/>
                     <Text style={styles.headerVideogameText}>{this.state.eventInfo.name}</Text>
                 </View>
-                <View>
+                <View style={{display: (this.state.hasEntrants ? "" : "none")}}>
                     <Text style={{fontSize: 40, alignSelf:'center'}}>Entrants</Text>
                     <ScrollableListContainer 
                     data={this.state.playerData} 
