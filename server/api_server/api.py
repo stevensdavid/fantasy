@@ -14,7 +14,7 @@ import bcrypt
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (Flask, make_response, request, safe_join, send_file,
                    send_from_directory)
-from flask_restful import Api, Resource, reqparse
+from flask_restful import Api, Resource, reqparse, inputs
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -718,20 +718,24 @@ class LeagueAPI(Resource):
         parser = make_pagination_reqparser()
         parser.add_argument('eventId', type=int)
         parser.add_argument('userId', type=int)
-        parser.add_argument('requirePublic', type=bool)
+        parser.add_argument('requirePublic', type=inputs.boolean)
         args = parser.parse_args(strict=True)
         allowed_privacies = [True] if args['requirePublic'] else [False, True]
         if args['eventId']:
             leagues = FantasyLeague.query.filter(
-                FantasyLeague.fantasy_drafts.any(
-                    FantasyDraft.user_id == args['userId']
+                FantasyLeague.fantasy_results.any(
+                    FantasyResult.user_id == args['userId']
                 ) if args['userId'] else True,
                 FantasyLeague.event_id == args['eventId'],
                 FantasyLeague.public.in_(allowed_privacies)
             ).paginate(page=args['page'], per_page=args['perPage']).items
         else:
-            leagues = FantasyLeague.query.filter(FantasyLeague.public.in_(
-                allowed_privacies)).paginate(page=args['page'],
+            leagues = FantasyLeague.query.filter(
+                FantasyLeague.public.in_(allowed_privacies),
+                FantasyLeague.fantasy_results.any(
+                    FantasyResult.user_id == args['userId']
+                ) if args['userId'] else True
+                ).paginate(page=args['page'],
                                              per_page=args['perPage']).items
         return fantasy_leagues_schema.jsonify(leagues)
 
@@ -815,9 +819,9 @@ class LeagueAPI(Resource):
         parser.add_argument('eventId', type=int)
         parser.add_argument('ownerId', type=int)
         parser.add_argument('draftSize', type=int)
-        parser.add_argument('public', type=bool)
+        parser.add_argument('public', type=inputs.boolean)
         parser.add_argument('name', type=str)
-        parser.add_argument('isSnake', type=bool)
+        parser.add_argument('isSnake', type=inputs.boolean)
         args = parser.parse_args(strict=True)
         if not user_is_logged_in(args['ownerId']):
             return NOT_LOGGED_IN_RESPONSE
@@ -874,7 +878,7 @@ class LeagueAPI(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('leagueId', type=int)
         parser.add_argument('draftSize', type=int)
-        parser.add_argument('public', type=bool)
+        parser.add_argument('public', type=inputs.boolean)
         parser.add_argument('name', type=str)
         league = FantasyLeague.query.filter(FantasyLeague.league_id
                                             == league_id).first()
