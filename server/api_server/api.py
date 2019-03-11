@@ -1080,6 +1080,8 @@ class FantasyResultAPI(Resource):
                         leagueId:
                             type: integer
                             description: The ID of the league to add the user to
+        security:
+            - bearerAuth: []
         responses:
             200:
                 description: The user was successfully added to the league
@@ -1092,6 +1094,15 @@ class FantasyResultAPI(Resource):
         parser.add_argument('userId', type=int)
         parser.add_argument('leagueId', type=int)
         args = parser.parse_args(strict=True)
+        league = FantasyLeague.query.filter_by(
+            league_id=args['leagueId']).first()
+        if not league:
+            return {'error': 'League not found'}, 400
+        if ((not user_is_logged_in(league.owner_id)
+             and not user_is_logged_in(args['userId']))
+                or (not league.public
+                    and not user_is_logged_in(league.owner_id))):
+            return NOT_LOGGED_IN_RESPONSE
         # Participation is marked by presence of a FantasyResult entity
         fantasy_result = FantasyResult(user_id=args['userId'],
                                        league_id=args['leagueId'])
@@ -1108,6 +1119,8 @@ class FantasyResultAPI(Resource):
         ---
         consumes:
             application/json
+        security:
+            - bearerAuth: []
         parameters:
             -   in: body
                 schema:
@@ -1135,6 +1148,13 @@ class FantasyResultAPI(Resource):
         parser.add_argument('userId', type=int)
         parser.add_argument('leagueId', type=int)
         args = parser.parse_args(strict=True)
+        league = FantasyLeague.query.filter_by(
+            league_id=args['leagueId']).first()
+        if not league:
+            return {'error': 'League not found'}, 400
+        if (not user_is_logged_in(league.owner_id)
+                and not user_is_logged_in(args['userId'])):
+            return NOT_LOGGED_IN_RESPONSE
         # Participation is marked by presence of a FantasyResult entity
         fantasy_result = FantasyResult.query.filter(
             FantasyResult.user_id == args['userId'],
