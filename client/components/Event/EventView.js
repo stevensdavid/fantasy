@@ -46,6 +46,14 @@ export default class EventView extends React.Component {
 
   componentDidMount() {
     this.fetchEventInfo();
+
+    this.subs = [
+      this.props.navigation.addListener('didFocus', () => {this.state.token != global.token? this.setState({token: global.token}): {}}),
+    ]; 
+  }
+
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
   }
 
   httpGetHeaders = {};
