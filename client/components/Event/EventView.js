@@ -172,6 +172,7 @@ export default class EventView extends React.Component {
             <ScrollableListContainer
               data={this.state.playerData}
               loading={this.state.loadingPlayers}
+              showSearchBar={true}
             />
           </HideAbleView>
         </ScrollView>

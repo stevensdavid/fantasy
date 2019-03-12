@@ -85,7 +85,8 @@ export default class TournamentView extends React.Component {
                 <ScrollableListContainer 
                 data={this.state.eventData} 
                 onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key, tournamentName: this.state.title, tournamentBanner: this.state.banner_uri})}
-                loading={this.state.loadingEvents}/>
+                loading={this.state.loadingEvents}
+                showSearchBar={true}/>
                 </HideAbleView>
                 </ScrollView>
             </View>)
