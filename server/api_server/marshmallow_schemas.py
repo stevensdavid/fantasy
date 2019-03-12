@@ -13,6 +13,16 @@ class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
         exclude = ('pw', 'salt',)
+    fantasy_drafts = ma.Nested(
+        'FantasyDraftSchema',
+        only=["league_id", "player_id"],
+        many=True
+    )
+    fantasy_results = ma.Nested(
+        'FantasyResultSchema',
+        only=["league_id", "score"],
+        many=True
+    )
 
 
 class FriendsSchema(ma.ModelSchema):
@@ -23,6 +33,21 @@ class FriendsSchema(ma.ModelSchema):
 class PlayerSchema(ma.ModelSchema):
     class Meta:
         model = Player
+    entrants = ma.Nested(
+        'EntrantSchema',
+        only=["event_id"],
+        many=True
+    )
+    fantasy_drafts = ma.Nested(
+        'FantasyDraftSchema',
+        only=["league_id", "user_id"],
+        many=True
+    )
+    placements = ma.Nested(
+        'PlacementSchema',
+        only=["event_id", "place"],
+        many=True
+    )
 
 
 class FantasyDraftSchema(ma.ModelSchema):
@@ -47,6 +72,11 @@ class EntrantSchema(ma.ModelSchema):
 class VideoGameSchema(ma.ModelSchema):
     class Meta:
         model = VideoGame
+    events = ma.Nested(
+        'EventSchema',
+        only=["event_id", "name", "tournament"],
+        many=True
+    )
 
 
 class EventSchema(ma.ModelSchema):
@@ -66,6 +96,16 @@ class EventSchema(ma.ModelSchema):
         'TournamentSchema',
         only=["tournament_id", "name", "ext_icon_url", "ext_banner_url"]
     )
+    fantasy_leagues = ma.Nested(
+        'FantasyLeagueSchema',
+        only=["league_id", "public"],
+        many=True
+    )
+    placments = ma.Nested(
+        'PlacementSchema',
+        only=["player_id", "place"],
+        many=True
+    )
 
 
 class TournamentSchema(ma.ModelSchema):
@@ -84,6 +124,16 @@ class FantasyLeagueSchema(ma.ModelSchema):
     event = ma.Nested(
         EventSchema,
         only=["tournament", "name", "event_id"]
+    )
+    fantasy_drafts = ma.Nested(
+        FantasyDraftSchema,
+        many=True,
+        only=["user_id", "player"]
+    )
+    fantasy_results = ma.Nested(
+        'FantasyResultSchema',
+        only=["user", "score"],
+        many=True
     )
 
 
