@@ -39,7 +39,7 @@ export class LeaguesHome extends React.Component {
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.loading} textContent={'Loading'} textStyle={styles.spinnerTextStyle} />
-        <LeagueList leagues={this.state.leagues}/>
+        <LeagueList navigation={this.props.navigation} leagues={this.state.leagues}/>
       </View>
     );
   }

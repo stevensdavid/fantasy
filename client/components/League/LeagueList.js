@@ -54,12 +54,16 @@ export class LeagueList extends React.Component {
         return this.state.data.concat(newData);
     }
 
+    openLeagueView(leagueId){
+        this.props.navigation.navigate("League", {league: leagueId})
+    }
+
     render() {
         return (
             <View>
                 <ScrollableListContainer
                     data={this.state.data}
-                    onItemClick={key => { }}
+                    onItemClick={key => {this.openLeagueView(key)}}
                     //style={null}
                     loading={this.state.loading}
                 />

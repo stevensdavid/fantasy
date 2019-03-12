@@ -51,7 +51,7 @@ export default class LeaguesScreen extends React.Component {
     const loginComponent = <LoginForm setToken = {this.setToken} navigation={this.props.navigation}></LoginForm>;
     return (
       <View>
-      {this.state.token ? <LeaguesHome /> : loginComponent}
+      {this.state.token ? <LeaguesHome navigation={this.props.navigation}/> : loginComponent}
       </View>
       );
   }
