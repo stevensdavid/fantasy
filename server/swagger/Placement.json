@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "id": "Placement",
+  "properties": {
+    "event": {
+      "type": "integer",
+      "format": "int32"
+    },
+    "player": {
+      "type": "object",
+      "properties":{
+        "player_id":{
+          "type": "integer",
+          "format": "int32"
+        },
+        "tag":{
+          "type":"string"
+        }
+      }
+    },
+    "place":{
+      "type": "integer",
+      "format": "int32"
+    }
+  }
+}
