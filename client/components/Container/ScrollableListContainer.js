@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View, ScrollView, FlatList, Text, Image, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, FlatList, Text, Image, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 
 /*Takes the following props:
@@ -17,7 +17,9 @@ export class ScrollableListContainer extends React.Component {
     render() {
         return (
         (this.props.loading? (
+            <View style={{flex: 1, justifyContent: 'center'}}>
             <ActivityIndicator animating={this.props.loading} size="large" color="#b3002d" />
+            </View>
         ): (
         <FlatList
             data={this.props.data}
