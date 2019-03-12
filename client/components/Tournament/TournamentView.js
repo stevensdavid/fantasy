@@ -77,7 +77,7 @@ export default class TournamentView extends React.Component {
         this.setState({loadingEvents: true});
         this.state.events.forEach(eventID => {
             this.fetchEvent(eventID).then((eventInfo) => {
-                if(!eventInfo.videogame) {
+                if(!eventInfo.videogame || eventInfo.videogame == undefined) {
                     newData.push({
                         key: '' + eventInfo.event_id,
                         img_uri: 'https://cdn.cwsplatform.com/assets/no-photo-available.png',
