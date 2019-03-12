@@ -951,7 +951,7 @@ class EntrantsAPI(Resource):
 
         parser = make_pagination_reqparser()
         args = parser.parse_args()
-        entrants = Entrant.query.filter(Entrant.event_id).order_by(
+        entrants = Entrant.query.filter(Entrant.event_id == event_id).order_by(
             Entrant.seed).paginate(page=args['page'], per_page=args['perPage']
                                    ).items
         if not entrants or entrants[0].seed is None:
@@ -959,10 +959,10 @@ class EntrantsAPI(Resource):
             # that signups are not yet complete, so update both using the API
             smashgg.get_entrants_in_event(event_id)
             # Rerun query
-            entrants = Entrant.query.filter(Entrant.event_id).order_by(
-                Entrant.seed).paginate(page=args['page'],
-                                       per_page=args['perPage']
-                                       ).items
+            entrants = Entrant.query.filter(
+                Entrant.event_id == event_id).order_by(
+                    Entrant.seed).paginate(
+                        page=args['page'], per_page=args['perPage'] ).items
         return entrants_schema.jsonify(entrants)
 
 
