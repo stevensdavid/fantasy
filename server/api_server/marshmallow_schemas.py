@@ -23,6 +23,11 @@ class UserSchema(ma.ModelSchema):
         only=["league_id", "score"],
         many=True
     )
+    fantasy_leagues = ma.Nested(
+        'FantasyLeagueSchema',
+        only=["league_id", "name"],
+        many=True
+    )
 
 
 class FriendsSchema(ma.ModelSchema):
