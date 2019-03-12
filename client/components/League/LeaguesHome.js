@@ -3,6 +3,7 @@ import {
   StyleSheet,
   ScrollView,
   View,
+  Text
 } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { LeagueList } from './LeagueList'
@@ -14,10 +15,22 @@ export class LeaguesHome extends React.Component {
       leagues: [],
       loading: true
     }
-    this.componentDidMount = this.componentDidMount.bind(this);
+    this.fetchLeagues = this.fetchLeagues.bind(this);
   }
 
   componentDidMount() {
+    this.fetchLeagues();
+
+    this.subs = [
+      this.props.navigation.addListener('didFocus', () => {this.props.navigation.getParam("newData", false) ? this.fetchLeagues(): {}}),
+    ]; 
+  }
+
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
+  }
+
+  fetchLeagues() {
     this.setState({ loading: true })
     // apparently this isn't supported yet
     // const url = new URL(global.server + '/leagues'),
@@ -26,9 +39,8 @@ export class LeaguesHome extends React.Component {
     fetch(global.server + '/leagues?userId=' + global.userID, { method: 'GET' }).then(response => {
       return response.json();
     }).then(obj => {
-      this.setState({ leagues: obj });
-      this.setState({ loading: false })
       console.log('Mounted LeaguesHome leagues: ' + JSON.stringify(obj));
+      this.setState({ leagues: obj, loading: false });
     }).catch(err => {
       console.error('GET leagues error: ' + err);
       this.setState({ loading: false });

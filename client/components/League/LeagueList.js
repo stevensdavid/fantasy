@@ -12,13 +12,8 @@ export class LeagueList extends React.Component {
       loading: true
     };
     this.setLeagues = this.setLeagues.bind(this);
-    this.componentDidUpdate = this.componentDidUpdate.bind(this);
     this.render = this.render.bind(this);
   }
-
-  /*componentDidMount() {
-        this.setLeagues();
-    }*/
 
   componentDidUpdate(prevProps) {
     if (this.props.leagues !== prevProps.leagues) {
@@ -33,7 +28,7 @@ export class LeagueList extends React.Component {
           );
         })
         .catch(err => console.log(err));
-    }
+}
   }
 
   async setLeagues() {
@@ -68,9 +63,9 @@ export class LeagueList extends React.Component {
     );
     console.log(
       "LeagueList.setLeagues done setting data, newData is " +
-        JSON.stringify(newData)
+      JSON.stringify(newData)
     );
-    return this.state.data.concat(newData);
+    return newData;
   }
 
   openLeagueView(leagueId) {
@@ -80,13 +75,13 @@ export class LeagueList extends React.Component {
   render() {
 
     return (
-      <View style={{minWidth:"100%"}}>
+      <View style={{ minWidth: "100%" }}>
         <ScrollableListContainer
           data={this.state.data}
           onItemClick={key => {
             this.openLeagueView(key);
           }}
-          
+
           loading={this.state.loading}
         />
         <AddButton hide={this.state.loading} containerStyle={styles.floatingButtonStyle} onPress={() => this.props.navigation.navigate("Search")} />
