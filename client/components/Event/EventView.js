@@ -14,6 +14,7 @@ import { Icon} from "react-native-elements";
 import Spinner from "react-native-loading-spinner-overlay";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
+import { HideAbleView } from '../View/HideAbleView';
 
 export default class EventView extends React.Component {
   static navigationOptions = {
