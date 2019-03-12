@@ -13,7 +13,6 @@ import {
 import { Icon} from "react-native-elements";
 import Spinner from "react-native-loading-spinner-overlay";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
-import { HideAbleView } from "../View/HideAbleView";
 import { AddButton } from "../Button/AddButton";
 
 export default class EventView extends React.Component {
