@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "id": "Entrant",
   "properties": {
     "seed": {
       "type": "integer",
@@ -7,12 +8,20 @@
       "nullable": true
     },
     "player": {
-      "type": "string",
-      "nullable": true
+      "type": "object",
+      "properties":{
+        "tag":{
+          "type":"string"
+        },
+        "player_id":{
+          "type":"integer",
+          "format":"int32"
+        }
+      }
     },
     "event": {
-      "type": "string",
-      "nullable": true
+      "type":"integer",
+      "format":"int32"
     }
   }
 }
