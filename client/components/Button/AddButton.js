@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableHighlight } from 'react-native';
+import { StyleSheet, TouchableHighlight, Text } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { HideAbleView } from '../View/HideAbleView';
 
@@ -31,11 +31,11 @@ export class AddButton extends React.Component {
 
 const styles = StyleSheet.create({
     buttonContainer: {
-        height: 50,
+        minHeight: 50,
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        width: 50,
+        minWidth: 50,
         borderRadius: 50
     },
     addButton: {
