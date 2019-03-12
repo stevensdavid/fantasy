@@ -47,8 +47,6 @@ export class LeaguesHome extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 300,
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#DCDCDC',

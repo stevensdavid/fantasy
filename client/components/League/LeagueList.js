@@ -11,6 +11,7 @@ export class LeagueList extends React.Component {
         }
         this.setLeagues = this.setLeagues.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
+        this.render = this.render.bind(this);
     }
 
     /*componentDidMount() {
@@ -42,7 +43,7 @@ export class LeagueList extends React.Component {
                     key: league.league_id.toString(),
                     title: league.name,
                     description: tournament.name + ': ' + event.name,
-                    img_url: tournament.ext_icon_url
+                    img_uri: tournament.ext_icon_url
                 }
             } catch (err){
                 console.log(err);
