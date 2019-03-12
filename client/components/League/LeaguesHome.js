@@ -49,7 +49,6 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#DCDCDC',
   },
   spinnerTextStyle: {
     color: '#FFF',
