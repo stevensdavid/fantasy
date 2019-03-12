@@ -16,6 +16,7 @@ import TournamentView from '../components/Tournament/TournamentView';
 import EventView from '../components/Event/EventView';
 import RegisterView from '../components/Profile/RegisterForm';
 import EditProfileView from '../components/Profile/EditProfile';
+import LeagueView from '../components/League/LeagueView'
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
@@ -65,6 +66,7 @@ ProfileStack.navigationOptions = {
 
 const LeaguesStack = createStackNavigator({
   Leagues: LeaguesScreen,
+  League: LeagueView
 });
 
 LeaguesStack.navigationOptions = {
