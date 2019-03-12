@@ -23,9 +23,9 @@ export default class EventView extends React.Component {
         };
 
         this.fetchEventInfo = this.fetchEventInfo.bind(this);
-        this.fetchVideogameInfo = this.fetchVideogameInfo.bind(this);
-        this.fetchTournamentInfo = this.fetchTournamentInfo.bind(this);
         this.eventID =  this.props.navigation.getParam("eventID", -1);
+        this.tournamentName =  this.props.navigation.getParam("tournamentName", -1);
+        this.tournamentBanner =  this.props.navigation.getParam("tournamentBanner", -1);
     }
 
     componentDidMount() {
@@ -50,131 +50,33 @@ export default class EventView extends React.Component {
                 { cancelable: false }
             )
             } else if(response.status === 200) {
-                response.json().then((eventJSON) => {
-                    this.fetchVideogameInfo(eventJSON.videogame).then((videogameInfo) => {
-                        this.fetchTournamentInfo(eventJSON.tournament).then((tournamentInfo) => {
-                            this.setState({
-                                eventInfo: {
-                                    name: eventJSON.name,
-                                    numEntrants: eventJSON.num_entrants,
-                                    entrants: eventJSON.entrants,
-                                    fantasyLeagues: eventJSON.fantasy_leagues,
-                                    placements: eventJSON.placements,
-                                    slug: eventJSON.slug,
-                                    startAt: eventJSON.start_at,
-                                    tournamentID: tournamentInfo.tournament_id,
-                                    videogameID: videogameInfo.videogame_id,
-                                    tournamentName: tournamentInfo.name,
-                                    videogameName: videogameInfo.name,
-                                    icon_uri: (videogameInfo.ext_photo_url ? videogameInfo.ext_photo_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
-                                    banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
-                                },
-                                loading: false,
-                                hasEntrants: eventJSON.entrants !== undefined && eventJSON.entrants.length  > 0,
-                            });
-                            if(this.state.eventInfo.entrants === undefined || this.state.eventInfo.entrants.length == 0) {
-                                this.setState({loadingPlayers: false})
-                            } else {
-                                this.fetchPlayers(this.state.eventInfo.entrants);
-                            }
-                        }).catch((error) => {
-                            console.error('GET tournament within event info error: ' + error);
-                            this.setState({loading: false});
-                        });
-                    }).catch((error) => {
-                        console.error('GET videogame within event info error: ' + error);
-                        this.setState({loading: false});
+                response.json().then((event) => {
+                    this.setState({
+                        eventInfo: {
+                            name: event.name,
+                            numEntrants: event.num_entrants,
+                            entrants: event.entrants,
+                            fantasyLeagues: event.fantasy_leagues,
+                            placements: event.placements,
+                            slug: event.slug,
+                            startAt: event.start_at,
+                            tournamentID: event.tournament,
+                            videogameID: event.videogame.videogame_id,
+                            tournamentName: this.tournamentName,
+                            videogameName: event.videogame.name,
+                            icon_uri: (event.videogame.ext_photo_url ? event.videogame.ext_photo_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
+                            banner_uri: (this.tournamentBanner != null ? this.tournamentBanner : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
+                        },
+                        playerData: event.entrants.map((p) => {return {key:p.player.player_id.toString(), title: p.player.tag, description:p.seed}}),
+                        loading: false,
+                        loadingPlayers: false,
+                        hasEntrants: event.entrants !== undefined && event.entrants.length  > 0,
                     });
                 })
             }
         }).catch((error) => {
             console.error('GET event info error: ' + error);
             this.setState({loading: false});
-        });
-    }
-
-    fetchVideogameInfo(videogameID) {
-        return fetch(global.server + "/videogame/" + videogameID, {
-            method: 'GET',
-            headers: this.httpGetHeaders
-        }).then((response) => {
-            if(response.status === 404 || response.status === 400) {
-            Alert.alert(
-                'ERROR!',
-                'VIDEOGAME ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
-                [
-                {text: 'OK', onPress: () => this.setState({loading: false})}
-                ],
-                { cancelable: false }
-            )
-            } else if(response.status === 200) {
-                return response.json();
-            }
-        }).catch((error) => {
-            console.error('GET tournament error: ' + error);
-            this.setState({loading: false});
-        });
-    }
-
-    fetchTournamentInfo(tournamentID) {
-        return fetch(global.server + "/tournaments/" + tournamentID, {
-            method: 'GET',
-            headers: this.httpGetHeaders
-        }).then((response) => {
-            if(response.status === 404 || response.status === 400) {
-            Alert.alert(
-                'ERROR!',
-                'TOURNAMENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
-                [
-                {text: 'OK', onPress: () => this.setState({loading: false})}
-                ],
-                { cancelable: false }
-            )
-            } else if(response.status === 200) {
-                return response.json();
-            }
-        }).catch((error) => {
-            console.error('GET tournament error: ' + error);
-            this.setState({loading: false});
-        });
-    }
-
-    fetchPlayerInfo(playerID) {
-        return fetch(global.server + "/players/" + playerID, {
-            method: 'GET',
-            headers: this.httpGetHeaders
-        }).then((response) => {
-            if(response.status === 404 || response.status === 400) {
-            Alert.alert(
-                'ERROR!',
-                'PLAYER ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
-                [
-                {text: 'OK', onPress: () => this.setState({loading: false})}
-                ],
-                { cancelable: false }
-            )
-            } else if(response.status === 200) {
-                return response.json();
-            }
-        }).catch((error) => {
-            console.error('GET tournament error: ' + error);
-            this.setState({loading: false});
-        });
-    }
-
-    fetchPlayers(entrants) {
-        const newData = [];
-        entrants.forEach(element => {
-            this.fetchPlayerInfo(element.player_id).then((playerInfo) => {
-                newData.push({
-                    key: '' + playerInfo.player_id,
-                    title: playerInfo.tag,
-                });
-                this.setState({
-                    playerData: newData,
-                    loadingPlayers: false,
-                })
-            });
         });
     }
 
