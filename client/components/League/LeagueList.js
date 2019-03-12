@@ -20,25 +20,15 @@ export class LeagueList extends React.Component {
       this.setState({ loading: true });
       this.setLeagues()
         .then(newData => {
-          this.setState({ data: newData });
-          this.setState({ loading: false });
-          console.log(
-            "LeagueList.componentDidUpdate is done: " +
-              JSON.stringify(this.state.data)
-          );
+          this.setState({ data: newData, loading: false });
         })
         .catch(err => console.log(err));
 }
   }
 
   async setLeagues() {
-    console.log(
-      "LeagueList setting data: " + JSON.stringify(this.props.leagues)
-    );
-
     const newData = await Promise.all(
       this.props.leagues.map(async league => {
-        console.log("Handling league " + league.league_id);
         try {
           let res = await fetch(global.server + "/events/" + league.event, {
             method: "GET"
@@ -60,10 +50,6 @@ export class LeagueList extends React.Component {
           return;
         }
       })
-    );
-    console.log(
-      "LeagueList.setLeagues done setting data, newData is " +
-      JSON.stringify(newData)
     );
     return newData;
   }

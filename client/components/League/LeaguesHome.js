@@ -40,10 +40,8 @@ export class LeaguesHome extends React.Component {
     fetch(global.server + '/leagues?userId=' + global.userID, { method: 'GET' }).then(response => {
       return response.json();
     }).then(obj => {
-      console.log('Mounted LeaguesHome leagues: ' + JSON.stringify(obj));
       this.setState({ leagues: obj, loading: false });
     }).catch(err => {
-      console.error('GET leagues error: ' + err);
       this.setState({ loading: false });
     });
   }
