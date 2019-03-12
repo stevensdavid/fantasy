@@ -37,8 +37,10 @@ class Friends(db.Model, Serializeable):
         "User.user_id"), primary_key=True)
     friend_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('followers'))
-    friend = db.relationship('User', backref=db.backref('following'))
+    user = db.relationship('User', backref=db.backref('followers'),
+                           foreign_keys=[user_id])
+    friend = db.relationship('User', backref=db.backref('following'),
+                             foreign_keys=[friend_id])
     def __repr__(self):
         return f'<Friends {self.user_id}, {self.friend_id}>'
 
