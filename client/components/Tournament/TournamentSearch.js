@@ -83,11 +83,13 @@ export class TournamentSearch extends React.Component {
                     inputStyle={styles.searchInput}
                     placeholderTextColor="#b3002d"
                 />
+                <View style={{marginBottom: 180}}>
                 <ScrollableListContainer 
                     data={this.state.data} 
                     onItemClick={(key) => this.props.navigation.push("Tournament", {tournamentID: key})}
                     loading={this.state.loading}>
                 </ScrollableListContainer>
+                </View>
             </View>)
     }
 }
