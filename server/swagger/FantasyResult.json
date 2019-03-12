@@ -1,13 +1,22 @@
 {
   "type": "object",
+  "id":"FantasyResult",
   "properties": {
     "league": {
-      "type": "string",
-      "nullable": true
+      "type":"integer",
+      "format":"int32"
     },
     "user": {
-      "type": "string",
-      "nullable": true
+      "type": "object",
+      "properties":{
+        "user_id":{
+          "type": "integer",
+          "format": "int32"
+        },
+        "tag":{
+          "type":"string"
+        }
+      }
     },
     "score": {
       "type": "integer",
