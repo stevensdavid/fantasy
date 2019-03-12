@@ -13,6 +13,10 @@ import {
 } from 'react-native';
 
 export default class CreateLeagueForm extends React.Component {
+    static navigationOptions = {
+        title: 'Create Fantasy League',
+    };
+
     constructor(props) {
         super(props)
         this.state = {
