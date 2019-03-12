@@ -1,9 +1,10 @@
 {
   "type": "object",
+  "id": "Constants",
   "properties": {
     "last_event_update": {
-      "type": "string",
-      "format": "date"
+      "type": "integer",
+      "format": "int32"
     }
   },
   "required": [
