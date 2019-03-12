@@ -58,6 +58,7 @@ export default class CreateLeagueForm extends React.Component {
         }).then(participant_res => {
             if (participant_res.status == 200) {
                 Alert.alert("Success!");
+                this.props.navigation.goBack();
             } else {
                 throw ('Add league owner to league error');
             }
