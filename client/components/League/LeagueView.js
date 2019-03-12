@@ -10,7 +10,8 @@ export default class LeagueView extends React.Component {
     this.state = {
       league: {},
       entrants: [],
-      data: []
+      data: [],
+      loading: true,
     };
     this.componentDidMount = this.componentDidMount.bind(this);
     this.league = this.props.navigation.getParam("league", -1);
@@ -27,7 +28,7 @@ export default class LeagueView extends React.Component {
         return this.getLeagueEntrants(league_res);
       })
       .then(entrants_res => {
-        this.setState({ entrants: entrants_res });
+        this.setState({ entrants: entrants_res, loading: false });
         this.setState({ data: this.createListData(entrants_res) });
         console.log(
           "Finished setting data: " + JSON.stringify(this.state.data)
@@ -97,8 +98,8 @@ export default class LeagueView extends React.Component {
         <Text style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}>
           {this.state.league.name}
         </Text>
-        <ScrollableListContainer data={this.state.data} />
-        <HideAbleView hide={true}>
+        <ScrollableListContainer loading={this.state.loading} data={this.state.data} />
+        <HideAbleView hide={this.state.league.owner === global.userId && !this.state.loading}>
         <TouchableHighlight
           style={[
             styles.buttonContainer,

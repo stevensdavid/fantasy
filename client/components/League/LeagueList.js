@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, TouchableHighlight } from "react-native";
+import { View, StyleSheet, TouchableHighlight, Dimensions } from "react-native";
 import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { HideAbleView } from '../View/HideAbleView';
@@ -80,13 +80,13 @@ export class LeagueList extends React.Component {
   render() {
 
     return (
-      <View>
+      <View style={{minWidth:"100%"}}>
         <ScrollableListContainer
           data={this.state.data}
           onItemClick={key => {
             this.openLeagueView(key);
           }}
-          //style={null}
+          
           loading={this.state.loading}
         />
         <HideAbleView hide={this.state.loading}>
