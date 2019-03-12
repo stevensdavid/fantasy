@@ -12,7 +12,7 @@ class ConstantsSchema(ma.ModelSchema):
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
-        exclude = ('pw','salt',)
+        exclude = ('pw', 'salt',)
 
 
 class FriendsSchema(ma.ModelSchema):
@@ -25,14 +25,15 @@ class PlayerSchema(ma.ModelSchema):
         model = Player
 
 
-class TournamentSchema(ma.ModelSchema):
+class FantasyDraftSchema(ma.ModelSchema):
     class Meta:
-        model = Tournament
+        model = FantasyDraft
 
 
-class EventSchema(ma.ModelSchema):
+class EntrantSchema(ma.ModelSchema):
     class Meta:
-        model = Event
+        model = Entrant
+    player = ma.Nested(PlayerSchema, only=['tag', 'player_id'])
 
 
 class VideoGameSchema(ma.ModelSchema):
@@ -40,14 +41,24 @@ class VideoGameSchema(ma.ModelSchema):
         model = VideoGame
 
 
-class EntrantSchema(ma.ModelSchema):
+class EventSchema(ma.ModelSchema):
     class Meta:
-        model = Entrant
+        model = Event
+    entrants = ma.Nested(EntrantSchema, only=['seed', 'player'], many=True)
+    videogame = ma.Nested(
+        VideoGameSchema,
+        only=['name', 'ext_photo_url', 'photo_path', 'videogame_id']
+    )
 
 
-class FantasyDraftSchema(ma.ModelSchema):
+class TournamentSchema(ma.ModelSchema):
     class Meta:
-        model = FantasyDraft
+        model = Tournament
+    events = ma.Nested(
+        EventSchema, 
+        only=['videogame', 'start_at', 'name', 'event_id'], 
+        many=True
+    )
 
 
 class FantasyLeagueSchema(ma.ModelSchema):
