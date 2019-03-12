@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import { ScrollableListContainer } from '../Container/ScrollableListContainer'
 
 export default class LeagueView extends React.Component {
@@ -82,6 +82,7 @@ export default class LeagueView extends React.Component {
     render() {
         return (
             <View>
+                <Text>{this.state.league.name}</Text>
                 <ScrollableListContainer
                     data={this.state.data}
                 />
