@@ -14,7 +14,7 @@ export class AddButton extends React.Component {
                         styles.addButton,
                         this.props.buttonStyle
                     ]}
-                    onPress={() => this.props.navigation.navigate("Search")}
+                    onPress={() => this.props.onPress()}
                 >
                     <Icon
                         containerStyle={{
