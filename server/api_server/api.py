@@ -337,7 +337,7 @@ class TournamentsAPI(Resource):
 
 class FriendsAPI(Resource):
     def get(self, user_id):
-        """Get all users who are friends with a specific user
+        """Get all users who a specific user considers friends
         ---
         parameters:
             -   name: user_id
@@ -360,19 +360,18 @@ class FriendsAPI(Resource):
             200:
                 description: All of the user's friends
                 schema:
-                    id: Friends
                     type: array
                     items:
-                        import: "swagger/User.json"
+                        type: object
+                        schema:
+                            import: "swagger/User.json"
         """
         parser = make_pagination_reqparser()
         parser.add_argument('tag', str)
         args = parser.parse_args(strict=True)
-        # The Friends junction table has symmetrical entries, i.e. both
-        # Friends(x,y) and Friends(y,x)
         friends = User.query.filter(
             Friends.query.filter(
-                Friends.user_1 == user_id, Friends.user_2 == User.user_id
+                Friends.user == user_id, Friends.friend_id == User.user_id
             ).exists()
             & User.tag.like(
                 f'%{args["tag"] if args["tag"] is not None else ""}%')
@@ -380,9 +379,9 @@ class FriendsAPI(Resource):
         return users_schema.jsonify(friends)
 
     def post(self, user_id):
-        """Make {user_id} friends with {friendId}. 
+        """Make {user_id} friends with {friendId}.
 
-        Creates symmetrical records in the database
+        Creates asymmetrical records in the database
         ---
         consumes:
             -   application/json
@@ -413,9 +412,8 @@ class FriendsAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         args = self._parse_put_delete()
         # Create symmetrical entities
-        friends = Friends(user_1=user_id, user_2=args['friendId'])
+        friends = Friends(user_id=user_id, friend_id=args['friendId'])
         db.session.add(friends)
-        db.session.add(Friends(user_1=args['friendId'], user_2=user_id))
         try:
             db.session.commit()
         except IntegrityError:
@@ -426,7 +424,7 @@ class FriendsAPI(Resource):
     def delete(self, user_id):
         """Delete {user_id}s friendship with {friendId}. 
 
-        Removes symmetrical records in the database
+        Removes asymmetrical records in the database
         ---
         consumes:
             -   application/json
@@ -457,14 +455,11 @@ class FriendsAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         args = self._parse_put_delete()
         friends = Friends.query.filter(
-            Friends.user_1 == user_id, Friends.user_2 == args['friendId']
+            Friends.user_id == user_id, Friends.friend_id == args['friendId']
         ).first()
         if not friends:
             return {'error': 'Not found'}, 404
         db.session.delete(friends)
-        db.session.delete(Friends.query.filter(
-            Friends.user_2 == user_id, Friends.user_1 == args['friendId']
-        ).first())
         db.session.commit()
         return friends.as_dict()
 

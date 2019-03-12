@@ -12,7 +12,7 @@ class ConstantsSchema(ma.ModelSchema):
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
-        exclude = ('pw', 'salt',)
+        exclude = ('pw', 'salt', 'followers')
     fantasy_drafts = ma.Nested(
         'FantasyDraftSchema',
         only=["league_id", "player_id"],
@@ -28,11 +28,23 @@ class UserSchema(ma.ModelSchema):
         only=["league_id", "name"],
         many=True
     )
+    following = ma.Nested(
+        'UserSchema',
+        only=["user_id", "tag", "photo_path"]
+    )
 
 
 class FriendsSchema(ma.ModelSchema):
     class Meta:
         model = Friends
+    user = ma.Nested(
+        UserSchema,
+        only=["user_id","tag","photo_path"]
+    )
+    friend = ma.Nested(
+        UserSchema,
+        only=["user_id","tag","photo_path"]
+    )
 
 
 class PlayerSchema(ma.ModelSchema):

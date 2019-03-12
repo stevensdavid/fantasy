@@ -33,20 +33,14 @@ class User(db.Model, Serializeable):
 
 class Friends(db.Model, Serializeable):
     __tablename__ = "Friends"
-    user_1 = db.Column(db.Integer, db.ForeignKey(
+    user_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
-    user_2 = db.Column(db.Integer, db.ForeignKey(
+    friend_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
-
-    @staticmethod
-    def constructor_params():
-        return {
-            'user_1': int,
-            'user_2': int,
-        }
-
+    user = db.relationship('User', backref=db.backref('followers'))
+    friend = db.relationship('User', backref=db.backref('following'))
     def __repr__(self):
-        return f'<Friends {self.user_1}, {self.user_2}>'
+        return f'<Friends {self.user_id}, {self.friend_id}>'
 
 
 class Player(db.Model, Serializeable):
