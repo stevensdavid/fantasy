@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "id":"Tournament",
   "properties": {
     "icon_path": {
       "type": "string",
@@ -29,9 +30,40 @@
       "maxLength": 255
     },
     "events": {
-      "type": "string",
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "videogame": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "ext_photo_url": {
+                "type": "string"
+              },
+              "photo_path": {
+                "type": "string"
+              },
+              "videogame_id": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "start_at": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "event_id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "ext_banner_url": {
