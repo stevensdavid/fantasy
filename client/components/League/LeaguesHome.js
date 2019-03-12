@@ -22,7 +22,7 @@ export class LeaguesHome extends React.Component {
     this.fetchLeagues();
 
     this.subs = [
-      this.props.navigation.addListener('didFocus', () => {this.props.navigation.getParam("newData", false) ? this.fetchLeagues(): {}}),
+      this.props.navigation.addListener('didFocus', () => {this.props.navigation.getParam("newData", false) ? this.fetchLeagues() : {}}),
     ]; 
   }
 
@@ -31,6 +31,7 @@ export class LeaguesHome extends React.Component {
   }
 
   fetchLeagues() {
+    this.props.navigation.setParams({newData:false})
     this.setState({ loading: true })
     // apparently this isn't supported yet
     // const url = new URL(global.server + '/leagues'),
