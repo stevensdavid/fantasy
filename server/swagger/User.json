@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "id": "User",
   "properties": {
     "first_name": {
       "type": "string",
@@ -11,9 +12,19 @@
       "maxLength": 255
     },
     "fantasy_results": {
-      "type": "string",
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "league_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "score": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "photo_path": {
@@ -30,15 +41,35 @@
       "maxLength": 255
     },
     "fantasy_drafts": {
-      "type": "string",
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "league_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "player_id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "fantasy_leagues": {
-      "type": "string",
+      "type": "array",
+      "description": "A list of fantasy leagues this user owns",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "league_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
       }
     },
     "last_name": {
