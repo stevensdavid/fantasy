@@ -11,10 +11,15 @@ export default class LeagueView extends React.Component {
             data: []
         }
         this.componentDidMount = this.componentDidMount.bind(this)
+        this.league = this.props.navigation.getParam("league", -1)
     }
 
     componentDidMount() {
-        this.getLeagueDetails(this.props.league).then(league_res => {
+        if (this.league === -1){
+            console.log('LeagueView: League ID was not received successfully');
+            return;
+        }
+        this.getLeagueDetails(this.league).then(league_res => {
             this.setState({ league: league_res });
             return this.getLeagueEntrants(league_res)
         }).then(entrants_res => {
@@ -35,9 +40,15 @@ export default class LeagueView extends React.Component {
         // the API
         let entrants = league.fantasy_results.map(x => x.user_id);
         let users = await Promise.all(entrants.map(async userId => {
-            return await (await fetch(global.server + '/users/' + userId,
-                { method: 'GET' })).json()
+            let res = await fetch(global.server + '/users/' + userId,
+            { method: 'GET' })
+            if (res.status == 200){
+                return await res.json()
+            } else {
+                throw await res.text();
+            }
         }));
+        console.log(JSON.stringify(users));
         let userMap = {}
         let playerMap = {}
         for (user of users) {
@@ -52,14 +63,15 @@ export default class LeagueView extends React.Component {
             }
             userMap[draft.user].draft.push(playerMap[draft.player]);
         }
-        return userMap.values();
+        console.log(JSON.stringify(userMap))
+        return Object.values(userMap);
     }
 
     createListData(entrants) {
         let data = [];
         for (entrant of entrants) {
             data.push({
-                "key": entrant.user_id,
+                "key": entrant.user_id.toString(),
                 "title": entrant.tag,
                 "description": entrant.draft.map(player => player.tag).join('\n'),
             })
