@@ -37,6 +37,7 @@ class UserSchema(ma.ModelSchema):
 class FriendsSchema(ma.ModelSchema):
     class Meta:
         model = Friends
+        exclude = ('user_id', 'friend_id')
     user = ma.Nested(
         UserSchema,
         only=["user_id","tag","photo_path"]

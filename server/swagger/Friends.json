@@ -1,4 +1,36 @@
 {
   "type": "object",
-  "properties": {}
+  "id":"Friends",
+  "properties": {
+    "user":{
+      "type":"object",
+      "properties":{
+        "user_id":{
+          "type":"integer",
+          "format":"int32"
+        },
+        "tag":{
+          "type":"string"
+        },
+        "photo_path":{
+          "type":"string"
+        }
+      }
+    },
+    "friend":{
+      "type":"object",
+      "properties":{
+        "user_id":{
+          "type":"integer",
+          "format":"int32"
+        },
+        "tag":{
+          "type":"string"
+        },
+        "photo_path":{
+          "type":"string"
+        }
+      }
+    }
+  }
 }
