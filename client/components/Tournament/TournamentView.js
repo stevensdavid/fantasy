@@ -4,7 +4,7 @@ import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, Dime
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
-import {EventView} from '../Event/EventView';
+import { HideAbleView } from '../View/HideAbleView';
 
 
 export default class TournamentView extends React.Component {
@@ -22,13 +22,10 @@ export default class TournamentView extends React.Component {
           title: '',
           banner_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
           icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
-          events: null,
-          eventData: [],
+          eventData: null,
           loadingEvents: true,
         };
-
-        this.fetchEvent = this.fetchEvent.bind(this);
-        this.fetchTournamentEvents = this.fetchTournamentEvents.bind(this);
+        
         this.tournamentID =  this.props.navigation.getParam("tournamentID", -1);
     }
     
@@ -56,10 +53,10 @@ export default class TournamentView extends React.Component {
                     title: tournamentInfo.name,
                     banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
                     icon_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
-                    events: tournamentInfo.events,
+                    eventData: tournamentInfo.events.map(e => {return {key:e.event_id.toString(), img_uri:e.videogame.ext_photo_url, title:e.name, description: (e.videogame.name + '\nStarts at: ' + new Date(e.start_at*1000).toDateString())}}),
                     loading: false,
+                    loadingEvents: false,
                 });
-                this.fetchTournamentEvents();
             })
             }
         }).catch((error) => {
@@ -72,95 +69,7 @@ export default class TournamentView extends React.Component {
         this.setTournamentInfo()
     }
 
-    fetchTournamentEvents() {
-        const newData = [];
-        this.setState({loadingEvents: true});
-        this.state.events.forEach(eventID => {
-            this.fetchEvent(eventID).then((eventInfo) => {
-                if(!eventInfo.videogame) {
-                    newData.push({
-                        key: '' + eventInfo.event_id,
-                        img_uri: 'https://cdn.cwsplatform.com/assets/no-photo-available.png',
-                        title: eventInfo.name,
-                    });
-                    this.setState({
-                        eventData: newData,
-                        loadingEvents: false,
-                    })
-                }
-                fetch(global.server + '/videogame/' + eventInfo.videogame, {
-                    method: 'GET',
-                    httpGetHeaders2: this.httpGetHeaders2
-                }).then((response) => {
-                    if(response.status === 404 || response.status === 400) {
-                        Alert.alert(
-                            'ERROR!',
-                            'VIDEOGAME ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
-                            [
-                            {text: 'OK', onPress: () => this.setState({loadingEvents: false})}
-                            ],
-                            { cancelable: false }
-                        )
-                        } else if(response.status === 200) {
-                        response.json().then((videogameInfo) => {
-                            const date = new Date(eventInfo.start_at*1000)
-                            const desc = (videogameInfo.name + '\nStarts at: ' + date.toDateString());
-                            newData.push({
-                                key: '' + eventInfo.event_id,
-                                img_uri: videogameInfo.ext_photo_url ? videogameInfo.ext_photo_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png',
-                                title: eventInfo.name,
-                                description: desc,
-                            });
-                            this.setState({
-                                eventData: newData,
-                                loadingEvents: false,
-                            })
-                        })
-                        }
-                }).catch((error) => {
-                    console.error('GET events error: ' + error);
-                    this.setState({loadingEvents: false});
-                });
-            });   
-        });
-    }
-
-    fetchEvent(eventID) {
-        return fetch(global.server + "/events/" + eventID, {
-            method: 'GET',
-            headers: this.httpGetHeaders
-        }).then((response) => {
-            if(response.status === 404 || response.status === 400) {
-            Alert.alert(
-                'ERROR!',
-                'EVENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
-                [
-                {text: 'OK', onPress: () => this.setState({loading: false})}
-                ],
-                { cancelable: false }
-            )
-            } else if(response.status === 200) {
-                return response.json();
-            }
-        }).catch((error) => {
-            console.error('GET event error: ' + error);
-            //this.setState({loading: false});
-        });
-    }
-
     render() {
-        const HideAbleView = (props) => {
-            const { children, hide, style } = props;
-            if (hide) {
-              return null;
-            }
-            return (
-              <View {...this.props} style={style}>
-                { children }
-              </View>
-            );
-          };
-
         return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
@@ -171,11 +80,11 @@ export default class TournamentView extends React.Component {
                     <Image resizeMode="cover" style={styles.iconImage} source={{uri: this.state.icon_uri}}/>
                     <Text style={styles.headerText}>{this.state.title}</Text>
                 </View>
-                <HideAbleView hide={!this.state.events}>
+                <HideAbleView hide={!this.state.eventData}>
                 <Text style={{fontSize: 40, alignSelf:'center'}}>Events</Text>
                 <ScrollableListContainer 
                 data={this.state.eventData} 
-                onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key})}
+                onItemClick={(key) => this.props.navigation.navigate("Event", {eventID: key, tournamentName: this.state.title, tournamentBanner: this.state.banner_uri})}
                 loading={this.state.loadingEvents}/>
                 </HideAbleView>
                 </ScrollView>

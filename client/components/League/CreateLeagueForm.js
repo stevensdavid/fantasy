@@ -12,11 +12,11 @@ import {
     Platform
 } from 'react-native';
 
-export class CreateLeagueForm extends React.Component {
+export default class CreateLeagueForm extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            eventId: props.eventId,
+            eventId: this.props.navigation.getParam("eventId", -1),
             isSnake: false,
             name: '',
             isPublic: false,

@@ -17,6 +17,7 @@ import EventView from '../components/Event/EventView';
 import RegisterView from '../components/Profile/RegisterForm';
 import EditProfileView from '../components/Profile/EditProfile';
 import LeagueView from '../components/League/LeagueView'
+import CreateLeagueForm from '../components/League/CreateLeagueForm'
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
@@ -25,6 +26,7 @@ const HomeStack = createStackNavigator({
   Home: HomeScreen,
   Tournament: TournamentView,
   Event: EventView,
+  CreateLeague: CreateLeagueForm
 });
 
 HomeStack.navigationOptions = {
@@ -88,7 +90,8 @@ LeaguesStack.navigationOptions = {
 const SearchStack = createStackNavigator({
   Search: SearchScreen,
   Tournament: TournamentView,
-  Event: EventView
+  Event: EventView,
+  CreateLeague: CreateLeagueForm
 })
 
 SearchStack.navigationOptions = {
