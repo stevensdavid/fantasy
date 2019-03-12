@@ -3,12 +3,9 @@ import {
     StyleSheet,
     Text,
     View,
-    TextInput,
-    Button,
     TouchableHighlight,
     Image,
     Alert,
-    Platform
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
