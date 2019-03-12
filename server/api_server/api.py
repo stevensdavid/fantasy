@@ -332,6 +332,18 @@ class FriendsAPI(Resource):
                 in: path
                 type: integer
                 required: true
+            -   name: page
+                in: query
+                required: false
+                type: integer
+                description: The page of results to return
+                default: 1
+            -   name: perPage
+                in: query
+                required: false
+                type: integer
+                description: The number of items to include per page
+                default: 20
         responses:
             200:
                 description: All of the user's friends
