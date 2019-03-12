@@ -69,7 +69,7 @@ export class ScrollableListContainer extends React.Component {
                             renderItem={({ item }) =>
                                 <TouchableOpacity onPress={() => { this.props.onItemClick ? this.props.onItemClick(item.key) : {} }}>
                                     <Card containerStyle={styles.cardContainer}>
-                                        <View style={{ flexDirection: 'row' }}>
+                                        <View style={{ flexDirection: 'row'}}>
                                             {item.img_uri ? (
                                                 <Image
                                                     resizeMode="cover"
@@ -78,7 +78,7 @@ export class ScrollableListContainer extends React.Component {
                                             ) : (
                                                     <View></View>
                                                 )}
-                                            <View>
+                                            <View style={{justifyContent: 'center'}}>
                                                 <Text style={styles.headerText}>{item.title}</Text>
                                                 <Text style={styles.descriptionText}>{item.description ? item.description : ''}</Text>
                                             </View>
