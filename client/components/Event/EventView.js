@@ -14,6 +14,7 @@ import { Icon} from "react-native-elements";
 import Spinner from "react-native-loading-spinner-overlay";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { HideAbleView } from "../View/HideAbleView";
+import { AddButton } from "../Button/AddButton";
 
 export default class EventView extends React.Component {
   static navigationOptions = {
@@ -30,7 +31,8 @@ export default class EventView extends React.Component {
         "https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif",
       playerData: null,
       loadingPlayers: true,
-      hasEntrants: false
+      hasEntrants: false,
+      token: global.token,
     };
 
     this.fetchEventInfo = this.fetchEventInfo.bind(this);
@@ -156,26 +158,7 @@ export default class EventView extends React.Component {
               {this.state.eventInfo.name}
             </Text>
           </View>
-          <HideAbleView hide={!global.token} style={{margin:10}}>
-            <TouchableHighlight
-              style={[
-                styles.buttonContainer,
-                styles.addButton
-              ]}
-              onPress={() => this.props.navigation.navigate("CreateLeague", {eventId: this.eventID})}
-            >
-              <Icon
-                containerStyle={{
-                  alignSelf: "center",
-                  alignItems: "center"
-                }}
-                name="add"
-                type="material"
-                color="#eff"
-                size={32}
-              />
-            </TouchableHighlight>
-          </HideAbleView>
+          <AddButton hide={!this.state.token} containerStyle={{margin:10}}/>
           <HideAbleView hide={!this.state.hasEntrants}>
             <Text style={{ fontSize: 40, alignSelf: "center" }}>Entrants</Text>
             <ScrollableListContainer
@@ -220,19 +203,6 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").width / 2
-  },
-  buttonContainer: {
-    height: 50,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-    marginRight: 27,
-    width: 50,
-    borderRadius: 50
-  },
-  addButton: {
-    backgroundColor: "#b3002d"
   },
   iconImageContainer: {
     flexDirection: "row"
