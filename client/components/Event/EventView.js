@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, ImageBackground, Text, Image, Alert, Touc
 import { Icon, Card } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
+import { HideAbleView } from '../View/HideAbleView';
 
 export default class EventView extends React.Component {
     static navigationOptions = {
@@ -178,18 +179,6 @@ export default class EventView extends React.Component {
     }
 
     render() {
-        const HideAbleView = (props) => {
-            const { children, hide, style } = props;
-            if (hide) {
-              return null;
-            }
-            return (
-              <View {...this.props} style={style}>
-                { children }
-              </View>
-            );
-          };
-
         return (
             <View>
                 <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
