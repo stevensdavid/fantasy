@@ -19,7 +19,6 @@ export class ScrollableListContainer extends React.Component {
         (this.props.loading? (
             <ActivityIndicator animating={this.props.loading} size="large" color="#b3002d" />
         ): (
-        <ScrollView style={styles.container} contentContainerStyle={this.props.style}>
         <FlatList
             data={this.props.data}
             renderItem={({item}) => 
@@ -42,7 +41,6 @@ export class ScrollableListContainer extends React.Component {
                 </Card>
                 </TouchableOpacity>}
         />
-        </ScrollView>
         )))
     }
 }

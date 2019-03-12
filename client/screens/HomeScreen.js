@@ -15,13 +15,18 @@ import {TournamentCoverFlow} from '../components/Tournament/TournamentCoverFlow'
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
-    title: 'Featured Tournaments',
+    title: 'Home',
   };
 
   render() {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+
+        <Text style={styles.headerText}>Featured Tournaments</Text>
+        <TournamentCoverFlow navigation={this.props.navigation}/>
+
+        <Text style={styles.headerText}>Upcoming Tournaments</Text>
         <TournamentCoverFlow navigation={this.props.navigation}/>
         {/*
           <View style={styles.welcomeContainer}>
@@ -91,6 +96,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  headerText: {
+    fontSize: 30, 
+    alignSelf:'center', 
+    fontWeight: "bold",
+    marginTop: 10,
   },
   developmentModeText: {
     marginBottom: 20,
