@@ -1,7 +1,8 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableHighlight } from "react-native";
+import { View, StyleSheet, TouchableHighlight } from "react-native";
 import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
+import { HideAbleView } from '../View/HideAbleView';
 
 export class LeagueList extends React.Component {
   constructor(props) {
@@ -77,17 +78,6 @@ export class LeagueList extends React.Component {
   }
 
   render() {
-    const HideAbleView = props => {
-      const { children, hide, style } = props;
-      if (hide) {
-        return null;
-      }
-      return (
-        <View {...this.props} style={style}>
-          {children}
-        </View>
-      );
-    };
 
     return (
       <View>
