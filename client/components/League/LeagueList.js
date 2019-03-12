@@ -106,7 +106,7 @@ export class LeagueList extends React.Component {
             styles.addButton,
             styles.floatingButtonStyle
           ]}
-          onPress={() => this.props.setToken(null)}
+          onPress={() => this.props.navigation.navigate("Search")}
         >
           <Icon
             containerStyle={{
