@@ -1,10 +1,21 @@
 {
   "type": "object",
+  "id": "Player",
   "properties": {
     "placements": {
-      "type": "string",
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "place": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "player_id": {
@@ -16,15 +27,31 @@
       "maxLength": 255
     },
     "fantasy_drafts": {
-      "type": "string",
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "league_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "entrants": {
-      "type": "string",
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
       }
     },
     "ranking": {
