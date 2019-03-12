@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableHighlight, Dimensions } from "react-native";
 import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
-import { HideAbleView } from '../View/HideAbleView';
+import { AddButton } from "../Button/AddButton";
 
 export class LeagueList extends React.Component {
   constructor(props) {
@@ -89,46 +89,13 @@ export class LeagueList extends React.Component {
           
           loading={this.state.loading}
         />
-        <HideAbleView hide={this.state.loading}>
-        <TouchableHighlight
-          style={[
-            styles.buttonContainer,
-            styles.addButton,
-            styles.floatingButtonStyle
-          ]}
-          onPress={() => this.props.navigation.navigate("Search")}
-        >
-          <Icon
-            containerStyle={{
-              alignSelf: "center",
-              alignItems: "center"
-            }}
-            name="add"
-            type="material"
-            color="#eff"
-            size={32}
-          />
-        </TouchableHighlight>
-        </HideAbleView>
+        <AddButton hide={this.state.loading} containerStyle={styles.floatingButtonStyle} onPress={() => this.props.navigation.navigate("Search")} />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    height: 50,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-    marginRight: 27,
-    width: 50,
-    borderRadius: 50
-  },
-  addButton: {
-    backgroundColor: "#b3002d"
-  },
   mainContainerStyle: {
     flexDirection: "column",
     flex: 1
@@ -136,7 +103,7 @@ const styles = StyleSheet.create({
   floatingButtonStyle: {
     alignSelf: "flex-end",
     position: "absolute",
-    bottom: 0,
-    right: 0
+    bottom: 16,
+    right: 26
   }
 });
