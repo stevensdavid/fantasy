@@ -166,7 +166,7 @@ export default class EventView extends React.Component {
               {this.state.eventInfo.name}
             </Text>
           </View>
-          <AddButton hide={!this.state.token} containerStyle={{margin:10}}/>
+          <AddButton onPress={() => this.props.navigation.navigate("CreateLeague", {eventId: this.eventID})} hide={!this.state.token} containerStyle={{margin:10}}/>
           <HideAbleView hide={!this.state.hasEntrants}>
             <Text style={{ fontSize: 40, alignSelf: "center" }}>Entrants</Text>
             <ScrollableListContainer
