@@ -30,19 +30,21 @@ class TournamentSchema(ma.ModelSchema):
         model = Tournament
 
 
+class EntrantSchema(ma.ModelSchema):
+    class Meta:
+        model = Entrant
+    player = ma.Nested(PlayerSchema, only=['tag','player_id'])
+
+
 class EventSchema(ma.ModelSchema):
     class Meta:
         model = Event
+    entrants = ma.Nested(EntrantSchema, only=['seed','player'], many=True)
 
 
 class VideoGameSchema(ma.ModelSchema):
     class Meta:
         model = VideoGame
-
-
-class EntrantSchema(ma.ModelSchema):
-    class Meta:
-        model = Entrant
 
 
 class FantasyDraftSchema(ma.ModelSchema):
