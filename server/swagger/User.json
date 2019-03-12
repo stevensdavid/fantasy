@@ -76,6 +76,24 @@
       "type": "string",
       "nullable": true,
       "maxLength": 50
+    },
+    "following": {
+      "type":"array",
+      "items":{
+        "type":"object",
+        "properties":{
+          "user_id":{
+            "type":"integer",
+            "format":"int32"
+          },
+          "tag":{
+            "type":"string"
+          },
+          "photo_path":{
+            "type":"string"
+          }
+        }
+      }
     }
   },
   "required": [
