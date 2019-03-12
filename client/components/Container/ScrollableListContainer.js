@@ -3,7 +3,7 @@ import { ActivityIndicator, StyleSheet, View, ScrollView, FlatList, Text, Image,
 import { Card } from 'react-native-elements';
 
 /*Takes the following props:
-    data: Array with objects each containing {key, img_url(optional), title, description(optional)}
+    data: Array with objects each containing {key, img_uri(optional), title, description(optional)}
     onItemClick(key): Function which handles the key of a clicked item.(optional)
     style: Object holding React Native CSS(optional).
 */

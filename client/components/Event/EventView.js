@@ -205,8 +205,7 @@ export default class EventView extends React.Component {
                 <HideAbleView hide={!this.state.hasEntrants}>
                     <Text style={{fontSize: 40, alignSelf:'center'}}>Entrants</Text>
                     <ScrollableListContainer 
-                    data={this.state.playerData} 
-                    style={{maxHeight: 420, borderWidth: 2, margin: 4}} 
+                    data={this.state.playerData}
                     loading={this.state.loadingPlayers}/>
                 </HideAbleView>
                 </ScrollView>
