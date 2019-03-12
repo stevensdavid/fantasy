@@ -1,17 +1,42 @@
 {
   "type": "object",
+  "id":"FantasyDraft",
   "properties": {
-    "player": {
-      "type": "string",
-      "nullable": true
+    "player_id": {
+      "type":"integer",
+      "format":"int32"
     },
-    "league": {
-      "type": "string",
-      "nullable": true
+    "league_id": {
+      "type":"integer",
+      "format":"int32"
     },
-    "user": {
-      "type": "string",
-      "nullable": true
+    "user_id": {
+      "type":"integer",
+      "format":"int32"
+    },
+    "user":{
+      "type":"object",
+      "properties":{
+        "user_id":{
+          "type":"integer",
+          "format":"int32"
+        },
+        "tag":{
+          "type":"string"
+        }
+      }
+    },
+    "player":{
+      "type":"object",
+      "properties":{
+        "tag":{
+          "type":"string"
+        },
+        "player_id":{
+          "type":"integer",
+          "format":"int32"
+        }
+      }
     }
   }
 }
