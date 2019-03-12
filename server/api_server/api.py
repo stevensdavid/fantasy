@@ -1211,12 +1211,15 @@ def user_is_logged_in(user_id):
     if scheme.lower() != 'bearer':
         return False
     user = User.query.filter(User.user_id == user_id).first()
-    email, hashed = base64.b64decode(token).decode().split(':')
+    try:
+        email, hashed = base64.b64decode(token).decode().split(':')
+    except UnicodeDecodeError:
+        return False
     return email == user.email and hashed == user.pw
 
 
 api.add_resource(DatabaseVersionAPI, '/event_version')
-api.add_resource(UsersAPI, '/users', '/users/<int:user_id>')
+api.add_resource(UsersAPI, '/ksers', '/users/<int:user_id>')
 api.add_resource(EventsAPI, '/events/<int:event_id>')
 api.add_resource(TournamentsAPI, '/tournaments',
                  '/tournaments/<int:tournament_id>')
