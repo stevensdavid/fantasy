@@ -55,7 +55,10 @@ class TournamentSchema(ma.ModelSchema):
     class Meta:
         model = Tournament
     events = ma.Nested(
-        EventSchema, only=['videogame', 'start_at', 'name'], many=True)
+        EventSchema, 
+        only=['videogame', 'start_at', 'name', 'event_id'], 
+        many=True
+    )
 
 
 class FantasyLeagueSchema(ma.ModelSchema):
