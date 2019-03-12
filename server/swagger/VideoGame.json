@@ -1,5 +1,6 @@
 {
   "type": "object",
+  "id": "VideoGame",
   "properties": {
     "photo_path": {
       "type": "string",
@@ -10,10 +11,41 @@
       "type": "string",
       "maxLength": 255
     },
-    "events": {
+    "ext_photo_url": {
       "type": "string",
+      "maxLength": 255
+    },
+    "events": {
+      "type": "array",
       "items": {
-        "type": "string"
+        "type": "object",
+        "properties": {
+          "event_id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tournament": {
+            "type": "object",
+            "properties": {
+              "tournament_id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "name": {
+                "type": "string"
+              },
+              "ext_icon_url": {
+                "type": "string"
+              },
+              "ext_banner_url": {
+                "type": "string"
+              }
+            }
+          }
+        }
       }
     },
     "videogame_id": {
