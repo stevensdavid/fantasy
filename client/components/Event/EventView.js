@@ -156,24 +156,26 @@ export default class EventView extends React.Component {
               {this.state.eventInfo.name}
             </Text>
           </View>
-          <TouchableHighlight
-            style={[
-              styles.buttonContainer,
-              styles.addButton
-            ]}
-            onPress={() => this.props.navigation.navigate("CreateLeague", {eventId: this.eventID})}
-          >
-            <Icon
-              containerStyle={{
-                alignSelf: "center",
-                alignItems: "center"
-              }}
-              name="add"
-              type="material"
-              color="#eff"
-              size={32}
-            />
-          </TouchableHighlight>
+          <HideAbleView hide={!global.token} style={{margin:10}}>
+            <TouchableHighlight
+              style={[
+                styles.buttonContainer,
+                styles.addButton
+              ]}
+              onPress={() => this.props.navigation.navigate("CreateLeague", {eventId: this.eventID})}
+            >
+              <Icon
+                containerStyle={{
+                  alignSelf: "center",
+                  alignItems: "center"
+                }}
+                name="add"
+                type="material"
+                color="#eff"
+                size={32}
+              />
+            </TouchableHighlight>
+          </HideAbleView>
           <HideAbleView hide={!this.state.hasEntrants}>
             <Text style={{ fontSize: 40, alignSelf: "center" }}>Entrants</Text>
             <ScrollableListContainer
