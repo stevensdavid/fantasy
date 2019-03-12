@@ -25,9 +25,7 @@ export default class TournamentView extends React.Component {
           eventData: null,
           loadingEvents: true,
         };
-
-        this.fetchEvent = this.fetchEvent.bind(this);
-        this.fetchTournamentEvents = this.fetchTournamentEvents.bind(this);
+        
         this.tournamentID =  this.props.navigation.getParam("tournamentID", -1);
     }
     
