@@ -15,6 +15,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (Flask, make_response, request, safe_join, send_file,
                    send_from_directory)
 from flask_restful import Api, Resource, reqparse, inputs
+from flask_socketio import send, emit
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -54,30 +55,6 @@ tournaments_schema = TournamentSchema(many=True)
 users_schema = UserSchema(many=True)
 video_games_schema = VideoGameSchema(many=True)
 entrants_schema = EntrantSchema(many=True)
-
-"""
-API endpoints providing support for:
-Söka användare +
-Skapa ny användare +
-Ändra lösenord +
-lägg till vän +
-
-Se turneringar +
-Se utvalda turneringar +
-Söka turneringar +
-
-Se alla events i turnering +
-
-Se alla vänner till användare +
-
-Se användares drafts +
-Se användares ligor (både ägda och deltagande) +
-Skapa ligor +
-Skapa drafts +
-Redigera liga +
-Redigera drafts +
-Bjud in deltagare
-"""
 
 
 class UsersAPI(Resource):
@@ -632,6 +609,11 @@ class DraftsAPI(Resource):
             FantasyDraft.league_id == league_id, FantasyDraft.user_id == user_id
         ).all()
         if len(current_draft) < league.draft_size:
+            if league.is_snake and league.turn != user_id:
+                return {
+                    "error": f"It is user {league.turn}'s turn to draft, not "
+                    "yours"
+                }, 400
             draft = FantasyDraft(league_id=league_id,
                                  user_id=user_id, player_id=args['playerId'])
             db.session.add(draft)
@@ -643,6 +625,20 @@ class DraftsAPI(Resource):
                     "error": "One of the provided parameters points to a non-"
                              "existent entity."
                 }, 400
+            if league.is_snake:
+                emit('new-draft', fantasy_draft_schema.dump(draft),
+                    namespace='/leagues', room=league_id)
+                users = sorted(map(lambda x: x.user, league.fantasy_results),
+                            key=lambda x: x.user_id)
+                first_draft = FantasyDraft.query.filter_by(
+                    league_id=league_id, user_id=users[0].user_id
+                ).all()
+                last_draft = FantasyDraft.query.filter_by(
+                    league_id=league_id, user_id=users[-1].user_id
+                ).all()
+                ascending = len(first_draft) > len(last_draft)
+                # TODO: fix turn
+                emit('turn-change', {'turn': None})
             return fantasy_draft_schema.jsonify(draft)
         return {
             "error": f"The user's draft is full. The draft size limit for "
@@ -1251,7 +1247,7 @@ class FantasyResultAPI(Resource):
         return schema.jsonify(fantasy_result)
 
 
-def user_is_logged_in(user_id):
+def user_is_logged_in(user_id, token=None):
     """Verify the authentication token in the request's headers
 
     :param user_id: The ID  of the user that the incoming request claims to be
@@ -1259,13 +1255,14 @@ def user_is_logged_in(user_id):
     :return: If the request passes the authentication
     :retype: bool
     """
-    header = request.headers.get('Authorization')
-    try:
-        scheme, token = header.split(' ')
-    except (ValueError, AttributeError):
-        return False
-    if scheme.lower() != 'bearer':
-        return False
+    if token is None:
+        header = request.headers.get('Authorization')
+        try:
+            scheme, token = header.split(' ')
+        except (ValueError, AttributeError):
+            return False
+        if scheme.lower() != 'bearer':
+            return False
     user = User.query.filter(User.user_id == user_id).first()
     try:
         email, hashed = base64.b64decode(token).decode().split(':')
