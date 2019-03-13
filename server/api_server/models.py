@@ -61,7 +61,7 @@ class FantasyLeague(db.Model, Serializeable):
     name = db.Column(db.String(45), nullable=False)
     public = db.Column(db.Boolean, nullable=False)
     is_snake = db.Column(db.Boolean)
-
+    turn = db.Column(db.Integer, nullable=True)
     event_id = db.Column(db.Integer, db.ForeignKey(
         "Event.event_id"), nullable=False)
     event = db.relationship(
