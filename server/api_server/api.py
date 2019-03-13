@@ -772,7 +772,7 @@ class LeagueAPI(Resource):
                 # This is a snake draft that hasn't started yet, update
                 # the turn and set order to ascending
                 league.draft_ascending = True
-                league.turn = min(map(lambda x: x['user']['user_id'],
+                league.turn = min(map(lambda x: x.user.user_id,
                                       league.fantasy_results))
                 db.session.commit()
             return fantasy_league_schema.jsonify(league)
