@@ -40,11 +40,11 @@ class FriendsSchema(ma.ModelSchema):
         exclude = ('user_id', 'friend_id')
     user = ma.Nested(
         UserSchema,
-        only=["user_id","tag","photo_path"]
+        only=["user_id", "tag", "photo_path"]
     )
     friend = ma.Nested(
         UserSchema,
-        only=["user_id","tag","photo_path"]
+        only=["user_id", "tag", "photo_path"]
     )
 
 
@@ -73,7 +73,7 @@ class FantasyDraftSchema(ma.ModelSchema):
         model = FantasyDraft
     player = ma.Nested(
         PlayerSchema,
-        only=["tag", "player_id"]
+        only=["tag", "player_id", "ext_photo_url", "photo_path"]
     )
     user = ma.Nested(
         UserSchema,
@@ -84,7 +84,10 @@ class FantasyDraftSchema(ma.ModelSchema):
 class EntrantSchema(ma.ModelSchema):
     class Meta:
         model = Entrant
-    player = ma.Nested(PlayerSchema, only=['tag', 'player_id'])
+    player = ma.Nested(
+        PlayerSchema,
+        only=['tag', 'player_id', "ext_photo_url", "photo_path"]
+    )
 
 
 class VideoGameSchema(ma.ModelSchema):
@@ -169,5 +172,5 @@ class PlacementSchema(ma.ModelSchema):
         model = Placement
     player = ma.Nested(
         PlayerSchema,
-        only=["player_id", "tag"]
+        only=["player_id", "tag", "ext_photo_url", "photo_path"]
     )
