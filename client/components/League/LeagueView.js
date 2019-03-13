@@ -15,6 +15,7 @@ export default class LeagueView extends React.Component {
     };
     this.componentDidMount = this.componentDidMount.bind(this);
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
+    this.handlePress = this.handlePress.bind(this);
   }
 
   componentDidMount() {
@@ -47,13 +48,24 @@ export default class LeagueView extends React.Component {
       }).catch(err => console.error(err));
   }
 
+  handlePress(userID) {
+    console.log(userID)
+    if (userID == global.userID) {
+      this.props.navigation.navigate("EditDraft", {league: this.state.league})
+    }
+  }
+
   render() {
     return (
       <View style={{ minHeight: "100%" }}>
         <Text style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}>
           {this.state.league.name}
         </Text>
-        <ScrollableListContainer loading={this.state.loading} data={this.state.data} />
+        <ScrollableListContainer
+          loading={this.state.loading}
+          data={this.state.data}
+          onItemClick={(userID) => this.handlePress(userID)}
+        />
         <AddButton hide={this.state.league.owner != global.userID || this.state.loading}
           containerStyle={styles.floatingButtonStyle}
           onPress={() => this.props.navigation.navigate("Search")} />
