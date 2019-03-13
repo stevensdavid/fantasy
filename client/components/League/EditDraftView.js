@@ -81,13 +81,28 @@ export default class EditDraftView extends React.Component {
                 }
             }).then(newDraft => {
                 this.setState({ draft: this.state.draft.concat(newDraft) });
-                this.setState({ entrants: this.state.entrants.filter(x => x.player.player_id != newDraft.player_id) })
                 this.setFormattedLists();
             }).catch(err => console.error(err));
     }
 
     removePlayer(playerID) {
-        
+        fetch(global.server + '/drafts/' + this.state.league.league_id + '/' + global.userID,
+            {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'bearer ' + global.token },
+                body: JSON.stringify({
+                    playerId: playerID
+                })
+            }).then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                } else {
+                    throw (res.body)
+                }
+            }).then(newDraft => {
+                this.setState({ draft: this.state.draft.filter(x => x.player.player_id != newDraft.player_id) });
+                this.setFormattedLists();
+            }).catch(err => console.error(err));
     }
 
     render() {
