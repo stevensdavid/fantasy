@@ -16,9 +16,10 @@ import TournamentView from '../components/Tournament/TournamentView';
 import EventView from '../components/Event/EventView';
 import RegisterView from '../components/Profile/RegisterForm';
 import EditProfileView from '../components/Profile/EditProfile';
-import LeagueView from '../components/League/LeagueView'
-import CreateLeagueForm from '../components/League/CreateLeagueForm'
-import EditDraftView from '../components/League/EditDraftView'
+import LeagueView from '../components/League/LeagueView';
+import CreateLeagueForm from '../components/League/CreateLeagueForm';
+import EditDraftView from '../components/League/EditDraftView';
+import FriendsView from '../components/Profile/FriendsView';
 
 //TODO: Remove this.
 import LinksScreen from '../screens/LinksScreen';
@@ -49,7 +50,8 @@ HomeStack.navigationOptions = {
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
   Register: RegisterView,
-  EditProfile: EditProfileView
+  EditProfile: EditProfileView,
+  Friends: FriendsView
 });
 
 ProfileStack.navigationOptions = {

@@ -23,12 +23,36 @@ export class LeagueList extends React.Component {
           return {
             key: league.league_id.toString(),
             title: league.name,
-            description: league.event.tournament.name + ': ' + league.event.name,
+            description:
+              league.event.tournament.name + ": " + league.event.name,
             img_uri: league.event.tournament.ext_icon_url
-          }
-        }), loading: false
+          };
+        }),
+        loading: false
       });
     }
+  }
+
+  deleteLeague(leagueID) {
+    fetch(global.server + "/leagues/" + leagueID, {
+      method: "DELETE",
+      headers: {
+        Authorization: "bearer " + global.token
+      }
+    })
+      .then(res => {
+        if (res.status === 200) {
+          return res.json();
+        } else {
+          throw res;
+        }
+      })
+      .then(deletedLeague => {
+        this.setState({
+          data: this.state.data.filter(x => x.key != deletedLeague.league_id)
+        });
+      })
+      .catch(err => console.log(err));
   }
 
   openLeagueView(selectedLeague) {
@@ -36,7 +60,6 @@ export class LeagueList extends React.Component {
   }
 
   render() {
-
     return (
       <View style={{ minWidth: "100%" }}>
         <ScrollableListContainer
@@ -44,10 +67,15 @@ export class LeagueList extends React.Component {
           onItemClick={key => {
             this.openLeagueView(key);
           }}
-
+          enableDeleteSwipe={true}
+          onItemDelete={leagueID => this.deleteLeague(leagueID)}
           loading={this.state.loading}
         />
-        <AddButton hide={this.state.loading} containerStyle={styles.floatingButtonStyle} onPress={() => this.props.navigation.navigate("Search")} />
+        <AddButton
+          hide={this.state.loading}
+          containerStyle={styles.floatingButtonStyle}
+          onPress={() => this.props.navigation.navigate("Search")}
+        />
       </View>
     );
   }

@@ -45,7 +45,8 @@ export default class EditDraftView extends React.Component {
             formattedDraft: this.state.draft.map(x => {
                 return {
                     key: x.player.player_id.toString(),
-                    title: x.player.tag
+                    title: x.player.tag,
+                    img_uri: x.player.ext_photo_url ? x.player.ext_photo_url : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
                 }
             })
         });
@@ -57,6 +58,7 @@ export default class EditDraftView extends React.Component {
                 return {
                     key: x.player.player_id.toString(),
                     title: x.player.tag,
+                    img_uri: x.player.ext_photo_url ? x.player.ext_photo_url : "https://cdn.cwsplatform.com/assets/no-photo-available.png",
                     description: 'Seed: ' + x.player.seed
                 }
             })
@@ -123,7 +125,7 @@ export default class EditDraftView extends React.Component {
                         onItemClick={playerID => this.removePlayer(playerID)}
                         loading={this.state.loading}
                     />
-                    <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
+                    <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 10, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
                     <Text style={styles.headerText}>All players</Text>
                     <ScrollableListContainer
                         showSearchBar={true}
