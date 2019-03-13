@@ -71,6 +71,8 @@ export class ProfileView extends React.Component {
   }
 
   render() {
+    const rightArrow = (<Icon name="chevron-right"  type="material" color="#222" size={32} />)
+
     return (
       <View>
       <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
@@ -112,22 +114,28 @@ export class ProfileView extends React.Component {
               </View>
               
               <TouchableOpacity onPress={() => this.props.navigation.navigate("Friends")}>
-                <View style={styles.textContainer}>
+                <View style={styles.linkContainer}>
                   <Text style={[styles.inputs, {fontWeight: "bold"}]}
                       secureTextEntry={true}
                       underlineColorAndroid='transparent'>
                       Friends: 0
                   </Text>
+                  <View>
+                  {rightArrow}
+                  </View>
                 </View>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => this.props.navigation.navigate("Leagues")}>
-                <View style={styles.textContainer}>
+                <View style={styles.linkContainer}>
+                  <View>
                   <Text style={[styles.inputs, {fontWeight: "bold"}]}
                       secureTextEntry={true}
                       underlineColorAndroid='transparent'>
                       Leagues: 0
                   </Text>
+                  </View>
+                  {rightArrow}
                 </View>
               </TouchableOpacity>
 
@@ -168,6 +176,16 @@ styles = StyleSheet.create({
       marginBottom:20,
       flexDirection: 'row',
       alignItems:'center'
+  },
+  linkContainer: {
+    borderBottomColor: '#F5FCFF',
+    backgroundColor: '#FFFFFF',
+    borderRadius:30,
+    borderBottomWidth: 1,
+    width:250,
+    height:45,
+    marginBottom:20,
+    flexDirection: 'row'
   },
   spinnerTextStyle: {
     color: '#FFF',
