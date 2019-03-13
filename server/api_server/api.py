@@ -727,9 +727,11 @@ class LeagueAPI(Resource):
         responses:
             200:
                 type: object
-                oneOf:
-                    -   import: "swagger/FantasyLeague.json"
-                    -   type: array
+                properties:
+                    either:
+                        import: "swagger/FantasyLeague.json"
+                    or:
+                        type: array
                         items:
                             import: "swagger/UnNestedFantasyLeague.json"
         """
