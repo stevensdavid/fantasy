@@ -123,6 +123,7 @@ export default class EditDraftView extends React.Component {
                         onItemClick={playerID => this.removePlayer(playerID)}
                         loading={this.state.loading}
                     />
+                    <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>
                     <Text style={styles.headerText}>All players</Text>
                     <ScrollableListContainer
                         showSearchBar={true}
