@@ -11,8 +11,8 @@ export class LeagueList extends React.Component {
       data: [],
       loading: true
     };
-    this.setLeagues = this.setLeagues.bind(this);
     this.render = this.render.bind(this);
+    this.openLeagueView = this.openLeagueView.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -32,14 +32,14 @@ export class LeagueList extends React.Component {
   }
 
   openLeagueView(leagueId) {
-    const league;
+    let selected_league;
     try {
-      league = this.props.leagues.filter(x => x.league_id === leagueId)[0];
+      selected_league = this.props.leagues.filter(x => x.league_id == leagueId)[0];
     } catch (err){
       console.error(err);
       return;
     }
-    this.props.navigation.navigate("League", { league: league });
+    this.props.navigation.navigate("League", { league: selected_league });
   }
 
   render() {

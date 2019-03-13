@@ -9,8 +9,6 @@ export default class LeagueView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      league: {},
-      entrants: [],
       data: [],
       loading: true,
     };
@@ -20,87 +18,37 @@ export default class LeagueView extends React.Component {
 
   componentDidMount() {
     if (this.league === -1) {
-      console.log("LeagueView: League ID was not received successfully");
+      console.error("LeagueView: League ID was not received successfully");
       return;
     }
-    this.getLeagueDetails(this.league)
-      .then(league_res => {
-        this.setState({ league: league_res });
-        return this.getLeagueEntrants(league_res);
-      })
-      .then(entrants_res => {
-        this.setState({ entrants: entrants_res, loading: false });
-        this.setState({ data: this.createListData(entrants_res) });
-        console.log(
-          "Finished setting data: " + JSON.stringify(this.state.data)
-        );
-      })
-      .catch(err => console.log(err));
-  }
-
-  async getLeagueDetails(league_id) {
-    let res = await fetch(global.server + "/leagues/" + league_id, {
-      method: "GET"
-    });
-    return res.json();
-  }
-
-  async getLeagueEntrants(league) {
-    // League is an object in the schema specified by the League model in
-    // the API
-    let entrants = league.fantasy_results.map(x => x.user_id);
-    let users = await Promise.all(
-      entrants.map(async userId => {
-        let res = await fetch(global.server + "/users/" + userId, {
-          method: "GET"
-        });
-        if (res.status == 200) {
-          return await res.json();
-        } else {
-          throw await res.text();
-        }
-      })
-    );
-    console.log(JSON.stringify(users));
-    let userMap = {};
-    let playerMap = {};
-    for (user of users) {
-      userMap[user.user_id] = user;
-      userMap[user.user_id].draft = [];
+    let participants = this.league.fantasy_results.reduce(
+      (newObj, x) => Object.assign(
+        newObj, { [x.user.user_id]: { tag: x.user.tag, draft: [] } }
+      ), {}
+    )
+    for (draft of this.league.fantasy_drafts) {
+      partcipants[draft.user_id].draft.push(draft.player.tag)
     }
-    for (draft of league.fantasy_drafts) {
-      if (!draft.player in playerMap) {
-        playerMap[player] = await (await fetch(
-          global.server + "/players/" + draft.player,
-          { method: "GET" }
-        )).json();
+    console.log(JSON.stringify(participants))
+    const newData = Object.keys(participants).map(k => {
+      return {
+        key: k.toString(),
+        title: participants[k].tag,
+        description: participants[k].draft.join("\n")
       }
-      userMap[draft.user].draft.push(playerMap[draft.player]);
-    }
-    console.log(JSON.stringify(userMap));
-    return Object.values(userMap);
-  }
-
-  createListData(entrants) {
-    let data = [];
-    for (entrant of entrants) {
-      data.push({
-        key: entrant.user_id.toString(),
-        title: entrant.tag,
-        description: entrant.draft.map(player => player.tag).join("\n")
-      });
-    }
-    return data;
+    })
+    this.setState({ data: newData })
+    this.setState({ loading: false })
   }
 
   render() {
     return (
-      <View style={{minHeight: "100%"}}>
+      <View style={{ minHeight: "100%" }}>
         <Text style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}>
-          {this.state.league.name}
+          {this.league.name}
         </Text>
         <ScrollableListContainer loading={this.state.loading} data={this.state.data} />
-        <AddButton hide={this.state.league.owner != global.userID || this.state.loading}
+        <AddButton hide={this.league.owner != global.userID || this.state.loading}
           containerStyle={styles.floatingButtonStyle}
           onPress={() => this.props.navigation.navigate("Search")} />
       </View>
