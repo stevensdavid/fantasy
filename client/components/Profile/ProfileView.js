@@ -20,6 +20,8 @@ export class ProfileView extends React.Component {
       firstName: '',
       lastName: '',
       tag: '',
+      nFriends: 0,
+      nLeagues: 0,
       tagFontSize: 42,
       loading: false,
     }
@@ -54,12 +56,15 @@ export class ProfileView extends React.Component {
         )
       } else if(response.status === 200) {
         response.json().then((responseJSON) => {
+          console.log(responseJSON);
           this.setState({
             email: responseJSON.email,
             firstName: responseJSON.first_name,
             lastName: responseJSON.last_name,
             tag: responseJSON.tag,
-            tagFontSize: (42 * 8) / responseJSON.tag.length
+            tagFontSize: (42 * 8) / responseJSON.tag.length,
+            nFriends: responseJSON.following.length,
+            nLeagues: responseJSON.fantasy_leagues.length
           });
           this.setState({loading: false});
         })
@@ -118,7 +123,7 @@ export class ProfileView extends React.Component {
                   <Text style={[styles.inputs, {fontWeight: "bold"}]}
                       secureTextEntry={true}
                       underlineColorAndroid='transparent'>
-                      Friends: 0
+                      Friends: {this.state.nFriends}
                   </Text>
                   <View>
                   {rightArrow}
@@ -132,7 +137,7 @@ export class ProfileView extends React.Component {
                   <Text style={[styles.inputs, {fontWeight: "bold"}]}
                       secureTextEntry={true}
                       underlineColorAndroid='transparent'>
-                      Leagues: 0
+                      Leagues: {this.state.nLeagues}
                   </Text>
                   </View>
                   {rightArrow}
