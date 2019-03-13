@@ -449,7 +449,12 @@ class FriendsAPI(Resource):
             200:
                 description: The deleted friend-pair
                 schema:
-                    import: "swagger/Friends.json"
+                    type: object
+                    properties:
+                        user_id:
+                            type: integer
+                        friend_id:
+                            type: integer
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -461,7 +466,8 @@ class FriendsAPI(Resource):
             return {'error': 'Not found'}, 404
         db.session.delete(friends)
         db.session.commit()
-        return friends.as_dict()
+        schema = FriendsSchema(only=['user_id', 'friend_id'])
+        return schema.jsonify(friends)
 
     def _parse_put_delete(self):
         parser = reqparse.RequestParser()
@@ -675,7 +681,14 @@ class DraftsAPI(Resource):
             200:
                 description: The removed draft entity
                 schema:
-                    import: "swagger/FantasyDraft.json"
+                    type: object
+                    properties:
+                        league_id:
+                            type: integer
+                        user_id:
+                            type: integer
+                        player_id:
+                            type: integer
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -696,7 +709,7 @@ class DraftsAPI(Resource):
         ).first()
         db.session.delete(draft)
         db.session.commit()
-        schema = FantasyDraftSchema(only=["league_id","player_id","user_id"])
+        schema = FantasyDraftSchema(only=["league_id", "player_id", "user_id"])
         return schema.jsonify(draft)
 
 
@@ -794,7 +807,24 @@ class LeagueAPI(Resource):
             200:
                 description: The deleted entity
                 schema:
-                    import: "swagger/FantasyLeague.json"
+                    type: object
+                    properties:
+                        league_id:
+                            type: integer
+                        name:
+                            type: string
+                        public:
+                            type: boolean
+                        is_snake:
+                            type: boolean
+                        turn:
+                            type: integer
+                        event_id:
+                            type: integer
+                        owner_id:
+                            type: integer
+                        draft_size:
+                            type: integer
         """
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
@@ -802,7 +832,9 @@ class LeagueAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         db.session.delete(league)
         db.session.commit()
-        return fantasy_league_schema.jsonify(league)
+        schema = FantasyLeagueSchema(
+            exclude=["owner", "event", "fantasy_drafts", "fantasy_results"])
+        return schema.jsonify(league)
 
     def post(self):
         """Create a new fantasy league
@@ -1178,9 +1210,16 @@ class FantasyResultAPI(Resource):
                                 The ID of the league to remove the user from
         responses:
             200:
-                description: The user was successfully removed to the league
+                description: The user was successfully removed from the league
                 schema:
-                    import: "swagger/FantasyResult.json"
+                    type: object
+                    properties:
+                        user_id:
+                            type: integer
+                        league_id:
+                            type: integer
+                        score:
+                            type: integer
             400:
                 description: Bad request
         '''
@@ -1208,7 +1247,8 @@ class FantasyResultAPI(Resource):
         except IntegrityError:
             db.session.rollback()
             return {'error': 'User or league not found'}, 400
-        return fantasy_result_schema.jsonify(fantasy_result)
+        schema = FantasyResultSchema(only=["league_id","user_id","score"])
+        return schema.jsonify(fantasy_result)
 
 
 def user_is_logged_in(user_id):
