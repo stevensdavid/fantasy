@@ -371,7 +371,7 @@ class FriendsAPI(Resource):
         args = parser.parse_args(strict=True)
         friends = User.query.filter(
             Friends.query.filter(
-                Friends.user == user_id, Friends.friend_id == User.user_id
+                Friends.user_id == user_id, Friends.friend_id == User.user_id
             ).exists()
             & User.tag.like(
                 f'%{args["tag"] if args["tag"] is not None else ""}%')
