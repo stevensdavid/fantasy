@@ -33,9 +33,8 @@ export default class LeagueView extends React.Component {
           ), {}
         )
         for (draft of this.state.league.fantasy_drafts) {
-          partcipants[draft.user_id].draft.push(draft.player.tag)
+          participants[draft.user_id].draft.push(draft.player.tag)
         }
-        console.log(JSON.stringify(participants))
         const newData = Object.keys(participants).map(k => {
           return {
             key: k.toString(),
@@ -49,7 +48,6 @@ export default class LeagueView extends React.Component {
   }
 
   handlePress(userID) {
-    console.log(userID)
     if (userID == global.userID) {
       this.props.navigation.navigate("EditDraft", {league: this.state.league})
     }
