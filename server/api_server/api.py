@@ -1173,7 +1173,7 @@ class FantasyResultAPI(Resource):
             league_id=args['leagueId']).first()
         if not league:
             return {'error': 'League not found'}, 400
-        if league.is_snake and league.fantasy_results:
+        if league.is_snake and league.fantasy_drafts:
             return {'error': 'Cannot join an in-progress snake draft'}, 400
         if ((not user_is_logged_in(league.owner_id)
              and not user_is_logged_in(args['userId']))
