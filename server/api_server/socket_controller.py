@@ -29,4 +29,5 @@ def leave_league_room(msg):
     league_id = msg['leagueID']
     user = User.query.filter_by(user_id=user_id).first()
     leave_room(league_id)
-    emit('left-room', user_schema.dump(user), emit=league_id)
+    emit('left-room', user_schema.dump(user),
+         namespace='/leagues', emit=league_id)
