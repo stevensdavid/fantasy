@@ -114,7 +114,7 @@ export class ProfileView extends React.Component {
                 <Text style={styles.inputs}
                     secureTextEntry={true}
                     underlineColorAndroid='transparent'>
-                    Info
+                    Friends: 0
                 </Text>
               </View>
 
