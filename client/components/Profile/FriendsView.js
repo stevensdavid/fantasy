@@ -4,10 +4,11 @@ import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
 export default class FriendsView extends React.Component {
-  static navigationOptions = {
+  static navigationOptions = ({navigation}) => {
+    return {
     title: "Friends",
     headerRight: (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("AddFriend")}>
         <Icon
           containerStyle={{ alignSelf: "center", alignItems: "center", marginRight: 10 }}
           name="add"
@@ -16,7 +17,7 @@ export default class FriendsView extends React.Component {
           color="#b3002d"
         />
       </TouchableOpacity>
-    )
+    )}
   };
 
   constructor(props) {
