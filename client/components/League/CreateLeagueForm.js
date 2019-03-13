@@ -100,12 +100,14 @@ export default class CreateLeagueForm extends React.Component {
                 <View style={styles.inputContainer}>
                     <Text>Snake draft</Text>
                     <Switch style={styles.inputs}
+                        value={this.state.isSnake}
                         onValueChange={(isSnake) => this.setState({ isSnake })}
                     />
                 </View>
                 <View style={styles.inputContainer}>
                     <Text>Public</Text>
                     <Switch style={styles.inputs}
+                        value={this.state.isPublic}
                         onValueChange={(isPublic) => this.setState({ isPublic })}
                     />
                 </View>
