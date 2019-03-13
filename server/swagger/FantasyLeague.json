@@ -8,6 +8,10 @@
     "is_snake": {
       "type": "boolean"
     },
+    "draft_ascending": {
+      "type":"boolean",
+      "nullable":true
+    },
     "fantasy_results": {
       "type": "array",
       "items": {

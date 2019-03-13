@@ -63,6 +63,7 @@ class FantasyLeague(db.Model, Serializeable):
     league_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(45), nullable=False)
     public = db.Column(db.Boolean, nullable=False)
+    # TODO: Consider breaking out snake draft related fields to a separate table
     is_snake = db.Column(db.Boolean)
     turn = db.Column(db.Integer, nullable=True)
     event_id = db.Column(db.Integer, db.ForeignKey(
@@ -76,6 +77,7 @@ class FantasyLeague(db.Model, Serializeable):
         'User', backref=db.backref('fantasy_leagues'),
         cascade="all, delete-orphan", single_parent=True)
     draft_size = db.Column(db.Integer, nullable=False)
+    draft_ascending = db.Column(db.Boolean)
 
     def __repr__(self):
         return f'<League {self.league_id}>'
@@ -201,7 +203,7 @@ class FantasyResult(db.Model, Serializeable):
     user_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
     user = db.relationship('User', backref=db.backref('fantasy_results'),
-        cascade="all, delete-orphan", single_parent=True)
+                           cascade="all, delete-orphan", single_parent=True)
     score = db.Column(db.Integer)
 
     def __repr__(self):
