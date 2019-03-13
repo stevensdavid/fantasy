@@ -198,8 +198,8 @@ class SmashGG:
                            if icon_path is not None else None,
                            banner_path='/'.join(banner_path.split('/')[-3:])
                            if banner_path is not None else None,
-                           ext_icon_url=None if len(
-                               images) < 1 else images[0]['url'],
+                           ext_icon_url=None if not images
+                           else images[0]['url'],
                            ext_banner_url=None if len(
                                images) < 2 else images[1]['url']
                            )
@@ -332,24 +332,28 @@ class SmashGG:
                 except IntegrityError:
                     # We haven't stored details about this player
                     db.session.rollback()
-                    image_dir = app.config['IMAGE_DIR'] + \
-                        f"/players/{player_id}"
-                    if not os.path.exists(image_dir):
-                        os.makedirs(image_dir)
-                    photo_path = image_dir + '/profile_photo.png'
-                    if not os.path.exists(photo_path):
-                        try:
-                            photo = requests.get(player['images'][0]['url'])
-                            if photo.status_code == requests.codes.ok:
-                                with open(photo_path, 'w+b') as file:
-                                    file.write(photo.content)
-                            else:
-                                photo_path = None
-                        except IndexError:
-                            photo_path = None
+
+                    # Downloading images takes a long time, temporary workaround
+                    # is to just use the images directly from SmashGG
+                    photo_path = None
+                    # image_dir = app.config['IMAGE_DIR'] + \
+                    #     f"/players/{player_id}"
+                    # if not os.path.exists(image_dir):
+                    #     os.makedirs(image_dir)
+                    # photo_path = image_dir + '/profile_photo.png'
+                    # if not os.path.exists(photo_path):
+                    #     try:
+                    #         photo = requests.get(player['images'][0]['url'])
+                    #         if photo.status_code == requests.codes.ok:
+                    #             with open(photo_path, 'w+b') as file:
+                    #                 file.write(photo.content)
+                    #         else:
+                    #             photo_path = None
+                    #     except IndexError:
+                    #         photo_path = None
                     p = Player(player_id=player_id,
                                tag=player['gamerTag'],
-                               ext_photo_url=None if len(player['images']) < 1
+                               ext_photo_url=None if not player['images']
                                else player['images'][0]['url'],
                                photo_path='/'.join(photo_path.split('/')[-3:])
                                if photo_path is not None else None
