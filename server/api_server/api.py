@@ -617,6 +617,11 @@ class DraftsAPI(Resource):
         args = parser.parse_args(strict=True)
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
+        if league.event.starts_at < time.time():
+            # This event has already started
+            return {
+                "error": "The event has already begun, and drafting has closed."
+            }, 400
         current_draft = FantasyDraft.query.filter(
             FantasyDraft.league_id == league_id, FantasyDraft.user_id == user_id
         ).all()
@@ -674,6 +679,13 @@ class DraftsAPI(Resource):
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
+        league = FantasyLeague.query.filter(
+            FantasyLeague.league_id == league_id).first()
+        if league.event.starts_at < time.time():
+            # This event has already started
+            return {
+                "error": "The event has already begun, and drafting has closed."
+            }, 400
         parser = reqparse.RequestParser()
         parser.add_argument('playerId', type=int)
         args = parser.parse_args(strict=True)
