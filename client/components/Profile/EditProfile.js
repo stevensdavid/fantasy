@@ -210,7 +210,6 @@ const styles = StyleSheet.create({
         height:45,
         marginLeft:16,
         borderBottomColor: '#FFFFFF',
-        flex:1,
     },
     inputIcon:{
       width:30,
@@ -219,6 +218,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center'
     },
     buttonContainer: {
+      zIndex: 1,
       height:45,
       flexDirection: 'row',
       justifyContent: 'center',

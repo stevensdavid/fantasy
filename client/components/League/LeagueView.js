@@ -14,16 +14,16 @@ export default class LeagueView extends React.Component {
       league: {}
     };
     this.componentDidMount = this.componentDidMount.bind(this);
-    this.leagueId = this.props.navigation.getParam("leagueId", -1);
+    this.leagueID = this.props.navigation.getParam("leagueID", -1);
   }
 
   componentDidMount() {
-    if (this.leagueId == -1) {
+    if (this.leagueID == -1) {
       console.error("LeagueView: League ID was not received successfully");
       return;
     }
     this.setState({ loading: false });
-    fetch(global.server + '/leagues/' + this.leagueId).then(res => res.json())
+    fetch(global.server + '/leagues/' + this.leagueID).then(res => res.json())
       .then(league_obj => {
         this.setState({ league: league_obj })
         let participants = this.state.league.fantasy_results.reduce(

@@ -32,7 +32,7 @@ export class LeagueList extends React.Component {
   }
 
   openLeagueView(selectedLeague) {
-    this.props.navigation.navigate("League", { leagueId: selectedLeague });
+    this.props.navigation.navigate("League", { leagueID: selectedLeague });
   }
 
   render() {
