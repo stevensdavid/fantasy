@@ -8,9 +8,9 @@ import {
   Image,
   TouchableOpacity
 } from "react-native";
-import { Card, SearchBar } from "react-native-elements";
+import { Card, Icon, SearchBar } from "react-native-elements";
 import { HideAbleView } from "../View/HideAbleView";
-import  Swipeout  from "react-native-swipeout";
+import Swipeout from "react-native-swipeout";
 
 /*Takes the following props:
     data: Array with objects each containing {key, img_uri(optional), title, description(optional)}
@@ -54,10 +54,25 @@ export class ScrollableListContainer extends React.Component {
   }
 
   render() {
-    let swipeBtns = [
+    const deleteButton = (
+      <View
+        style={[styles.buttonContainer, styles.deleteButton, {}]}
+        onPress={() => this.props.onPress()}
+      >
+        <Icon
+          containerStyle={{ alignSelf: "center"}}
+          name="delete"
+          type="material"
+          color="#eff"
+          size={42}
+        />
+      </View>
+    );
+
+    let swipeBtn = [
       {
-        text: "Delete",
-        backgroundColor: "red",
+        backgroundColor: "transparent",
+        component: deleteButton,
         onPress: () => {
           this.deleteNote(rowData);
         }
@@ -94,7 +109,12 @@ export class ScrollableListContainer extends React.Component {
         <FlatList
           data={this.state.show}
           renderItem={({ item }) => (
-            <Swipeout right={swipeBtns} autoClose={true} backgroundColor="transparent">
+            <Swipeout
+              disabled={this.props.enableSwipe ? false : true}
+              right={swipeBtn}
+              autoClose={true}
+              backgroundColor="transparent"
+            >
               <TouchableOpacity
                 onPress={() => {
                   this.props.onItemClick
@@ -166,5 +186,19 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     color: "#b3002d"
+  },
+  buttonContainer: {
+    minHeight: 70,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf:'center',
+    minWidth: 70,
+    marginRight: 10,
+    marginTop: "45%",
+    borderRadius: 70 / 2
+  },
+  deleteButton: {
+    backgroundColor: "#b3002d"
   }
 });
