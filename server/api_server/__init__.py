@@ -12,7 +12,8 @@ api = Api(app)
 # Wrap flask for SSL
 # Talisman(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'mysql://fantasy:dB13%bofLUM1*sNG3%%p@dstevens.se/fantasy')
+    'mysql://fantasy:dB13%bofLUM1*sNG3%%p@dstevens.se/fantasy?charset=utf8mb4')
+app.config['MYSQL_DATABASE_CHARSET'] = 'utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
