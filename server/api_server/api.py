@@ -726,9 +726,15 @@ class LeagueAPI(Resource):
                 type: integer
         responses:
             200:
-                description: The fantasy leagues matching the parameters
+                description: The fantasy league matching the ID
                 schema:
                         import: "swagger/FantasyLeague.json"
+            200:
+                descirption: The multiple leagues matching the parameters
+                schema:
+                    type: array
+                    items:
+                        import: "swagger/UnNestedFantasyLeague.json"
         """
         if league_id:
             league = FantasyLeague.query.filter(
@@ -756,7 +762,10 @@ class LeagueAPI(Resource):
                 ) if args['userId'] else True
             ).paginate(page=args['page'],
                        per_page=args['perPage']).items
-        return fantasy_leagues_schema.jsonify(leagues)
+        schema = FantasyLeagueSchema(many=True,
+                                     exclude=("fantasy_results",
+                                              "fantasy_drafts"))
+        return schema.jsonify(leagues)
 
     def delete(self, league_id):
         """Delete a fantasy league
@@ -957,7 +966,7 @@ class EntrantsAPI(Resource):
             entrants = Entrant.query.filter(
                 Entrant.event_id == event_id).order_by(
                     Entrant.seed).paginate(
-                        page=args['page'], per_page=args['perPage'] ).items
+                        page=args['page'], per_page=args['perPage']).items
         return entrants_schema.jsonify(entrants)
 
 
