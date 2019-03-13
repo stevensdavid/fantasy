@@ -34,19 +34,14 @@ export class LeagueList extends React.Component {
   }
 
   deleteLeague(leagueID) {
-    fetch(
-      global.server +
-        "/leagues/" +
-        leagueID,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "bearer " + global.token
-        }
+    fetch(global.server + "/leagues/" + leagueID, {
+      method: "DELETE",
+      headers: {
+        Authorization: "bearer " + global.token
       }
-    )
+    })
       .then(res => {
+        console.log(res);
         if (res.status === 200) {
           return res.json();
         } else {
@@ -55,12 +50,10 @@ export class LeagueList extends React.Component {
       })
       .then(deletedLeague => {
         this.setState({
-          data: this.state.data.filter(
-            x => x.league.id != deletedLeague.key
-          )
+          data: this.state.data.filter(x => x.key != deletedLeague.league_id)
         });
       })
-      .catch(err => console.error(err));
+      .catch(err => console.log(err));
   }
 
   openLeagueView(selectedLeague) {
