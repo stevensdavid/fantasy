@@ -6,6 +6,7 @@ import {
     TouchableHighlight,
     Image,
     Alert,
+    TouchableOpacity
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -70,6 +71,8 @@ export class ProfileView extends React.Component {
   }
 
   render() {
+    const rightArrow = (<Icon name="chevron-right"  type="material" color="#222" size={32} />)
+
     return (
       <View>
       <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
@@ -110,21 +113,31 @@ export class ProfileView extends React.Component {
                 </Text>
               </View>
               
-              <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
-                    underlineColorAndroid='transparent'>
-                    Info
-                </Text>
-              </View>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("Friends")}>
+                <View style={styles.linkContainer}>
+                  <Text style={[styles.inputs, {fontWeight: "bold"}]}
+                      secureTextEntry={true}
+                      underlineColorAndroid='transparent'>
+                      Friends: 0
+                  </Text>
+                  <View>
+                  {rightArrow}
+                  </View>
+                </View>
+              </TouchableOpacity>
 
-              <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
-                    underlineColorAndroid='transparent'>
-                    Info
-                </Text>
-              </View>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("Leagues")}>
+                <View style={styles.linkContainer}>
+                  <View>
+                  <Text style={[styles.inputs, {fontWeight: "bold"}]}
+                      secureTextEntry={true}
+                      underlineColorAndroid='transparent'>
+                      Leagues: 0
+                  </Text>
+                  </View>
+                  {rightArrow}
+                </View>
+              </TouchableOpacity>
 
               <View style={{flexDirection: 'row'}}>
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.navigation.navigate("EditProfile", {reload: this.reloadInfo})}>
@@ -163,6 +176,16 @@ styles = StyleSheet.create({
       marginBottom:20,
       flexDirection: 'row',
       alignItems:'center'
+  },
+  linkContainer: {
+    borderBottomColor: '#F5FCFF',
+    backgroundColor: '#FFFFFF',
+    borderRadius:30,
+    borderBottomWidth: 1,
+    width:250,
+    height:45,
+    marginBottom:20,
+    flexDirection: 'row'
   },
   spinnerTextStyle: {
     color: '#FFF',

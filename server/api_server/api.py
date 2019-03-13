@@ -348,7 +348,7 @@ class FriendsAPI(Resource):
         args = parser.parse_args(strict=True)
         friends = User.query.filter(
             Friends.query.filter(
-                Friends.user == user_id, Friends.friend_id == User.user_id
+                Friends.user_id == user_id, Friends.friend_id == User.user_id
             ).exists()
             & User.tag.like(
                 f'%{args["tag"] if args["tag"] is not None else ""}%')
@@ -1341,14 +1341,18 @@ def main():
         scheduler.add_job(func=routine_update,
                           trigger="interval", seconds=60*60)
         scheduler.start()
+        # Run a routine update immediately
+        routine_update()
         socketio.run(
+            app,
+            log_output=True,
             host='0.0.0.0',
             use_reloader=False,
             ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
                          '/etc/letsencrypt/live/dstevens.se/privkey.pem')
         )
     else:
-        socketio.run(debug=True)
+        socketio.run(app, debug=True)
 
 
 if __name__ == '__main__':

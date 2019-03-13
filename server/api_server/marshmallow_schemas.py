@@ -30,7 +30,8 @@ class UserSchema(ma.ModelSchema):
     )
     following = ma.Nested(
         'UserSchema',
-        only=["user_id", "tag", "photo_path"]
+        only=["user_id", "tag", "photo_path"],
+        many=True
     )
 
 
