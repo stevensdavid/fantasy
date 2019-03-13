@@ -18,44 +18,28 @@ export class LeagueList extends React.Component {
   componentDidUpdate(prevProps) {
     if (this.props.leagues !== prevProps.leagues) {
       this.setState({ loading: true });
-      this.setLeagues()
-        .then(newData => {
-          this.setState({ data: newData, loading: false });
-        })
-        .catch(err => console.log(err));
-}
-  }
-
-  async setLeagues() {
-    const newData = await Promise.all(
-      this.props.leagues.map(async league => {
-        try {
-          let res = await fetch(global.server + "/events/" + league.event, {
-            method: "GET"
-          });
-          let event = await res.json();
-          res = await fetch(
-            global.server + "/tournaments/" + event.tournament,
-            { method: "GET" }
-          );
-          let tournament = await res.json();
+      this.setState({
+        data: this.props.leagues.map(league => {
           return {
             key: league.league_id.toString(),
             title: league.name,
-            description: tournament.name + ": " + event.name,
-            img_uri: tournament.ext_icon_url
-          };
-        } catch (err) {
-          console.log(err);
-          return;
-        }
-      })
-    );
-    return newData;
+            description: league.event.tournament.name + ': ' + league.event.name,
+            img_uri: league.event.tournament.ext_icon_url
+          }
+        }), loading: false
+      });
+    }
   }
 
   openLeagueView(leagueId) {
-    this.props.navigation.navigate("League", { league: leagueId });
+    const league;
+    try {
+      league = this.props.leagues.filter(x => x.league_id === leagueId)[0];
+    } catch (err){
+      console.error(err);
+      return;
+    }
+    this.props.navigation.navigate("League", { league: league });
   }
 
   render() {
