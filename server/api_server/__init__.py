@@ -17,4 +17,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 app.config['IMAGE_DIR'] = os.getcwd() + '/images'
+app.config['SWAGGER'] = {
+    "title": "Fantasy API",
+    "description": "A RESTful API",
+    "uiversion": 3
+}
 swagger = Swagger(app)
