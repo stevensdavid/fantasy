@@ -349,7 +349,7 @@ class SmashGG:
                             photo_path = None
                     p = Player(player_id=player_id,
                                tag=player['gamerTag'],
-                               ext_photo_url=None if len(player['images'] < 1)
+                               ext_photo_url=None if len(player['images']) < 1
                                else player['images'][0]['url'],
                                photo_path='/'.join(photo_path.split('/')[-3:])
                                if photo_path is not None else None
