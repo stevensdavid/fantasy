@@ -31,15 +31,8 @@ export class LeagueList extends React.Component {
     }
   }
 
-  openLeagueView(leagueId) {
-    let selected_league;
-    try {
-      selected_league = this.props.leagues.filter(x => x.league_id == leagueId)[0];
-    } catch (err){
-      console.error(err);
-      return;
-    }
-    this.props.navigation.navigate("League", { league: selected_league });
+  openLeagueView(selectedLeague) {
+    this.props.navigation.navigate("League", { leagueId: selectedLeague });
   }
 
   render() {

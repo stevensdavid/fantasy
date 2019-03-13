@@ -11,44 +11,50 @@ export default class LeagueView extends React.Component {
     this.state = {
       data: [],
       loading: true,
+      league: {}
     };
     this.componentDidMount = this.componentDidMount.bind(this);
-    this.league = this.props.navigation.getParam("league", -1);
+    this.leagueId = this.props.navigation.getParam("leagueId", -1);
   }
 
   componentDidMount() {
-    if (this.league === -1) {
+    if (this.leagueId == -1) {
       console.error("LeagueView: League ID was not received successfully");
       return;
     }
-    let participants = this.league.fantasy_results.reduce(
-      (newObj, x) => Object.assign(
-        newObj, { [x.user.user_id]: { tag: x.user.tag, draft: [] } }
-      ), {}
-    )
-    for (draft of this.league.fantasy_drafts) {
-      partcipants[draft.user_id].draft.push(draft.player.tag)
-    }
-    console.log(JSON.stringify(participants))
-    const newData = Object.keys(participants).map(k => {
-      return {
-        key: k.toString(),
-        title: participants[k].tag,
-        description: participants[k].draft.join("\n")
-      }
-    })
-    this.setState({ data: newData })
-    this.setState({ loading: false })
+    this.setState({ loading: false });
+    fetch(global.server + '/leagues/' + this.leagueId).then(res => res.json())
+      .then(league_obj => {
+        this.setState({ league: league_obj })
+        let participants = this.state.league.fantasy_results.reduce(
+          (newObj, x) => Object.assign(
+            newObj, { [x.user.user_id]: { tag: x.user.tag, draft: [] } }
+          ), {}
+        )
+        for (draft of this.state.league.fantasy_drafts) {
+          partcipants[draft.user_id].draft.push(draft.player.tag)
+        }
+        console.log(JSON.stringify(participants))
+        const newData = Object.keys(participants).map(k => {
+          return {
+            key: k.toString(),
+            title: participants[k].tag,
+            description: participants[k].draft.join("\n")
+          }
+        })
+        this.setState({ data: newData })
+        this.setState({ loading: false })
+      }).catch(err => console.error(err));
   }
 
   render() {
     return (
       <View style={{ minHeight: "100%" }}>
         <Text style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}>
-          {this.league.name}
+          {this.state.league.name}
         </Text>
         <ScrollableListContainer loading={this.state.loading} data={this.state.data} />
-        <AddButton hide={this.league.owner != global.userID || this.state.loading}
+        <AddButton hide={this.state.league.owner != global.userID || this.state.loading}
           containerStyle={styles.floatingButtonStyle}
           onPress={() => this.props.navigation.navigate("Search")} />
       </View>
