@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
       justifyContent: 'center'
     },
     buttonContainer: {
+      zIndex: 1,
       height:45,
       flexDirection: 'row',
       justifyContent: 'center',
