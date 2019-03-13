@@ -145,11 +145,8 @@ export class ProfileView extends React.Component {
 
 styles = StyleSheet.create({
   container: {
-    marginTop: 180,
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#DCDCDC',
   },
   headerContent: {
     margin: 35,
@@ -174,7 +171,6 @@ styles = StyleSheet.create({
       height:45,
       marginLeft:16,
       borderBottomColor: '#FFFFFF',
-      flex:1,
   },
   inputIcon:{
     width:30,
@@ -183,6 +179,7 @@ styles = StyleSheet.create({
     justifyContent: 'center'
   },
   buttonContainer: {
+    zIndex: 1,
     height:45,
     flexDirection: 'row',
     justifyContent: 'center',

@@ -210,7 +210,6 @@ const styles = StyleSheet.create({
         height:45,
         marginLeft:16,
         borderBottomColor: '#FFFFFF',
-        flex:1,
     },
     inputIcon:{
       width:30,
