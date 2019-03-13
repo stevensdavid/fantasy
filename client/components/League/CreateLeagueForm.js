@@ -27,6 +27,10 @@ export default class CreateLeagueForm extends React.Component {
             draftSize: 5
         }
         console.log(this.state)
+
+        this.createLeague = this.createLeague.bind(this)
+
+        this.leagueID = null
     }
 
     createLeague(stateInfo) {
@@ -51,6 +55,7 @@ export default class CreateLeagueForm extends React.Component {
                 throw 'Create league server error';
             }
         }).then(obj => {
+            this.leagueID = obj.league_id
             return fetch(global.server + '/fantasy_participants', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'bearer ' + global.token },
@@ -62,7 +67,7 @@ export default class CreateLeagueForm extends React.Component {
         }).then(participant_res => {
             if (participant_res.status == 200) {
                 Alert.alert("Success!");
-                this.props.navigation.navigate("Leagues", {newData: true});
+                this.props.navigation.navigate("Leagues", {newData: true, leagueID: this.leagueID});
             } else {
                 throw ('Add league owner to league error');
             }
