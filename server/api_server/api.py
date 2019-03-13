@@ -627,18 +627,24 @@ class DraftsAPI(Resource):
                 }, 400
             if league.is_snake:
                 emit('new-draft', fantasy_draft_schema.dump(draft),
-                    namespace='/leagues', room=league_id)
+                     namespace='/leagues', room=league_id)
                 users = sorted(map(lambda x: x.user, league.fantasy_results),
-                            key=lambda x: x.user_id)
+                               key=lambda x: x.user_id)
                 first_draft = FantasyDraft.query.filter_by(
                     league_id=league_id, user_id=users[0].user_id
                 ).all()
                 last_draft = FantasyDraft.query.filter_by(
                     league_id=league_id, user_id=users[-1].user_id
                 ).all()
-                ascending = len(first_draft) > len(last_draft)
-                # TODO: fix turn
-                emit('turn-change', {'turn': None})
+                if len(first_draft) == len(last_draft):
+                    league.ascending = not league.ascending
+                    # Turn should repeat to form snake
+                else:
+                    # Turn should change
+                    league.turn = users.index(user_id) + (1 if league.ascending
+                                                          else - 1)
+                    db.session.commit()
+                emit('turn-change', {'turn': league.turn})
             return fantasy_draft_schema.jsonify(draft)
         return {
             "error": f"The user's draft is full. The draft size limit for "
@@ -690,6 +696,8 @@ class DraftsAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
+        if league.is_snake:
+            return {"error":"Players cannot be deleted from snake drafts"}, 400
         if league.event.start_at < time.time():
             # This event has already started
             return {
