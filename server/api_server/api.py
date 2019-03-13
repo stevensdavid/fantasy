@@ -19,7 +19,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 
-from . import api, app, db
+from . import api, app, db, socketio
 from .marshmallow_schemas import (ConstantsSchema, EntrantSchema, EventSchema,
                                   FantasyDraftSchema, FantasyLeagueSchema,
                                   FantasyResultSchema, FriendsSchema,
@@ -371,7 +371,7 @@ class FriendsAPI(Resource):
         args = parser.parse_args(strict=True)
         friends = User.query.filter(
             Friends.query.filter(
-                Friends.user == user_id, Friends.friend_id == User.user_id
+                Friends.user_id == user_id, Friends.friend_id == User.user_id
             ).exists()
             & User.tag.like(
                 f'%{args["tag"] if args["tag"] is not None else ""}%')
@@ -1247,7 +1247,7 @@ class FantasyResultAPI(Resource):
         except IntegrityError:
             db.session.rollback()
             return {'error': 'User or league not found'}, 400
-        schema = FantasyResultSchema(only=["league_id","user_id","score"])
+        schema = FantasyResultSchema(only=["league_id", "user_id", "score"])
         return schema.jsonify(fantasy_result)
 
 
@@ -1344,12 +1344,18 @@ def main():
         scheduler.add_job(func=routine_update,
                           trigger="interval", seconds=60*60)
         scheduler.start()
-        app.run(host='0.0.0.0',
-                use_reloader=False,
-                ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
-                             '/etc/letsencrypt/live/dstevens.se/privkey.pem'))
+        # Run a routine update immediately
+        routine_update()
+        socketio.run(
+            app,
+            log_output=True,
+            host='0.0.0.0',
+            use_reloader=False,
+            ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
+                         '/etc/letsencrypt/live/dstevens.se/privkey.pem')
+        )
     else:
-        app.run(debug=True)
+        socketio.run(app, debug=True)
 
 
 if __name__ == '__main__':
