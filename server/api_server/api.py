@@ -768,6 +768,13 @@ class LeagueAPI(Resource):
         if league_id:
             league = FantasyLeague.query.filter(
                 FantasyLeague.league_id == league_id).first()
+            if league.is_snake and not league.fantasy_drafts:
+                # This is a snake draft that hasn't started yet, update
+                # the turn and set order to ascending
+                league.draft_ascending = True
+                league.turn = min(map(lambda x: x.user.user_id,
+                                      league.fantasy_results))
+                db.session.commit()
             return fantasy_league_schema.jsonify(league)
         parser = make_pagination_reqparser()
         parser.add_argument('eventId', type=int)
@@ -1173,7 +1180,7 @@ class FantasyResultAPI(Resource):
             league_id=args['leagueId']).first()
         if not league:
             return {'error': 'League not found'}, 400
-        if league.is_snake and league.fantasy_results:
+        if league.is_snake and league.fantasy_drafts:
             return {'error': 'Cannot join an in-progress snake draft'}, 400
         if ((not user_is_logged_in(league.owner_id)
              and not user_is_logged_in(args['userId']))
