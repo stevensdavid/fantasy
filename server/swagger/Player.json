@@ -26,6 +26,14 @@
       "type": "string",
       "maxLength": 255
     },
+    "ext_photo_url": {
+      "type":"string",
+      "maxLength": 255
+    },
+    "photo_path":{
+      "type":"string",
+      "maxLength":255
+    },
     "fantasy_drafts": {
       "type": "array",
       "items": {

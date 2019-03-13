@@ -15,6 +15,14 @@
         },
         "tag":{
           "type":"string"
+        },
+        "ext_photo_url": {
+          "type":"string",
+          "maxLength": 255
+        },
+        "photo_path":{
+          "type":"string",
+          "maxLength":255
         }
       }
     },
