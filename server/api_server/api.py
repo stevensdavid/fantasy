@@ -1344,14 +1344,18 @@ def main():
         scheduler.add_job(func=routine_update,
                           trigger="interval", seconds=60*60)
         scheduler.start()
+        # Run a routine update immediately
+        routine_update()
         socketio.run(
+            app,
+            log_output=True,
             host='0.0.0.0',
             use_reloader=False,
             ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
                          '/etc/letsencrypt/live/dstevens.se/privkey.pem')
         )
     else:
-        socketio.run(debug=True)
+        socketio.run(app, debug=True)
 
 
 if __name__ == '__main__':
