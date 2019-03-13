@@ -266,10 +266,12 @@ class SmashGG:
                 }) {
                     nodes {
                         participants {
-                            playerId
-                            gamerTag
-                            images {
-                                url
+                            player {
+                                id
+                                gamerTag
+                                images {
+                                    url
+                                }
                             }
                         }
                     }
@@ -319,7 +321,8 @@ class SmashGG:
                 # The tournament hasn't been seeded
                 print(f"Event {event_id}  hasn't been seeded")
             for entrant in r.json()['data']['event']['entrants']['nodes']:
-                player_id = entrant['participants'][0]['playerId']
+                player = entrant['participants'][0]['player']
+                player_id = player['id']
                 seed = seeding[player_id] if player_id in seeding else None
                 e = Entrant(event_id=event_id, player_id=player_id, seed=seed)
                 # Merge performs an UPDATE query if the row already exists
@@ -329,7 +332,6 @@ class SmashGG:
                 except IntegrityError:
                     # We haven't stored details about this player
                     db.session.rollback()
-                    player = entrant['participants'][0]
                     image_dir = app.config['IMAGE_DIR'] + \
                         f"/players/{player_id}"
                     if not os.path.exists(image_dir):
