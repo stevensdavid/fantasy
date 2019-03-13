@@ -1,10 +1,22 @@
 import React from "react";
-import { View, Text} from "react-native";
-import { ScrollableListContainer } from '../Container/ScrollableListContainer';
+import { View, TouchableOpacity } from "react-native";
+import { Icon } from "react-native-elements";
+import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
 export default class FriendsView extends React.Component {
   static navigationOptions = {
-    title: 'Friends',
+    title: "Friends",
+    headerRight: (
+      <TouchableOpacity>
+        <Icon
+          containerStyle={{ alignSelf: "center", alignItems: "center", marginRight: 10 }}
+          name="add"
+          type="material"
+          size={35}
+          color="#b3002d"
+        />
+      </TouchableOpacity>
+    )
   };
 
   constructor(props) {
@@ -23,7 +35,7 @@ export default class FriendsView extends React.Component {
 
   fetchFriends(userID) {
     newData = [];
-    fetch(global.server + "/friends/" + userID + '?page=1&perPage=20', {
+    fetch(global.server + "/friends/" + userID + "?page=1&perPage=20", {
       method: "GET"
     })
       .then(res => {
@@ -34,7 +46,7 @@ export default class FriendsView extends React.Component {
         }
       })
       .then(friendsData => {
-        if(friendsData.length > 0) {
+        if (friendsData.length > 0) {
           newData.push({
             key: friendsData.user_id,
             title: friendsData.tag,
