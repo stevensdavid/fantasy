@@ -2,7 +2,8 @@ import React from 'react'
 import {
     View,
     Text,
-    Alert
+    Alert,
+    ScrollView
 } from 'react-native'
 import { ScrollableListContainer } from '../Container/ScrollableListContainer'
 
@@ -20,6 +21,7 @@ export default class EditDraftView extends React.Component {
         console.log('State: ' + JSON.stringify(this.state))
         this.setFormattedLists = this.setFormattedLists.bind(this);
         this.getEntrants = this.getEntrants.bind(this);
+        this.removePlayer = this.removePlayer.bind(this);
     }
 
     componentDidMount() {
@@ -40,8 +42,11 @@ export default class EditDraftView extends React.Component {
                 }
             })
         });
+        let draftedPlayers = this.state.draft.reduce((newObj, x) => Object.assign(newObj, { [x.player.player_id]: x.player }), {});
         this.setState({
-            formattedEntrants: this.state.entrants.map(x => {
+            formattedEntrants: this.state.entrants.filter(
+                x => !(x.player.player_id in draftedPlayers)
+            ).map(x => {
                 return {
                     key: x.player.player_id.toString(),
                     title: x.player.tag,
@@ -81,19 +86,26 @@ export default class EditDraftView extends React.Component {
             }).catch(err => console.error(err));
     }
 
+    removePlayer(playerID) {
+        
+    }
+
     render() {
         return (
             <View>
                 <Text>Editing draft</Text>
-                <Text>Drafted players</Text>
-                <ScrollableListContainer
-                    data={this.state.formattedDraft}
-                />
-                <Text>All players</Text>
-                <ScrollableListContainer
-                    data={this.state.formattedEntrants}
-                    onItemClick={playerID => this.draftPlayer(playerID)}
-                />
+                <ScrollView>
+                    <Text>Drafted players</Text>
+                    <ScrollableListContainer
+                        data={this.state.formattedDraft}
+                        onItemClick={playerID => this.removePlayer(playerID)}
+                    />
+                    <Text>All players</Text>
+                    <ScrollableListContainer
+                        data={this.state.formattedEntrants}
+                        onItemClick={playerID => this.draftPlayer(playerID)}
+                    />
+                </ScrollView>
             </View>
         )
     }
