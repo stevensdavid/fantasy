@@ -620,7 +620,7 @@ class DraftsAPI(Resource):
         current_draft = FantasyDraft.query.filter(
             FantasyDraft.league_id == league_id, FantasyDraft.user_id == user_id
         ).all()
-        if len(current_draft) < league.draft_size_limit:
+        if len(current_draft) < league.draft_size:
             draft = FantasyDraft(league_id=league_id,
                                  user_id=user_id, player_id=args['playerId'])
             db.session.add(draft)
