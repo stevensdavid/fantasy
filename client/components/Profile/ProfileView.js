@@ -76,7 +76,7 @@ export class ProfileView extends React.Component {
   }
 
   render() {
-    const rightArrow = (<Icon name="chevron-right"  type="material" color="#222" size={32} />)
+    const rightArrow = (<Icon containerStyle={{height: 45, marginLeft: 2, marginBottom:17, justifyContent:'center', alignSelf:'center', alignItems:'center'}}  name="chevron-right"  type="material" color="#222" size={50} />)
 
     return (
       <View>
@@ -121,25 +121,19 @@ export class ProfileView extends React.Component {
               <TouchableOpacity onPress={() => this.props.navigation.navigate("Friends")}>
                 <View style={styles.linkContainer}>
                   <Text style={[styles.inputs, {fontWeight: "bold"}]}
-                      secureTextEntry={true}
                       underlineColorAndroid='transparent'>
                       Friends: {this.state.nFriends}
                   </Text>
-                  <View>
                   {rightArrow}
-                  </View>
                 </View>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => this.props.navigation.navigate("Leagues")}>
                 <View style={styles.linkContainer}>
-                  <View>
                   <Text style={[styles.inputs, {fontWeight: "bold"}]}
-                      secureTextEntry={true}
                       underlineColorAndroid='transparent'>
                       Leagues: {this.state.nLeagues}
                   </Text>
-                  </View>
                   {rightArrow}
                 </View>
               </TouchableOpacity>
@@ -151,6 +145,7 @@ export class ProfileView extends React.Component {
                   <Icon containerStyle={{marginLeft: 5, alignSelf:'center', alignItems:'center'}} name='edit' type='material' color='#eff' size={18}/>
                 </View>
               </TouchableHighlight>
+
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.setToken(null)}>
                 <Text style={styles.loginText}>Logout</Text>
               </TouchableHighlight>
@@ -183,19 +178,21 @@ styles = StyleSheet.create({
       alignItems:'center'
   },
   linkContainer: {
+    zIndex: 1,
+    height:45,
+    flexDirection: 'row',
+    marginBottom:20,
     borderBottomColor: '#F5FCFF',
     backgroundColor: '#FFFFFF',
     borderRadius:30,
     borderBottomWidth: 1,
     width:250,
-    height:45,
-    marginBottom:20,
-    flexDirection: 'row'
   },
   spinnerTextStyle: {
     color: '#FFF',
   },
   inputs:{
+    fontSize: 26,
       height:45,
       marginLeft:16,
       borderBottomColor: '#FFFFFF',
