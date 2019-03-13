@@ -1,0 +1,64 @@
+{
+    "type": "object",
+    "id":"UnNestedFantasyLeague",
+    "properties": {
+      "public": {
+        "type": "boolean"
+      },
+      "is_snake": {
+        "type": "boolean"
+      },
+      "name": {
+        "type": "string",
+        "maxLength": 45
+      },
+      "league_id": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "draft_size": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "owner": {
+        "type": "integer",
+        "format": "int32"
+      },
+      "event": {
+        "type": "object",
+        "properties":{
+          "tournament":{
+            "type": "object",
+            "properties":{
+              "tournament_id":{
+                "type":"integer",
+                "format":"int32"
+              },
+              "name":{
+                "type":"string"
+              },
+              "ext_icon_url":{
+                "type":"string"
+              },
+              "ext_banner_url":{
+                "type":"string"
+              }
+            }
+          },
+          "name":{
+            "type":"string"
+          },
+          "event_id":{
+            "type":"integer",
+            "format":"int32"
+          }
+        }
+      }
+    },
+    "required": [
+      "draft_size",
+      "name",
+      "public",
+      "is_snake"
+    ]
+  }
