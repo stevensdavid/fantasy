@@ -22,8 +22,15 @@ export class LeaguesHome extends React.Component {
     this.fetchLeagues();
 
     this.subs = [
-      this.props.navigation.addListener('didFocus', () => {this.props.navigation.getParam("newData", false) ? this.fetchLeagues() : {}}),
+      this.props.navigation.addListener('didFocus', () => {this.props.navigation.getParam("newData", false) ? 
+        this.newLeague(this.props.navigation.getParam("leagueID", -1)) 
+        : {}}),
     ]; 
+  }
+
+  newLeague(leagueID) {
+    this.fetchLeagues();
+    this.props.navigation.navigate("League", { league: leagueID })
   }
 
   componentWillUnmount() {

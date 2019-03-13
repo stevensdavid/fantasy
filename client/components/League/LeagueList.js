@@ -28,14 +28,14 @@ export class LeagueList extends React.Component {
 
   async setLeagues() {
     const newData = await Promise.all(
-      this.props.leagues.map(async league => {
+      this.props.leagues.map(async (league) => {
         try {
-          let res = await fetch(global.server + "/events/" + league.event, {
+          let res = await fetch(global.server + "/events/" + league.event.event_id, {
             method: "GET"
           });
           let event = await res.json();
           res = await fetch(
-            global.server + "/tournaments/" + event.tournament,
+            global.server + "/tournaments/" + event.tournament.tournament_id,
             { method: "GET" }
           );
           let tournament = await res.json();
