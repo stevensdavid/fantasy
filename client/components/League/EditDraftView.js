@@ -3,11 +3,16 @@ import {
     View,
     Text,
     Alert,
-    ScrollView
+    ScrollView,
+    StyleSheet
 } from 'react-native'
 import { ScrollableListContainer } from '../Container/ScrollableListContainer'
 
 export default class EditDraftView extends React.Component {
+    static navigationOptions = {
+        title: "Edit draft"
+    };
+
     constructor(props) {
         super(props)
         let league = this.props.navigation.getParam("league", null)
@@ -16,7 +21,8 @@ export default class EditDraftView extends React.Component {
             draft: league.fantasy_drafts.filter(x => x.user_id == global.userID),
             entrants: [],
             formattedDraft: [],
-            formattedEntrants: []
+            formattedEntrants: [],
+            loading: true
         };
         console.log('State: ' + JSON.stringify(this.state))
         this.setFormattedLists = this.setFormattedLists.bind(this);
@@ -29,6 +35,7 @@ export default class EditDraftView extends React.Component {
             this.getEntrants().then(newEntrants => {
                 this.setState({ entrants: this.state.entrants.concat(newEntrants) });
                 this.setFormattedLists();
+                this.setState({loading: false});
             }).catch(err => console.error(err));
         }
     }
@@ -108,20 +115,31 @@ export default class EditDraftView extends React.Component {
     render() {
         return (
             <View>
-                <Text>Editing draft</Text>
                 <ScrollView>
-                    <Text>Drafted players</Text>
+                    <Text style={styles.headerText}>Drafted players</Text>
                     <ScrollableListContainer
+                        showSearchBar={true}
                         data={this.state.formattedDraft}
                         onItemClick={playerID => this.removePlayer(playerID)}
+                        loading={this.state.loading}
                     />
-                    <Text>All players</Text>
+                    <Text style={styles.headerText}>All players</Text>
                     <ScrollableListContainer
+                        showSearchBar={true}
                         data={this.state.formattedEntrants}
                         onItemClick={playerID => this.draftPlayer(playerID)}
+                        loading={this.state.loading}
                     />
                 </ScrollView>
             </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    headerText: {
+        fontSize: 32,
+        fontWeight: "bold",
+        alignSelf:"center"
+    }
+});
