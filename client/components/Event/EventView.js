@@ -98,6 +98,7 @@ export default class EventView extends React.Component {
               playerData: event.entrants.map(p => {
                 return {
                   key: p.player.player_id.toString(),
+                  img_uri: p.player.ext_photo_url ? p.player.ext_photo_url : "https://cdn.cwsplatform.com/assets/no-photo-available.png",
                   title: p.player.tag,
                   description: p.seed
                 };
