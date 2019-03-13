@@ -6,6 +6,7 @@ import {
     TouchableHighlight,
     Image,
     Alert,
+    TouchableOpacity
   } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -110,13 +111,15 @@ export class ProfileView extends React.Component {
                 </Text>
               </View>
               
-              <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
-                    underlineColorAndroid='transparent'>
-                    Friends: 0
-                </Text>
-              </View>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("Friends")}>
+                <View style={styles.textContainer}>
+                  <Text style={styles.inputs}
+                      secureTextEntry={true}
+                      underlineColorAndroid='transparent'>
+                      Friends: 0
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
               <View style={styles.textContainer}>
                 <Text style={styles.inputs}
