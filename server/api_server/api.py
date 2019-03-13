@@ -617,7 +617,7 @@ class DraftsAPI(Resource):
         args = parser.parse_args(strict=True)
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
-        if league.event.starts_at < time.time():
+        if league.event.start_at < time.time():
             # This event has already started
             return {
                 "error": "The event has already begun, and drafting has closed."
@@ -681,7 +681,7 @@ class DraftsAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
-        if league.event.starts_at < time.time():
+        if league.event.start_at < time.time():
             # This event has already started
             return {
                 "error": "The event has already begun, and drafting has closed."
