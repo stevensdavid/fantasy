@@ -28,9 +28,9 @@ export class LeaguesHome extends React.Component {
     ]; 
   }
 
-  newLeague(leagueID) {
+  newLeague(newLeagueID) {
     this.fetchLeagues();
-    this.props.navigation.navigate("League", { league: leagueID })
+    this.props.navigation.navigate("League", { leagueID: newLeagueID })
   }
 
   componentWillUnmount() {
