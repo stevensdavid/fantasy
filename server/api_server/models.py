@@ -50,6 +50,8 @@ class Player(db.Model, Serializeable):
     player_id = db.Column(db.Integer, primary_key=True)
     ranking = db.Column(db.Integer)
     tag = db.Column(db.String(255), nullable=False)
+    photo_path = db.Column(db.String(255))
+    ext_photo_url = db.Column(db.String(255))
 
     def __repr__(self):
         return f'<Player {self.tag} ({self.player_id})>'

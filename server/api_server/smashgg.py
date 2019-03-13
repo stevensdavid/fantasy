@@ -268,6 +268,9 @@ class SmashGG:
                         participants {
                             playerId
                             gamerTag
+                            images {
+                                url
+                            }
                         }
                     }
                 }
@@ -326,8 +329,29 @@ class SmashGG:
                 except IntegrityError:
                     # We haven't stored details about this player
                     db.session.rollback()
+                    player = entrant['participants'][0]
+                    image_dir = app.config['IMAGE_DIR'] + \
+                        f"/players/{player_id}"
+                    if not os.path.exists(image_dir):
+                        os.makedirs(image_dir)
+                    photo_path = image_dir + '/profile_photo.png'
+                    if not os.path.exists(photo_path):
+                        try:
+                            photo = requests.get(player['images'][0]['url'])
+                            if photo.status_code == requests.codes.ok:
+                                with open(photo_path, 'w+b') as file:
+                                    file.write(photo.content)
+                            else:
+                                photo_path = None
+                        except IndexError:
+                            photo_path = None
                     p = Player(player_id=player_id,
-                               tag=entrant['participants'][0]['gamerTag'])
+                               tag=player['gamerTag'],
+                               ext_photo_url=None if len(player['images'] < 1)
+                               else player['images'][0]['url'],
+                               photo_path='/'.join(photo_path.split('/')[-3:])
+                               if photo_path is not None else None
+                               )
                     db.session.add(p)
                     db.session.commit()
             page += 1
