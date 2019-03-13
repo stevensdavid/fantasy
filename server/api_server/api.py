@@ -726,15 +726,12 @@ class LeagueAPI(Resource):
                 type: integer
         responses:
             200:
-                description: The fantasy league matching the ID
-                schema:
-                        import: "swagger/FantasyLeague.json"
-            200:
-                descirption: The multiple leagues matching the parameters
-                schema:
-                    type: array
-                    items:
-                        import: "swagger/UnNestedFantasyLeague.json"
+                type: object
+                oneOf:
+                    -   import: "swagger/FantasyLeague.json"
+                    -   type: array
+                        items:
+                            import: "swagger/UnNestedFantasyLeague.json"
         """
         if league_id:
             league = FantasyLeague.query.filter(
