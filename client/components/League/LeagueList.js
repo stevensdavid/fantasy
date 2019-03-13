@@ -31,6 +31,10 @@ export class LeagueList extends React.Component {
     }
   }
 
+  deleteLeague(leagueID) {
+
+  }
+
   openLeagueView(selectedLeague) {
     this.props.navigation.navigate("League", { leagueID: selectedLeague });
   }
@@ -44,7 +48,8 @@ export class LeagueList extends React.Component {
           onItemClick={key => {
             this.openLeagueView(key);
           }}
-
+          enableDeleteSwipe={true}
+          onItemDelete={(leagueID) => this.deleteLeague(leagueID)}
           loading={this.state.loading}
         />
         <AddButton hide={this.state.loading} containerStyle={styles.floatingButtonStyle} onPress={() => this.props.navigation.navigate("Search")} />
