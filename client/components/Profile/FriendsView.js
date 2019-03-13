@@ -3,6 +3,10 @@ import { View, Text} from "react-native";
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 export default class FriendsView extends React.Component {
+  static navigationOptions = {
+    title: 'Friends',
+  };
+
   constructor(props) {
     super(props);
 
@@ -51,7 +55,6 @@ export default class FriendsView extends React.Component {
   render() {
     return (
       <View>
-        <Text>Hi</Text>
         <ScrollableListContainer
           data={this.state.data}
           loading={this.state.loading}
