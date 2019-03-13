@@ -69,12 +69,12 @@ class FantasyLeague(db.Model, Serializeable):
         "Event.event_id"), nullable=False)
     event = db.relationship(
         'Event', backref=db.backref('fantasy_leagues'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     owner_id = db.Column(db.Integer, db.ForeignKey(
         'User.user_id'), nullable=False)
     owner = db.relationship(
         'User', backref=db.backref('fantasy_leagues'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     draft_size = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -104,7 +104,7 @@ class Event(db.Model, Serializeable):
         "Tournament.tournament_id"), nullable=False)
     tournament = db.relationship(
         'Tournament', backref=db.backref('events'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     name = db.Column(db.String(255))
     slug = db.Column(db.String(255))
     num_entrants = db.Column(db.Integer, nullable=False)
@@ -136,13 +136,13 @@ class Entrant(db.Model, Serializeable):
     event_id = db.Column(db.Integer, db.ForeignKey(
         "Event.event_id"), primary_key=True)
     event = db.relationship('Event', backref=db.backref('entrants'),
-                            cascade="all, delete-orphan")
+                            cascade="all, delete-orphan", single_parent=True)
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     # Players should not be lazy-loaded
     player = db.relationship(
         'Player', backref=db.backref('entrants'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     seed = db.Column(db.Integer)
 
     def __repr__(self):
@@ -155,17 +155,17 @@ class FantasyDraft(db.Model, Serializeable):
         "FantasyLeague.league_id"), primary_key=True)
     league = db.relationship(
         'FantasyLeague', backref=db.backref('fantasy_drafts'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
     user = db.relationship(
         'User', backref=db.backref('fantasy_drafts'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     player = db.relationship(
         'Player', backref=db.backref('fantasy_drafts'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
 
     def __repr__(self):
         return f'<FantasyDraft league {self.league_id} user {self.user_id}' \
@@ -178,13 +178,13 @@ class Placement(db.Model, Serializeable):
         "Event.event_id"), primary_key=True)
     event = db.relationship(
         'Event', backref=db.backref('placements'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
 
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     player = db.relationship(
         'Player', backref=db.backref('placements'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     place = db.Column(db.Integer)
 
     def __repr__(self):
@@ -197,11 +197,11 @@ class FantasyResult(db.Model, Serializeable):
         "FantasyLeague.league_id"), primary_key=True)
     league = db.relationship(
         'FantasyLeague', backref=db.backref('fantasy_results'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     user_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
     user = db.relationship('User', backref=db.backref('fantasy_results'),
-        cascade="all, delete-orphan")
+        cascade="all, delete-orphan", single_parent=True)
     score = db.Column(db.Integer)
 
     def __repr__(self):
