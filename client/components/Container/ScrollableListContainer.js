@@ -13,9 +13,11 @@ import { HideAbleView } from "../View/HideAbleView";
 import Swipeout from "react-native-swipeout";
 
 /*Takes the following props:
-    data: Array with objects each containing {key, img_uri(optional), title, description(optional)}
-    onItemClick(key): Function which handles the key of a clicked item.(optional)
+    data: Array with objects each containing {key, img_uri(optional), title, description(Optional)}
+    onItemClick(key): Function which handles the key of a clicked item.(Optional)
     style: Object holding React Native CSS(optional).
+    enableDeleteSwipe: Enable swipe left to show delete button(Optional)
+    onItemDelete(key): Function which handles the deletion of an item(must if enableDeleteSwipe = true)
 */
 
 export class ScrollableListContainer extends React.Component {
