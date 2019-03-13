@@ -697,7 +697,7 @@ class DraftsAPI(Resource):
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
         if league.is_snake:
-            return {"error":"Players cannot be deleted from snake drafts"}, 400
+            return {"error": "Players cannot be deleted from snake drafts"}, 400
         if league.event.start_at < time.time():
             # This event has already started
             return {
@@ -1000,7 +1000,6 @@ class EntrantsAPI(Resource):
                     items:
                         import: "swagger/Entrant.json"
         """
-
         parser = make_pagination_reqparser()
         args = parser.parse_args()
         entrants = Entrant.query.filter(Entrant.event_id == event_id).order_by(
