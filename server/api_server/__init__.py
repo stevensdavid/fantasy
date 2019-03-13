@@ -22,3 +22,4 @@ app.config['SWAGGER'] = {
     "uiversion": 3
 }
 swagger = Swagger(app)
+socketio = SocketIO(app)
