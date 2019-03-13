@@ -24,6 +24,11 @@
         "type": "integer",
         "format": "int32"
       },
+      "turn": {
+        "type": "integer",
+        "format": "int32",
+        "nullable": true
+      },
       "event": {
         "type": "object",
         "properties":{
