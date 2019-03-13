@@ -696,7 +696,8 @@ class DraftsAPI(Resource):
         ).first()
         db.session.delete(draft)
         db.session.commit()
-        return fantasy_draft_schema.jsonify(draft)
+        schema = FantasyDraftSchema(only=["league_id","player_id","user_id"])
+        return schema.jsonify(draft)
 
 
 class LeagueAPI(Resource):
