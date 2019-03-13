@@ -53,7 +53,7 @@ export class ScrollableListContainer extends React.Component {
                 </View>
             ) : (
                     <View>
-                        <HideAbleView hide={this.props.showSearchBar ? !this.props.showSearchBar : true}>
+                        <HideAbleView hide={this.props.showSearchBar ? false || !(this.props.data.length > 0) : true}>
                             <SearchBar
                                 placeholder="Search"
                                 onChangeText={text => this.searchFilterFunction(text)}
