@@ -69,16 +69,6 @@ export class ScrollableListContainer extends React.Component {
       </View>
     );
 
-    let swipeBtn = [
-      {
-        backgroundColor: "transparent",
-        component: deleteButton,
-        onPress: () => {
-          this.deleteNote(rowData);
-        }
-      }
-    ];
-
     return this.props.loading ? (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator
@@ -110,8 +100,16 @@ export class ScrollableListContainer extends React.Component {
           data={this.state.show}
           renderItem={({ item }) => (
             <Swipeout
-              disabled={this.props.enableSwipe ? false : true}
-              right={swipeBtn}
+              disabled={this.props.enableDeleteSwipe ? false : true}
+              right={[
+                {
+                  backgroundColor: "transparent",
+                  component: deleteButton,
+                  onPress: () => {
+                    this.props.onItemDelete(item.key);
+                  }
+                }
+              ]}
               autoClose={true}
               backgroundColor="transparent"
             >
