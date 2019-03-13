@@ -66,15 +66,16 @@ class SmashGG:
                                   },
                                   headers={"Authorization":
                                            f"Bearer {self.api_key}"})
-            for standing in r.json()['event']['standings']['nodes']:
-                insert_stmt = insert(Placement).values(
-                    event_id=event_id,
-                    player_id=standing['entrant']['participants'][0]
-                                      ['playerId'],
-                    place=standing['placement']
-                ).on_duplicate_key_update(place=standing['placement'],
-                                          status='U')
-                db.execute(insert_stmt)
+            if r.json()['data']['event']['standings'] is not None:
+                for standing in r.json()['data']['event']['standings']['nodes']:
+                    insert_stmt = insert(Placement).values(
+                        event_id=event_id,
+                        player_id=standing['entrant']['participants'][0]
+                                          ['playerId'],
+                        place=standing['placement']
+                    ).on_duplicate_key_update(place=standing['placement'],
+                                              status='U')
+                    db.execute(insert_stmt)
             page += 1
             read += per_page
         db.session.commit()
