@@ -41,11 +41,10 @@ export class LeagueList extends React.Component {
       }
     })
       .then(res => {
-        console.log(res);
         if (res.status === 200) {
           return res.json();
         } else {
-          throw res.body;
+          throw res;
         }
       })
       .then(deletedLeague => {
