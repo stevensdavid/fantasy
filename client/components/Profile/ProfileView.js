@@ -113,7 +113,7 @@ export class ProfileView extends React.Component {
               
               <TouchableOpacity onPress={() => this.props.navigation.navigate("Friends")}>
                 <View style={styles.textContainer}>
-                  <Text style={styles.inputs}
+                  <Text style={[styles.inputs, {fontWeight: "bold"}]}
                       secureTextEntry={true}
                       underlineColorAndroid='transparent'>
                       Friends: 0
@@ -121,13 +121,15 @@ export class ProfileView extends React.Component {
                 </View>
               </TouchableOpacity>
 
-              <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
-                    underlineColorAndroid='transparent'>
-                    Info
-                </Text>
-              </View>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate("Leagues")}>
+                <View style={styles.textContainer}>
+                  <Text style={[styles.inputs, {fontWeight: "bold"}]}
+                      secureTextEntry={true}
+                      underlineColorAndroid='transparent'>
+                      Leagues: 0
+                  </Text>
+                </View>
+              </TouchableOpacity>
 
               <View style={{flexDirection: 'row'}}>
               <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.props.navigation.navigate("EditProfile", {reload: this.reloadInfo})}>
