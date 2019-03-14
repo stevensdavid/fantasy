@@ -185,6 +185,22 @@ class UsersAPI(Resource):
                 description: The updated user
                 schema:
                     import: "swagger/User.json"
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+            404:
+                description: User not found
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -385,6 +401,14 @@ class FriendsAPI(Resource):
                 description: The resulting friend-pair
                 schema:
                     import: "swagger/Friends.json"
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -397,7 +421,7 @@ class FriendsAPI(Resource):
         except IntegrityError:
             # These users are already friends
             db.session.rollback()
-        return friends.as_dict()
+        return friends_schema.jsonify(friends)
 
     def delete(self, user_id):
         """Delete {user_id}s friendship with {friendId}. 
@@ -433,6 +457,21 @@ class FriendsAPI(Resource):
                             type: integer
                         friend_id:
                             type: integer
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+            404:
+                description: Not found
+                type: object
+                properties:
+                    error:
+                        type: string
+                        description: An error message
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -634,14 +673,20 @@ class DraftsAPI(Resource):
             400:
                 description: Bad request
                 schema:
+                    type: object
                     properties:
                         error:
                             type: string
                             description: >
-                                An error message describing what went wrong. The
-                                API distinguishes between two different causes 
-                                of errors: the user's draft being full and 
-                                integrity errors due to the passed parameters.
+                                An error message describing what went wrong.
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -744,6 +789,21 @@ class DraftsAPI(Resource):
                             type: integer
                         player_id:
                             type: integer
+            400:
+                description: Bad request
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
@@ -889,6 +949,14 @@ class LeagueAPI(Resource):
                             type: integer
                         draft_size:
                             type: integer
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
@@ -950,6 +1018,14 @@ class LeagueAPI(Resource):
                 description: The created fantasy league
                 schema:
                     import: "swagger/FantasyLeague.json"
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         parser = reqparse.RequestParser()
         parser.add_argument('eventId', type=int)
@@ -1010,6 +1086,22 @@ class LeagueAPI(Resource):
                 description: The updated fantasy league
                 schema:
                     import: "swagger/FantasyLeague.json"
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+            404:
+                description: League not found
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         parser = reqparse.RequestParser()
         parser.add_argument('leagueId', type=int)
@@ -1113,6 +1205,7 @@ class LoginAPI(Resource):
             400:
                 description: Failed login
                 schema:
+                    type: object
                     properties:
                         error:
                             type: string
@@ -1181,6 +1274,11 @@ class FantasyResultAPI(Resource):
                 description: >
                     Bad request, likely due to not specifying any of the query
                     parameters.
+                type: object
+                properties:
+                    error:
+                        type: string
+                        description: An error message
         '''
         parser = reqparse.RequestParser()
         parser.add_argument('userId', type=int)
@@ -1224,6 +1322,20 @@ class FantasyResultAPI(Resource):
                     import: "swagger/FantasyResult.json"
             400:
                 description: Bad request
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         '''
         parser = reqparse.RequestParser()
         parser.add_argument('userId', type=int)
@@ -1287,6 +1399,20 @@ class FantasyResultAPI(Resource):
                             type: integer
             400:
                 description: Bad request
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         '''
         parser = reqparse.RequestParser()
         parser.add_argument('userId', type=int)
