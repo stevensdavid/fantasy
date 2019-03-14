@@ -65,6 +65,7 @@ export default class LeagueView extends React.Component {
           onItemClick={(userID) => this.handlePress(userID)}
         />
         <AddButton hide={this.state.league.owner != global.userID || this.state.loading}
+          buttonName = "edit"
           containerStyle={styles.floatingButtonStyle}
           onPress={() => this.props.navigation.navigate("LeagueParticipants", {leagueID: this.leagueID})} />
       </View>
