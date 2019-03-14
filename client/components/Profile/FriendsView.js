@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
@@ -66,7 +66,7 @@ export default class FriendsView extends React.Component {
   }
 
   render() {
-    return (
+    if(this.state.data.length > 0) { return (
       <View>
         <ScrollableListContainer
           data={this.state.data}
@@ -75,5 +75,15 @@ export default class FriendsView extends React.Component {
         />
       </View>
     );
-  }
+  }else {
+    return <Text style={styles.headerText}>No friends, why not follow one?</Text>
+  }} 
 }
+
+const styles = StyleSheet.create({
+  headerText: {
+    marginTop: 20,
+    fontSize: 24,
+    alignSelf: "center"
+  }
+});

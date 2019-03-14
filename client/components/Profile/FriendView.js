@@ -10,8 +10,13 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import Spinner from "react-native-loading-spinner-overlay";
+import { HideAbleView } from "../View/HideAbleView";
 
-export class ProfileView extends React.Component {
+export default class FriendsView extends React.Component {
+  static navigationOptions = {
+    title: "User"
+  };
+
   constructor(props) {
     super(props);
 
@@ -25,24 +30,32 @@ export class ProfileView extends React.Component {
       tagFontSize: 42,
       loading: false,
       infoTextSize: 24,
+      isFollowing: false
     };
 
     this.reloadInfo = this.reloadInfo.bind(this);
+    this.addFollow = this.addFollow.bind(this);
+
+    this.friendID = this.props.navigation.getParam("friendID", -1);
   }
 
   reloadInfo() {
-    this.getUserInfo();
+    this.getFriendInfo(this.friendID);
   }
 
   componentDidMount() {
-    this.getUserInfo();
+    this.getFriendInfo(this.friendID);
+  }
+
+  addFollow(userID, friendID) {
+
   }
 
   httpGetHeaders = {};
 
-  getUserInfo() {
+  getFriendInfo(id) {
     this.setState({ loading: true });
-    fetch(global.server + "/users/" + global.userID, {
+    fetch(global.server + "/users/" + id, {
       method: "GET",
       headers: this.httpGetHeaders
     })
@@ -76,23 +89,6 @@ export class ProfileView extends React.Component {
   }
 
   render() {
-    const rightArrow = (
-      <Icon
-        containerStyle={{
-          height: 45,
-          marginLeft: 2,
-          marginBottom: 17,
-          justifyContent: "center",
-          alignSelf: "center",
-          alignItems: "center"
-        }}
-        name="chevron-right"
-        type="material"
-        color="#222"
-        size={50}
-      />
-    );
-
     return (
       <View>
         <Spinner
@@ -118,26 +114,33 @@ export class ProfileView extends React.Component {
         </View>
         <View style={styles.container}>
           <View style={styles.textContainer}>
-            <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]} underlineColorAndroid="transparent">
+            <Text
+              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
+              underlineColorAndroid="transparent"
+            >
               {this.state.firstName}
             </Text>
           </View>
 
           <View style={styles.textContainer}>
-            <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]} underlineColorAndroid="transparent">
+            <Text
+              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
+              underlineColorAndroid="transparent"
+            >
               {this.state.lastName}
             </Text>
           </View>
 
           <View style={styles.textContainer}>
-            <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]} underlineColorAndroid="transparent">
+            <Text
+              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
+              underlineColorAndroid="transparent"
+            >
               {this.state.email}
             </Text>
           </View>
 
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Friends")}
-          >
+          <TouchableOpacity>
             <View style={styles.linkContainer}>
               <Text
                 style={[styles.inputs, { fontWeight: "bold" }]}
@@ -145,13 +148,10 @@ export class ProfileView extends React.Component {
               >
                 Friends: {this.state.nFriends}
               </Text>
-              {rightArrow}
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Leagues")}
-          >
+          <TouchableOpacity>
             <View style={styles.linkContainer}>
               <Text
                 style={[styles.inputs, { fontWeight: "bold" }]}
@@ -159,42 +159,17 @@ export class ProfileView extends React.Component {
               >
                 Leagues: {this.state.nLeagues}
               </Text>
-              {rightArrow}
             </View>
           </TouchableOpacity>
 
-          <View style={{ flexDirection: "row" }}>
+          <HideAbleView hide={this.state.isFollowing}>
             <TouchableHighlight
               style={[styles.buttonContainer, styles.loginButton]}
-              onPress={() =>
-                this.props.navigation.navigate("EditProfile", {
-                  reload: this.reloadInfo
-                })
-              }
+              onPress={() => this.addFollow(global.userID, this.friendID)}
             >
-              <View style={{ flexDirection: "row" }}>
-                <Text style={styles.loginText}>Edit</Text>
-                <Icon
-                  containerStyle={{
-                    marginLeft: 5,
-                    alignSelf: "center",
-                    alignItems: "center"
-                  }}
-                  name="edit"
-                  type="material"
-                  color="#eff"
-                  size={18}
-                />
-              </View>
+              <Text style={styles.loginText}>Follow</Text>
             </TouchableHighlight>
-
-            <TouchableHighlight
-              style={[styles.buttonContainer, styles.loginButton]}
-              onPress={() => this.props.setToken(null)}
-            >
-              <Text style={styles.loginText}>Logout</Text>
-            </TouchableHighlight>
-          </View>
+          </HideAbleView>
         </View>
       </View>
     );
@@ -214,10 +189,12 @@ styles = StyleSheet.create({
   textContainer: {
     borderBottomColor: "#F5FCFF",
     backgroundColor: "#FFFFFF",
+    borderRadius: 30,
     borderBottomWidth: 1,
-    width: 350,
+    width: 250,
     height: 45,
     marginBottom: 20,
+    flexDirection: "row",
     alignItems: "center"
   },
   linkContainer: {
@@ -235,6 +212,7 @@ styles = StyleSheet.create({
     color: "#FFF"
   },
   inputs: {
+    fontSize: 26,
     height: 45,
     marginLeft: 16,
     borderBottomColor: "#FFFFFF"
