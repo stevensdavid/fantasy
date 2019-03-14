@@ -31,10 +31,10 @@ export default class FollowingView extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchFriends(this.state.userID);
+    this.fetchFollowing(this.state.userID);
   }
 
-  fetchFriends(userID) {
+  fetchFollowing(userID) {
     newData = [];
     fetch(global.server + "/friends/" + userID + "?page=1&perPage=20", {
       method: "GET"
