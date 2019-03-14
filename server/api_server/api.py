@@ -659,7 +659,7 @@ class ImagesAPI(Resource):
             if os.path.exists(filename):
                 os.remove(filename)
             else:
-                os.makedirs(filename, exist_ok=True)
+                os.makedirs(os.path.dirname(filename), exist_ok=True)
             image.save(filename)
             # Rename and convert it to PNG to be consistent
             final_path = safe_join('users', str(user_id), 'profile_photo.png')
@@ -667,7 +667,7 @@ class ImagesAPI(Resource):
             if os.path.exists(final_path):
                 os.remove(final_path)
             else:
-                os.makedirs(final_path, exist_ok=True)
+                os.makedirs(os.path.dirname(final_path), exist_ok=True)
                 user = User.query.filter_by(user_id=user_id).first()
                 user.photo_path = final_path
                 db.session.commit()
