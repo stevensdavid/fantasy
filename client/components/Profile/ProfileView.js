@@ -20,7 +20,8 @@ export class ProfileView extends React.Component {
       firstName: "",
       lastName: "",
       tag: "",
-      nFriends: 0,
+      nFollowing: 0,
+      nFollowers: 0,
       nLeagues: 0,
       tagFontSize: 42,
       loading: false,
@@ -62,7 +63,8 @@ export class ProfileView extends React.Component {
               lastName: responseJSON.last_name,
               tag: responseJSON.tag,
               tagFontSize: (38 * 8) / responseJSON.tag.length,
-              nFriends: responseJSON.following.length,
+              nFollowing: responseJSON.following.length,
+              nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length
             });
             this.setState({ loading: false });
@@ -136,6 +138,19 @@ export class ProfileView extends React.Component {
           </View>
 
           <TouchableOpacity
+          >
+            <View style={styles.linkContainer}>
+              <Text
+                style={[styles.inputs, { fontWeight: "bold" }]}
+                underlineColorAndroid="transparent"
+              >
+                Followers: {this.state.nFollowers}
+              </Text>
+              {rightArrow}
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             onPress={() => this.props.navigation.navigate("Friends")}
           >
             <View style={styles.linkContainer}>
@@ -143,7 +158,7 @@ export class ProfileView extends React.Component {
                 style={[styles.inputs, { fontWeight: "bold" }]}
                 underlineColorAndroid="transparent"
               >
-                Friends: {this.state.nFriends}
+                Following: {this.state.nFollowing}
               </Text>
               {rightArrow}
             </View>
