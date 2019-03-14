@@ -11,9 +11,10 @@ from datetime import date
 from threading import Thread
 
 import bcrypt
+from PIL import Image
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (Flask, make_response, request, safe_join, send_file,
-                   send_from_directory)
+                   send_from_directory, secure_filename)
 from flask_restful import Api, Resource, reqparse, inputs
 from flask_socketio import send, emit
 from flask_sqlalchemy import SQLAlchemy
@@ -547,6 +548,80 @@ class ImagesAPI(Resource):
             return send_file(io.BytesIO(img.read()),
                              mimetype='image/png', as_attachment=True,
                              attachment_filename=os.path.split(fname)[1])
+
+    def post(self, user_id):
+        '''Upload a profile photo
+        ---
+        consumes:
+            - multipart/form-data
+        parameters:
+            -   name: user_id
+                in: path
+                type: integer
+                required: true
+                description: The ID of the user
+            -   in: formData
+                name: upfile
+                type: file
+                description: >
+                    The photo to upload. Supported formats are JPEG and PNG
+        security:
+            - bearerAuth: []
+        respones:
+            204:
+                description: Success
+            400:
+                description: Bad request
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+            401:
+                description: Unauthorized
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
+        '''
+        if not user_is_logged_in(user_id):
+            return NOT_LOGGED_IN_RESPONSE
+        if 'file' not in request.files:
+            return {'error': 'No file part'}, 400
+        image = request.files['file']
+        if image.filename == '':
+            return {'error': 'No selected file'}, 400
+        if image and self._allowed_filetype(image.filename):
+            filename = safe_join(app.config['IMAGE_DIR'],
+                                 f'{user_id}/{image.filename}')
+            if os.path.exists(filename):
+                os.remove(filename)
+            else:
+                os.makedirs(filename, exist_ok=True)
+            file.save(filename)
+            # Rename and convert it to PNG to be consistent
+            final_path = safe_join(str(user_id), 'profile_photo.png')
+            final_location = safe_join(app.config['IMAGE_DIR'], final_path)
+            if os.path.exists(final_path):
+                os.remove(final_path)
+            else:
+                os.makedirs(final_path, exist_ok=True)
+                user = User.query.filter_by(user_id=user_id).first()
+                user.photo_path = final_path
+                db.session.commit()
+            Image.open(filename).save(final_location)
+            os.remove(filename)
+            return ('', 204)
+        return {'error': 'Unsupported filetype. Supported extensions are png, '
+                'jpg and jpeg'}, 400
+
+    def _allowed_filetype(self, filename):
+        ALLOWED_EXTENSIONS = ['png', 'jpg', 'jpeg']
+        return ('.'in filename and
+                filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS)
 
 
 class DraftsAPI(Resource):
@@ -1420,6 +1495,7 @@ api.add_resource(TournamentsAPI, '/tournaments',
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
 api.add_resource(ImagesAPI, '/images/<path:fname>')
+api.add_resource(ImagesAPI, '/images/<int:user_id>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>', '/leagues')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
