@@ -12,10 +12,10 @@ export class TournamentSearch extends React.Component {
             headers: this.httpGetHeaders
         })
         .then((response) => {
-            if(response.status === 404 || response.status === 400) {
+            if(response.status != 200 && response.status != 204) {
                 this.setState({loading: false});
-                Alert.alert("Alert", "(404 or 400) Should not be seing this.");
-              } else if (response.status === 200) {
+                Alert.alert("Alert", "(Status is !200) Should not be seing this.");
+              } else {
                 response.json().then((respjson) => {
                   this.setState({data: []});
                   const newData = [];

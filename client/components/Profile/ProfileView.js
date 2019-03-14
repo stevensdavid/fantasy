@@ -191,7 +191,7 @@ export class ProfileView extends React.Component {
             >
               #{this.state.tag}
             </Text>
-            <Text style={{ fontSize: 14, color: "#b3002d" }}>Score: 0</Text>
+            <Text style={{ marginLeft:4, fontSize: 14, color: "#b3002d" }}>Score: 0</Text>
           </View>
         </View>
         <View style={styles.container}>

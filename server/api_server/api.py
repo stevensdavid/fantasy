@@ -835,7 +835,8 @@ class DraftsAPI(Resource):
                 league.turn = users.index(user_id) + (1 if league.ascending
                                                       else - 1)
                 db.session.commit()
-            emit('turn-change', {'turn': league.turn})
+            emit('turn-change', {'turn': league.turn},
+                 namespace='/leagues', room=league_id)
         return fantasy_draft_schema.jsonify(draft)
 
     def delete(self, league_id, user_id):
@@ -1521,7 +1522,7 @@ class FantasyResultAPI(Resource):
         db.session.delete(fantasy_result)
         # Remove all drafts by the user
         FantasyDraft.query.filter(FantasyDraft.league_id == args['leagueId'],
-                            FantasyDraft.user_id == args['userId']).delete()
+                                  FantasyDraft.user_id == args['userId']).delete()
         try:
             db.session.commit()
         except IntegrityError:
