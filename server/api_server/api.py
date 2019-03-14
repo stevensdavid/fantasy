@@ -578,11 +578,11 @@ class FeaturedTournamentsAPI(Resource):
 
 
 class ImagesAPI(Resource):
-    def get(self, param):
+    def get(self, fname):
         """Get an image file
         ---
         parameters:
-            -   name: param
+            -   name: fname
                 in: path
                 type: string
                 required: true
@@ -599,18 +599,20 @@ class ImagesAPI(Resource):
                             type: string
                             format: binary
         """
-        with open(safe_join(app.config['IMAGE_DIR'], param), 'rb') as img:
+        with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
             return send_file(io.BytesIO(img.read()),
                              mimetype='image/png', as_attachment=True,
-                             attachment_filename=os.path.split(param)[1])
+                             attachment_filename=os.path.split(fname)[1])
 
-    def post(self, param):
+
+class UploadImageAPI(Resource):
+    def post(self, user_id):
         '''Upload a profile photo
         ---
         consumes:
             - multipart/form-data
         parameters:
-            -   name: param
+            -   name: user_id
                 in: path
                 type: integer
                 required: true
@@ -642,10 +644,6 @@ class ImagesAPI(Resource):
                             type: string
                             description: An error message
         '''
-        try:
-            user_id = int(param)
-        except ValueError:
-            return {'error', 'Path parameter should be an integer'}, 400
         if not user_is_logged_in(user_id):
             return NOT_LOGGED_IN_RESPONSE
         if 'file' not in request.files:
@@ -1554,7 +1552,8 @@ api.add_resource(TournamentsAPI, '/tournaments',
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FollowersAPI, '/followers/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
-api.add_resource(ImagesAPI, '/images/<param>')
+api.add_resource(ImagesAPI, '/images/<path:fname>')
+api.add_resource(UploadImageAPI, '/images/<int:user_id>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>', '/leagues')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
