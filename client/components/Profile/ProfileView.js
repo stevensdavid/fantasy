@@ -41,6 +41,7 @@ export class ProfileView extends React.Component {
       this.props.navigation.addListener("didFocus", payload => {
         if (global.newUserInfo) {
           this.getUserInfo();
+          global.newUserInfo = false;
         }
       })
     ];
