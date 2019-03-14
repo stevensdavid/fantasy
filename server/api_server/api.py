@@ -655,14 +655,14 @@ class ImagesAPI(Resource):
             return {'error': 'No selected file'}, 400
         if image and self._allowed_filetype(image.filename):
             filename = safe_join(app.config['IMAGE_DIR'],
-                                 f'{user_id}/{image.filename}')
+                                 f'users/{user_id}/{image.filename}')
             if os.path.exists(filename):
                 os.remove(filename)
             else:
                 os.makedirs(filename, exist_ok=True)
-            file.save(filename)
+            image.save(filename)
             # Rename and convert it to PNG to be consistent
-            final_path = safe_join(str(user_id), 'profile_photo.png')
+            final_path = safe_join('users', str(user_id), 'profile_photo.png')
             final_location = safe_join(app.config['IMAGE_DIR'], final_path)
             if os.path.exists(final_path):
                 os.remove(final_path)
