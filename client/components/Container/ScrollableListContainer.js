@@ -145,6 +145,9 @@ export class ScrollableListContainer extends React.Component {
             </Swipeout>
           )}
         />
+        <HideAbleView style={{alignItems: 'center', justifyContent:'center'}} hide={!(this.props.emptyText && this.state.show.length === 0)}>
+          <Text style={{fontSize: 21}}>{this.props.emptyText}</Text>
+        </HideAbleView>
       </View>
     );
   }
