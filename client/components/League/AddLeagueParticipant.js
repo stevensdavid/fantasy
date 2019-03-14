@@ -78,7 +78,7 @@ export default class AddLeagueParticipants extends React.Component {
           inputStyle={styles.searchInput}
           placeholderTextColor="#b3002d"
         />
-        <View style={{ marginBottom: 180 }}>
+        <View style={{ marginBottom: 120 }}>
           <ScrollableListContainer
             emptyText = "Nothing to show"
             data={this.state.data}
