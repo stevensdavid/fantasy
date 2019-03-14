@@ -346,6 +346,11 @@ class FriendsAPI(Resource):
                 type: integer
                 description: The number of items to include per page
                 default: 20
+            -   name: tag
+                in: query
+                required: false
+                type: string
+                description: A tag to search for
         responses:
             200:
                 description: All of the user's friends
@@ -417,7 +422,7 @@ class FriendsAPI(Resource):
         except IntegrityError:
             # These users are already friends
             db.session.rollback()
-        return friends_schema.jsonify(friends)
+        return friend_schema.jsonify(friends)
 
     def delete(self, user_id):
         """Delete {user_id}s friendship with {friendId}. 
@@ -486,6 +491,55 @@ class FriendsAPI(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('friendId', int)
         return parser.parse_args()
+
+
+class FollowersAPI(Resource):
+    def get(self, user_id):
+        """Get all users who follow a specific user
+        ---
+        parameters:
+            -   name: user_id
+                in: path
+                type: integer
+                required: true
+            -   name: page
+                in: query
+                required: false
+                type: integer
+                description: The page of results to return
+                default: 1
+            -   name: perPage
+                in: query
+                required: false
+                type: integer
+                description: The number of items to include per page
+                default: 20
+            -   name: tag
+                in: query
+                required: false
+                type: string
+                description: A tag to search for
+        responses:
+            200:
+                description: All of the user's followers
+                schema:
+                    type: array
+                    items:
+                        type: object
+                        schema:
+                            import: "swagger/User.json"
+        """
+        parser = make_pagination_reqparser()
+        parser.add_argument('tag', str)
+        args = parser.parse_args(strict=True)
+        friends = User.query.filter(
+            Friends.query.filter(
+                Friends.user_id == User.user_id, Friends.friend_id == user_id
+            ).exists()
+            & User.tag.like(
+                f'%{args["tag"] if args["tag"] is not None else ""}%')
+        ).paginate(page=args['page'], per_page=args['perPage']).items
+        return users_schema.jsonify(friends)
 
 
 class DatabaseVersionAPI(Resource):
@@ -1493,6 +1547,7 @@ api.add_resource(EventsAPI, '/events/<int:event_id>')
 api.add_resource(TournamentsAPI, '/tournaments',
                  '/tournaments/<int:tournament_id>')
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
+api.add_resource(FollowersAPI, '/followers/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
 api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(ImagesAPI, '/images/<int:user_id>')
