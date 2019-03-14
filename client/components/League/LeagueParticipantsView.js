@@ -17,12 +17,13 @@ export default class LeagueParticipantsView extends React.Component {
       userID: global.userID,
       term: "",
       loading: true,
-      loadingParticipants: true,
+      loadingParticipants: true
     };
 
     this.fetchUsers = this.fetchUsers.bind(this);
     this.fetchParticipants = this.fetchParticipants.bind(this);
-
+    this.forceUpdate = this.forceUpdate.bind(this);
+    
     this.leagueId = this.props.navigation.getParam("leagueID", -1);
   }
 
@@ -32,72 +33,45 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   addLeagueParticipant(userID) {
-    newData = [];
-    fetch(global.server + "/users?tag=" + term, {
-      method: "GET"
+    fetch(global.server + "/fantasy_participants", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + global.token
+      },
+      body: JSON.stringify({
+        leagueId: this.leagueId,
+        userId: userID
+      })
     })
       .then(res => {
         if (res.status === 200) {
-          return res.json();
+          this.forceUpdate();
         } else {
           throw res;
         }
-      })
-      .then(userData => {
-        if (userData.length > 0) {
-          userData.map(user => {
-            if (user.user_id !== global.userID) {
-              newData.push({
-                key: user.user_id.toString(),
-                title: user.tag,
-                description: user.first_name + " " + user.last_name,
-                img_uri:
-                  "https://cdn.cwsplatform.com/assets/no-photo-available.png"
-              });
-            }
-          });
-        }
-      })
-      .then(() => {
-        this.setState({
-          data: newData,
-          loading: false
-        });
       })
       .catch(err => console.log(err));
   }
 
   deleteLeagueParticipant(userID) {
-    fetch(global.server + "/users?tag=" + term, {
-      method: "GET"
+    fetch(global.server + "/fantasy_participants", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + global.token
+      },
+      body: JSON.stringify({
+        leagueId: this.leagueId,
+        userId: userID
+      })
     })
       .then(res => {
         if (res.status === 200) {
-          return res.json();
+          this.forceUpdate();
         } else {
           throw res;
         }
-      })
-      .then(userData => {
-        if (userData.length > 0) {
-          userData.map(user => {
-            if (user.user_id !== global.userID) {
-              newData.push({
-                key: user.user_id.toString(),
-                title: user.tag,
-                description: user.first_name + " " + user.last_name,
-                img_uri:
-                  "https://cdn.cwsplatform.com/assets/no-photo-available.png"
-              });
-            }
-          });
-        }
-      })
-      .then(() => {
-        this.setState({
-          data: newData,
-          loading: false
-        });
       })
       .catch(err => console.log(err));
   }
@@ -145,7 +119,7 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   fetchParticipants() {
-    newData = [];
+    newParticipantsData = [];
     this.setState({ loadingParticipants: true });
     fetch(global.server + "/leagues/" + this.leagueId, {
       method: "GET"
@@ -158,10 +132,10 @@ export default class LeagueParticipantsView extends React.Component {
         }
       })
       .then(leagueData => {
-        if (leagueData.length > 0) {
+        if (leagueData.fantasy_results.length > 0) {
           leagueData.fantasy_results.map(result => {
             if (result.user.user_id !== global.userID) {
-              newData.push({
+              newParticipantsData.push({
                 key: result.user.user_id.toString(),
                 title: result.user.tag,
                 img_uri:
@@ -173,7 +147,7 @@ export default class LeagueParticipantsView extends React.Component {
       })
       .then(() => {
         this.setState({
-          participantsData: newData,
+          participantsData: newParticipantsData,
           loadingParticipants: false
         });
       })
@@ -187,7 +161,7 @@ export default class LeagueParticipantsView extends React.Component {
         onPress={() => this.props.onPress()}
       >
         <Icon
-          containerStyle={{ alignSelf: "center"}}
+          containerStyle={{ alignSelf: "center" }}
           name="delete"
           type="material"
           color="#eff"
@@ -202,7 +176,7 @@ export default class LeagueParticipantsView extends React.Component {
         onPress={() => this.props.onPress()}
       >
         <Icon
-          containerStyle={{ alignSelf: "center"}}
+          containerStyle={{ alignSelf: "center" }}
           name="add"
           type="material"
           color="#eff"
@@ -211,20 +185,21 @@ export default class LeagueParticipantsView extends React.Component {
       </View>
     );
 
-
     return (
       <View>
-          <ScrollableListContainer
-            showSearchBar={true}
-            emptyText="No participants"
-            data={this.state.participantsData}
-            rightButton={deleteButton}
-            rightButtonClick={userID => this.deleteLeagueParticipant(userID)}
-            onItemClick={key =>
-              this.props.navigation.push("Friend", { friendID: key })
-            }
-            loading={this.state.loadingParticipants}
-          />
+        <ScrollableListContainer
+          searchBarPlaceholder="Search participants..."
+          style={{maxHeight: 300}}
+          showSearchBar={true}
+          emptyText="No participants"
+          data={this.state.participantsData}
+          rightButton={deleteButton}
+          rightButtonClick={userID => this.deleteLeagueParticipant(userID)}
+          onItemClick={key =>
+            this.props.navigation.push("Friend", { friendID: key })
+          }
+          loading={this.state.loadingParticipants}
+        />
         <View
           style={{
             borderBottomColor: "silver",
@@ -237,7 +212,7 @@ export default class LeagueParticipantsView extends React.Component {
         />
         <View>
           <SearchBar
-            placeholder="Search"
+            placeholder="Search user..."
             onChangeText={this.updateSearch}
             value={this.state.term}
             containerStyle={styles.searchContainer}
@@ -245,8 +220,9 @@ export default class LeagueParticipantsView extends React.Component {
             inputStyle={styles.searchInput}
             placeholderTextColor="#b3002d"
           />
-          <View style={{ marginBottom: 270 }}>
+          <View>
             <ScrollableListContainer
+              style={{maxHeight: 240}}
               emptyText="Nothing to show"
               data={this.state.data}
               rightButton={addButton}
@@ -281,7 +257,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf:'center',
+    alignSelf: "center",
     minWidth: 70,
     marginRight: 10,
     marginTop: "45%",
