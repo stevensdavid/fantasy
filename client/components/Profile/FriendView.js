@@ -58,7 +58,6 @@ export default class FriendsView extends React.Component {
         )
       } else if(response.status === 200) {
         response.json().then((responseJSON) => {
-          console.log(responseJSON);
           this.setState({
             email: responseJSON.email,
             firstName: responseJSON.first_name,
