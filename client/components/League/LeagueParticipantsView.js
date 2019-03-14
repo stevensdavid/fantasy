@@ -33,6 +33,7 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   addLeagueParticipant(userID) {
+    this.setState({ loadingParticipants: true });
     fetch(global.server + "/fantasy_participants", {
       method: "POST",
       headers: {
@@ -55,6 +56,7 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   deleteLeagueParticipant(userID) {
+    this.setState({ loadingParticipants: true });
     fetch(global.server + "/fantasy_participants", {
       method: "DELETE",
       headers: {
