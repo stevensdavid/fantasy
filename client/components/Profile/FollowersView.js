@@ -26,7 +26,7 @@ export default class FollowersView extends React.Component {
 
   fetchFollowers(userID) {
     newData = [];
-    fetch(global.server + "/friends/" + userID + "?page=1&perPage=20", {
+    fetch(global.server + "/followers/" + userID + "?page=1&perPage=20", {
       method: "GET"
     })
       .then(res => {
