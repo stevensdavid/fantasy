@@ -8,7 +8,7 @@ export default class FollowingView extends React.Component {
     return {
     title: "Following",
     headerRight: (
-      <TouchableOpacity onPress={() => navigation.navigate("AddFriend")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Follow")}>
         <Icon
           containerStyle={{ alignSelf: "center", alignItems: "center", marginRight: 10 }}
           name="add"

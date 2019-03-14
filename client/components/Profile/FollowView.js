@@ -3,9 +3,9 @@ import { View, StyleSheet } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
-export default class FriendsView extends React.Component {
+export default class FollowView extends React.Component {
   static navigationOptions = {
-    title: "Add Friend"
+    title: "Follow"
   };
 
   constructor(props) {
