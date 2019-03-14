@@ -6,6 +6,7 @@ import AppNavigator from './navigation/AppNavigator';
 global.token = null;
 global.server = "https://dstevens.se:5000";
 global.userID = null;
+global.newUserInfo = false;
 
 export default class App extends React.Component {
   state = {
