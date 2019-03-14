@@ -14,12 +14,13 @@ import bcrypt
 from PIL import Image
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (Flask, make_response, request, safe_join, send_file,
-                   send_from_directory, secure_filename)
+                   send_from_directory)
 from flask_restful import Api, Resource, reqparse, inputs
 from flask_socketio import send, emit
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
+from werkzeug.utils import secure_filename
 
 from . import api, app, db, socketio
 from .marshmallow_schemas import (ConstantsSchema, EntrantSchema, EventSchema,
