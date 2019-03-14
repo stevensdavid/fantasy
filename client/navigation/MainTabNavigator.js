@@ -23,6 +23,7 @@ import FollowingView from '../components/Profile/FollowingView';
 import FriendView from '../components/Profile/FriendView';
 import FollowView from '../components/Profile/FollowView';
 import FollowersView from '../components/Profile/FollowersView';
+import AddLeagueParticipantView from '../components/League/AddLeagueParticipant';
 
 
 const HomeStack = createStackNavigator({
@@ -76,7 +77,8 @@ ProfileStack.navigationOptions = {
 const LeaguesStack = createStackNavigator({
   Leagues: LeaguesScreen,
   League: LeagueView,
-  EditDraft: EditDraftView
+  EditDraft: EditDraftView,
+  AddLeagueParticipant: AddLeagueParticipantView
 });
 
 LeaguesStack.navigationOptions = {
