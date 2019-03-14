@@ -1620,6 +1620,9 @@ def routine_update():
     constants.last_event_update = time.time()
     db.session.commit()
 
+# This import has to happen after all initialization
+import api_server.socket_controller
+
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
@@ -1635,8 +1638,8 @@ def main():
             log_output=True,
             host='0.0.0.0',
             use_reloader=False,
-            ssl_context=('/etc/letsencrypt/live/dstevens.se/fullchain.pem',
-                         '/etc/letsencrypt/live/dstevens.se/privkey.pem')
+            certfile='/etc/letsencrypt/live/dstevens.se/fullchain.pem',
+            keyfile='/etc/letsencrypt/live/dstevens.se/privkey.pem'
         )
     else:
         socketio.run(app, debug=True)
