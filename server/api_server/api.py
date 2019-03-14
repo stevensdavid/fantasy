@@ -1563,7 +1563,7 @@ api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
 api.add_resource(PlayerAPI, '/players/<int:player_id>')
 api.add_resource(FantasyResultAPI, '/fantasy_participants')
 
-NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
+NOT_LOGGED_IN_RESPONSE = ({'error': 'login required'}, 401)
 
 
 def make_pagination_reqparser():
