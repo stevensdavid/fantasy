@@ -65,7 +65,7 @@ export default class EventView extends React.Component {
       headers: this.httpGetHeaders
     })
       .then(response => {
-        if (response.status === 404 || response.status === 400) {
+        if (response.status !== 200) {
           Alert.alert(
             "ERROR!",
             "EVENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!",
