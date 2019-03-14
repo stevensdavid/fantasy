@@ -421,7 +421,7 @@ class FriendsAPI(Resource):
         except IntegrityError:
             # These users are already friends
             db.session.rollback()
-        return friends_schema.jsonify(friends)
+        return friend_schema.jsonify(friends)
 
     def delete(self, user_id):
         """Delete {user_id}s friendship with {friendId}. 
