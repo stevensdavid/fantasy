@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import SocketIOClient from "socket.io-client";
-import {ScrollableListContainer} from '../Container/ScrollableListContainer';
-import {AddButton} from '../Button/AddButton';
+import { ScrollableListContainer } from '../Container/ScrollableListContainer';
+import { AddButton } from '../Button/AddButton';
 
 export default class SnakeLeagueView extends React.Component {
   constructor(props) {
@@ -14,7 +14,9 @@ export default class SnakeLeagueView extends React.Component {
       data: []
     };
 
-    this.socket = SocketIOClient("https://dstevens.se:5000", { nsp: "/leagues", upgrade:false });
+    this.socket = SocketIOClient(global.server + '/leagues', {
+      secure: true, reconnect: true, transports: ['websocket']
+    });
     this.socket.on("left-room", this.leftRoom);
     this.socket.on("joined-room", this.joinedRoom);
     this.socket.on("turn-change", this.turnChange);
@@ -48,15 +50,15 @@ export default class SnakeLeagueView extends React.Component {
     */
   }
 
-  leftRoom() {}
+  leftRoom() { }
 
-  joinedRoom() {}
+  joinedRoom() { }
 
-  turnChange() {}
+  turnChange() { }
 
-  newDraft() {}
+  newDraft() { }
 
-  handlePress(userID) {}
+  handlePress(userID) { }
 
   componentDidMount() {
     this.socket.connect();
@@ -69,14 +71,14 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   async fetchLeagueInfo(leagueID) {
-      let league_obj = {};
+    let league_obj = {};
     try {
       let res = await fetch(global.server + "/leagues/" + leagueID);
       league_obj = await res.json();
     } catch (err) {
       console.error(err);
     }
-    
+
     this.setState({ league: league_obj });
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>
