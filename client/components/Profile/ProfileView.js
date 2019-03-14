@@ -25,7 +25,7 @@ export class ProfileView extends React.Component {
       nLeagues: 0,
       tagFontSize: 42,
       loading: false,
-      infoTextSize: 24,
+      infoTextSize: 24
     };
 
     this.reloadInfo = this.reloadInfo.bind(this);
@@ -37,6 +37,17 @@ export class ProfileView extends React.Component {
 
   componentDidMount() {
     this.getUserInfo();
+    this.subs = [
+      this.props.navigation.addListener("didFocus", payload => {
+        if (global.newUserInfo) {
+          this.getUserInfo();
+        }
+      })
+    ];
+  }
+
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
   }
 
   httpGetHeaders = {};
@@ -120,19 +131,28 @@ export class ProfileView extends React.Component {
         </View>
         <View style={styles.container}>
           <View style={styles.textContainer}>
-            <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]} underlineColorAndroid="transparent">
+            <Text
+              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
+              underlineColorAndroid="transparent"
+            >
               {this.state.firstName}
             </Text>
           </View>
 
           <View style={styles.textContainer}>
-            <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]} underlineColorAndroid="transparent">
+            <Text
+              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
+              underlineColorAndroid="transparent"
+            >
               {this.state.lastName}
             </Text>
           </View>
 
           <View style={styles.textContainer}>
-            <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]} underlineColorAndroid="transparent">
+            <Text
+              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
+              underlineColorAndroid="transparent"
+            >
               {this.state.email}
             </Text>
           </View>

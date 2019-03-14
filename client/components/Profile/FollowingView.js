@@ -32,10 +32,22 @@ export default class FollowingView extends React.Component {
 
   componentDidMount() {
     this.fetchFollowing(this.state.userID);
+    this.subs = [
+      this.props.navigation.addListener("didFocus", payload => {
+        if (global.newUserInfo) {
+          this.fetchFollowing(this.state.userID);
+        }
+      })
+    ];
+  }
+
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
   }
 
   fetchFollowing(userID) {
     newData = [];
+    this.setState({loading: true});
     fetch(global.server + "/friends/" + userID + "?page=1&perPage=20", {
       method: "GET"
     })

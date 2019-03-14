@@ -22,10 +22,22 @@ export default class FollowersView extends React.Component {
 
   componentDidMount() {
     this.fetchFollowers(this.state.userID);
+    this.subs = [
+      this.props.navigation.addListener("didFocus", payload => {
+        if (global.newUserInfo) {
+          this.fetchFollowers(this.state.userID);
+        }
+      })
+    ];
+  }
+
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
   }
 
   fetchFollowers(userID) {
     newData = [];
+    this.setState({loading: true});
     fetch(global.server + "/followers/" + userID + "?page=1&perPage=20", {
       method: "GET"
     })
