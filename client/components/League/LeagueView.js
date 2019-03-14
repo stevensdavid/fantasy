@@ -66,7 +66,7 @@ export default class LeagueView extends React.Component {
         />
         <AddButton hide={this.state.league.owner != global.userID || this.state.loading}
           containerStyle={styles.floatingButtonStyle}
-          onPress={() => this.props.navigation.navigate("AddLeagueParticipant")} />
+          onPress={() => this.props.navigation.navigate("AddLeagueParticipant", {leagueID: this.leagueID})} />
       </View>
     );
   }
