@@ -124,7 +124,8 @@ export default class FriendsView extends React.Component {
               lastName: responseJSON.last_name,
               tag: responseJSON.tag,
               tagFontSize: (38 * 8) / responseJSON.tag.length,
-              nFriends: responseJSON.following.length,
+              nFollowing: responseJSON.following.length,
+              nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length
             });
             this.setState({ loading: false });
@@ -195,7 +196,18 @@ export default class FriendsView extends React.Component {
                 style={[styles.inputs, { fontWeight: "bold" }]}
                 underlineColorAndroid="transparent"
               >
-                Friends: {this.state.nFriends}
+                Followers: {this.state.nFollowers}
+              </Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <View style={styles.linkContainer}>
+              <Text
+                style={[styles.inputs, { fontWeight: "bold" }]}
+                underlineColorAndroid="transparent"
+              >
+                Following: {this.state.nFollowing}
               </Text>
             </View>
           </TouchableOpacity>
