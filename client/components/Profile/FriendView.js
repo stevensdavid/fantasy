@@ -24,6 +24,7 @@ export default class FriendsView extends React.Component {
       nLeagues: 0,
       tagFontSize: 42,
       loading: false,
+      infoTextSize: 24
     }
 
     this.reloadInfo = this.reloadInfo.bind(this);
@@ -95,24 +96,21 @@ export default class FriendsView extends React.Component {
       <View style={styles.container}>
 
               <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
+                <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]}
                     underlineColorAndroid='transparent'>
                     {this.state.firstName}
                 </Text>
               </View>
 
               <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
+                <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]}
                     underlineColorAndroid='transparent'>
                     {this.state.lastName}
                 </Text>
               </View>
 
               <View style={styles.textContainer}>
-                <Text style={styles.inputs}
-                    secureTextEntry={true}
+                <Text style={[styles.inputs, {fontSize: this.state.infoTextSize}]}
                     underlineColorAndroid='transparent'>
                     {this.state.email}
                 </Text>
