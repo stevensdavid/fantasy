@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
-export default class AddLeagueParticipants extends React.Component {
+export default class LeagueParticipantsView extends React.Component {
   static navigationOptions = {
     title: "Add League Participants"
   };
@@ -18,6 +18,8 @@ export default class AddLeagueParticipants extends React.Component {
     };
 
     this.fetchUsers = this.fetchUsers.bind(this);
+
+    this.leagueId = this.props.navigation.getParam("leagueID", -1);
   }
 
   componentDidMount() {
