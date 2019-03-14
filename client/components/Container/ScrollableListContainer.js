@@ -19,6 +19,7 @@ import Swipeout from "react-native-swipeout";
     rightButton: Enable swipe left to show rightButton React component(Optional)
     rightButtonClick(key): Function which handles the click of right button(must if rightButton is given)
     emptyText: Text to display if filtered list is empty(Optional)
+    searchBarPlaceholder: self-explanatory
 */
 
 export class ScrollableListContainer extends React.Component {
@@ -75,7 +76,7 @@ export class ScrollableListContainer extends React.Component {
           }
         >
           <SearchBar
-            placeholder="Search"
+            placeholder= {this.props.searchBarPlaceholder? this.props.searchBarPlaceholder : "Search"}
             onChangeText={text => this.searchFilterFunction(text)}
             containerStyle={styles.searchContainer}
             value={this.state.search}
