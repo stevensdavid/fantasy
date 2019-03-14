@@ -7,7 +7,7 @@ export class AddButton extends React.Component {
     render() {
         const item = (this.props.text ? <Text style={this.props.textStyle}>{this.props.text}</Text> : <Icon 
             containerStyle={{ alignSelf: "center", alignItems: "center" }}
-            name="add"
+            name= {this.props.buttonName ? this.props.buttonName : "add"}
             type="material"
             color="#eff"
             size={this.props.iconSize ? this.props.iconSize : 32} />)
