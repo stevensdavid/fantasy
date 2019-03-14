@@ -38,7 +38,7 @@ export default class TournamentView extends React.Component {
             method: 'GET',
             headers: this.httpGetHeaders
         }).then((response) => {
-            if(response.status !== 200 || response.status !== 204) {
+            if(response.status != 200 && response.status != 204) {
             Alert.alert(
                 'ERROR!',
                 'TOURNAMENT ID OR PAGE NOT FOUND, SHOULD NOT BE SEING THIS!',
