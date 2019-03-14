@@ -604,48 +604,51 @@ class DraftsAPI(Resource):
         current_draft = FantasyDraft.query.filter(
             FantasyDraft.league_id == league_id, FantasyDraft.user_id == user_id
         ).all()
-        if len(current_draft) < league.draft_size:
-            if league.is_snake and league.turn != user_id:
-                return {
-                    "error": f"It is user {league.turn}'s turn to draft, not "
-                    "yours"
-                }, 400
-            draft = FantasyDraft(league_id=league_id,
-                                 user_id=user_id, player_id=args['playerId'])
-            db.session.add(draft)
-            try:
+        if len(current_draft) >= league.draft_size:
+            return {
+                "error": f"The user's draft is full. The draft size limit for "
+                         f"league {league.name} is {league.draft_size_limit}."
+            }, 400
+        if league.is_snake and league.turn != user_id:
+            return {
+                "error": f"It is user {league.turn}'s turn to draft, not "
+                         f"yours"
+            }, 400
+        if (league.is_snake and FantasyDraft.query.filter_by(
+                league_id=league_id, player_id=args['playerId']).exists()):
+            return {"error": f"This player has already been drafted"}, 400
+        draft = FantasyDraft(league_id=league_id,
+                             user_id=user_id, player_id=args['playerId'])
+        db.session.add(draft)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {
+                "error": "One of the provided parameters points to a non-"
+                         "existent entity."
+            }, 400
+        if league.is_snake:
+            emit('new-draft', fantasy_draft_schema.dump(draft),
+                 namespace='/leagues', room=league_id)
+            users = sorted(map(lambda x: x.user, league.fantasy_results),
+                           key=lambda x: x.user_id)
+            first_draft = FantasyDraft.query.filter_by(
+                league_id=league_id, user_id=users[0].user_id
+            ).all()
+            last_draft = FantasyDraft.query.filter_by(
+                league_id=league_id, user_id=users[-1].user_id
+            ).all()
+            if len(first_draft) == len(last_draft):
+                league.ascending = not league.ascending
+                # Turn should repeat to form snake
+            else:
+                # Turn should change
+                league.turn = users.index(user_id) + (1 if league.ascending
+                                                      else - 1)
                 db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                return {
-                    "error": "One of the provided parameters points to a non-"
-                             "existent entity."
-                }, 400
-            if league.is_snake:
-                emit('new-draft', fantasy_draft_schema.dump(draft),
-                     namespace='/leagues', room=league_id)
-                users = sorted(map(lambda x: x.user, league.fantasy_results),
-                               key=lambda x: x.user_id)
-                first_draft = FantasyDraft.query.filter_by(
-                    league_id=league_id, user_id=users[0].user_id
-                ).all()
-                last_draft = FantasyDraft.query.filter_by(
-                    league_id=league_id, user_id=users[-1].user_id
-                ).all()
-                if len(first_draft) == len(last_draft):
-                    league.ascending = not league.ascending
-                    # Turn should repeat to form snake
-                else:
-                    # Turn should change
-                    league.turn = users.index(user_id) + (1 if league.ascending
-                                                          else - 1)
-                    db.session.commit()
-                emit('turn-change', {'turn': league.turn})
-            return fantasy_draft_schema.jsonify(draft)
-        return {
-            "error": f"The user's draft is full. The draft size limit for "
-            f"league {league.name} is {league.draft_size_limit}."
-        }, 400
+            emit('turn-change', {'turn': league.turn})
+        return fantasy_draft_schema.jsonify(draft)
 
     def delete(self, league_id, user_id):
         """Remove a player from the user's fantasy draft
