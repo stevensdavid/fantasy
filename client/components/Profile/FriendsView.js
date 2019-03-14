@@ -74,6 +74,9 @@ export default class FriendsView extends React.Component {
           data={this.state.data}
           loading={this.state.loading}
           showSearchBar={true}
+          onItemClick={key =>
+              this.props.navigation.push("Friend", { friendID: key })
+            }
         />
       </View>
     );
