@@ -3,9 +3,9 @@ import { View, StyleSheet } from "react-native";
 import { SearchBar } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
-export default class FollowView extends React.Component {
+export default class AddLeagueParticipants extends React.Component {
   static navigationOptions = {
-    title: "Follow"
+    title: "Add League Participants"
   };
 
   constructor(props) {
