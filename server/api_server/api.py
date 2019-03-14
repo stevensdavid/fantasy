@@ -1472,7 +1472,7 @@ api.add_resource(EventsAPI, '/events/<int:event_id>')
 api.add_resource(TournamentsAPI, '/tournaments',
                  '/tournaments/<int:tournament_id>')
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
-api.add_resource(FollowersAPI, '/followers/<int:user_id')
+api.add_resource(FollowersAPI, '/followers/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
 api.add_resource(ImagesAPI, '/images/<path:fname>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
