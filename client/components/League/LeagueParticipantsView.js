@@ -22,7 +22,7 @@ export default class LeagueParticipantsView extends React.Component {
 
     this.fetchUsers = this.fetchUsers.bind(this);
     this.fetchParticipants = this.fetchParticipants.bind(this);
-    this.forceUpdate = this.forceUpdate.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
     
     this.leagueId = this.props.navigation.getParam("leagueID", -1);
   }
@@ -46,7 +46,7 @@ export default class LeagueParticipantsView extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
-          this.forceUpdate();
+          this.fetchParticipants();
         } else {
           throw res;
         }
@@ -68,7 +68,7 @@ export default class LeagueParticipantsView extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
-          this.forceUpdate();
+          this.fetchParticipants();
         } else {
           throw res;
         }
