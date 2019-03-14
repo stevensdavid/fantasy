@@ -68,13 +68,17 @@ class FantasyLeague(db.Model, Serializeable):
     event_id = db.Column(db.Integer, db.ForeignKey(
         "Event.event_id"), nullable=False)
     event = db.relationship(
-        'Event', backref=db.backref('fantasy_leagues'),
-        cascade="all, delete-orphan", single_parent=True)
+        'Event',
+        backref=db.backref('fantasy_leagues', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     owner_id = db.Column(db.Integer, db.ForeignKey(
         'User.user_id'), nullable=False)
     owner = db.relationship(
-        'User', backref=db.backref('fantasy_leagues'),
-        cascade="all, delete-orphan", single_parent=True)
+        'User',
+        backref=db.backref('fantasy_leagues', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     draft_size = db.Column(db.Integer, nullable=False)
     draft_ascending = db.Column(db.Boolean)
 
@@ -104,8 +108,10 @@ class Event(db.Model, Serializeable):
     tournament_id = db.Column(db.Integer, db.ForeignKey(
         "Tournament.tournament_id"), nullable=False)
     tournament = db.relationship(
-        'Tournament', backref=db.backref('events'),
-        cascade="all, delete-orphan", single_parent=True)
+        'Tournament',
+        backref=db.backref('events', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     name = db.Column(db.String(255))
     slug = db.Column(db.String(255))
     num_entrants = db.Column(db.Integer, nullable=False)
@@ -113,8 +119,10 @@ class Event(db.Model, Serializeable):
     videogame_id = db.Column(db.Integer, db.ForeignKey(
         "VideoGame.videogame_id"), nullable=False)
     videogame = db.relationship(
-        'VideoGame', backref=db.backref('events'),
-        cascade="save-update, merge")
+        'VideoGame',
+        backref=db.backref('events', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
 
     def __repr__(self):
         return f'<Event {self.name} ({self.event_id})>'
@@ -136,14 +144,19 @@ class Entrant(db.Model, Serializeable):
     __tablename__ = "Entrant"
     event_id = db.Column(db.Integer, db.ForeignKey(
         "Event.event_id"), primary_key=True)
-    event = db.relationship('Event', backref=db.backref('entrants'),
-                            cascade="all, delete-orphan", single_parent=True)
+    event = db.relationship(
+        'Event',
+        backref=db.backref('entrants', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     # Players should not be lazy-loaded
     player = db.relationship(
-        'Player', backref=db.backref('entrants'),
-        cascade="all, delete-orphan", single_parent=True)
+        'Player',
+        backref=db.backref('entrants', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     seed = db.Column(db.Integer)
 
     def __repr__(self):
@@ -155,18 +168,24 @@ class FantasyDraft(db.Model, Serializeable):
     league_id = db.Column(db.Integer, db.ForeignKey(
         "FantasyLeague.league_id"), primary_key=True)
     league = db.relationship(
-        'FantasyLeague', backref=db.backref('fantasy_drafts'),
-        cascade="all, delete-orphan", single_parent=True)
+        'FantasyLeague',
+        backref=db.backref('fantasy_drafts', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     user_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
     user = db.relationship(
-        'User', backref=db.backref('fantasy_drafts'),
-        cascade="all, delete-orphan", single_parent=True)
+        'User',
+        backref=db.backref('fantasy_drafts', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     player = db.relationship(
-        'Player', backref=db.backref('fantasy_drafts'),
-        cascade="all, delete-orphan", single_parent=True)
+        'Player',
+        backref=db.backref('fantasy_drafts', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
 
     def __repr__(self):
         return f'<FantasyDraft league {self.league_id} user {self.user_id}' \
@@ -178,14 +197,18 @@ class Placement(db.Model, Serializeable):
     event_id = db.Column(db.Integer, db.ForeignKey(
         "Event.event_id"), primary_key=True)
     event = db.relationship(
-        'Event', backref=db.backref('placements'),
-        cascade="all, delete-orphan", single_parent=True)
+        'Event',
+        backref=db.backref('placements', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
 
     player_id = db.Column(db.Integer, db.ForeignKey(
         "Player.player_id"), primary_key=True)
     player = db.relationship(
-        'Player', backref=db.backref('placements'),
-        cascade="all, delete-orphan", single_parent=True)
+        'Player',
+        backref=db.backref('placements', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     place = db.Column(db.Integer)
 
     def __repr__(self):
@@ -197,12 +220,17 @@ class FantasyResult(db.Model, Serializeable):
     league_id = db.Column(db.Integer, db.ForeignKey(
         "FantasyLeague.league_id"), primary_key=True)
     league = db.relationship(
-        'FantasyLeague', backref=db.backref('fantasy_results'),
-        cascade="all, delete-orphan", single_parent=True)
+        'FantasyLeague',
+        backref=db.backref('fantasy_results', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     user_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('fantasy_results'),
-                           cascade="all, delete-orphan", single_parent=True)
+    user = db.relationship(
+        'User',
+        backref=db.backref('fantasy_results', cascade="all, delete-orphan",
+                           single_parent=True)
+    )
     score = db.Column(db.Integer)
 
     def __repr__(self):
