@@ -8,7 +8,7 @@ import {
   Alert,
   TouchableOpacity
 } from "react-native";
-import { ImagePicker, Permissions } from 'expo';
+import { ImagePicker, Permissions } from "expo";
 import { Icon } from "react-native-elements";
 import Spinner from "react-native-loading-spinner-overlay";
 
@@ -70,6 +70,7 @@ export class ProfileView extends React.Component {
           );
         } else if (response.status === 200) {
           response.json().then(responseJSON => {
+            hasPhoto = responseJSON.photo_path != null;
             this.setState({
               email: responseJSON.email,
               firstName: responseJSON.first_name,
@@ -78,7 +79,8 @@ export class ProfileView extends React.Component {
               tagFontSize: (38 * 8) / responseJSON.tag.length,
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
-              nLeagues: responseJSON.fantasy_leagues.length
+              nLeagues: responseJSON.fantasy_leagues.length,
+              photo_path: (hasPhoto ? responseJSON.photo_path : ''),
             });
             this.setState({ loading: false });
           });
@@ -92,8 +94,10 @@ export class ProfileView extends React.Component {
 
   async pickAndUploadPhoto() {
     // Heavily inspired by https://stackoverflow.com/a/42521680
-    const { status: cameraRollPerm } = await Permissions.askAsync(Permissions.CAMERA_ROLL)
-    if (cameraRollPerm !== 'granted') {
+    const { status: cameraRollPerm } = await Permissions.askAsync(
+      Permissions.CAMERA_ROLL
+    );
+    if (cameraRollPerm !== "granted") {
       return;
     }
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -106,32 +110,36 @@ export class ProfileView extends React.Component {
       return;
     }
     let localUri = result.uri;
-    let filename = localUri.split('/').pop();
+    let filename = localUri.split("/").pop();
     // Infer the type of the image
     let match = /\.(\w+)$/.exec(filename);
     let type = match ? `image/${match[1]}` : `image`;
     console.log(type);
-    if (!["image/jpeg", "image/jpg", "image/png"].includes(type.toLowerCase())) {
-      Alert.alert('Unsupported file type, please choose a JPG, JPEG or PNG image');
+    if (
+      !["image/jpeg", "image/jpg", "image/png"].includes(type.toLowerCase())
+    ) {
+      Alert.alert(
+        "Unsupported file type, please choose a JPG, JPEG or PNG image"
+      );
       return;
     }
 
     // Upload the image using the fetch and FormData APIs
     let formData = new FormData();
     // Assume "photo" is the name of the form field the server expects
-    formData.append('file', { uri: localUri, name: filename, type });
+    formData.append("file", { uri: localUri, name: filename, type });
     try {
-      result = await fetch(global.server + '/images/' + global.userID, {
-        method: 'POST',
+      result = await fetch(global.server + "/images/" + global.userID, {
+        method: "POST",
         body: formData,
         headers: {
-          'content-type': 'multipart/form-data',
+          "content-type": "multipart/form-data",
           Authorization: "bearer " + global.token
-        },
+        }
       });
     } catch (err) {
-      console.log(err)
-      Alert.alert('Unsuccesful')
+      console.log(err);
+      Alert.alert("Unsuccesful");
     }
     if (result.status !== 204) {
       text = await result.text();
@@ -165,8 +173,13 @@ export class ProfileView extends React.Component {
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.headerContent}>
-          <Icon name="portrait" type="material" color="black" size={104}
-            onPress={this.pickAndUploadPhoto} />
+          <TouchableOpacity onPress={this.pickAndUploadPhoto}>
+            <Image
+              style={{ width: 100, height: 100, borderRadius: 10 }}
+              resizeMode="cover"
+              source={{ uri: (this.state.photo_path != '' ? global.server + '/images/' + this.state.photo_path : 'https://cdn.cwsplatform.com/assets/no-photo-available.png') }}
+            />
+          </TouchableOpacity>
           <View style={{ marginRight: 80 }}>
             <Text
               style={{
