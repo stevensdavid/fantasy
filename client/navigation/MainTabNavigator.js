@@ -78,6 +78,7 @@ const LeaguesStack = createStackNavigator({
   Leagues: LeaguesScreen,
   League: LeagueView,
   EditDraft: EditDraftView,
+  Friend: FriendView,
   LeagueParticipants: LeagueParticipantsView
 });
 
