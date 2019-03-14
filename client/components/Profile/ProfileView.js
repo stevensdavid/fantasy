@@ -80,7 +80,7 @@ export class ProfileView extends React.Component {
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length,
-              photo_path: (hasPhoto ? responseJSON.photo_path : ''),
+              photo_path: (hasPhoto ? responseJSON.photo_path : null),
             });
             this.setState({ loading: false });
           });
@@ -177,7 +177,7 @@ export class ProfileView extends React.Component {
             <Image
               style={{ width: 100, height: 100, borderRadius: 10 }}
               resizeMode="cover"
-              source={{ uri: (this.state.photo_path != '' ? global.server + '/images/' + this.state.photo_path : 'https://cdn.cwsplatform.com/assets/no-photo-available.png') }}
+              source={{ uri: (this.state.photo_path != null ? global.server + '/images/' + this.state.photo_path : 'https://cdn.cwsplatform.com/assets/no-photo-available.png') }}
             />
           </TouchableOpacity>
           <View style={{ marginRight: 80 }}>
