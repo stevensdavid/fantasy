@@ -655,19 +655,19 @@ class ImagesAPI(Resource):
             return {'error': 'No selected file'}, 400
         if image and self._allowed_filetype(image.filename):
             filename = safe_join(app.config['IMAGE_DIR'],
-                                 f'{user_id}/{image.filename}')
+                                 f'users/{user_id}/{image.filename}')
             if os.path.exists(filename):
                 os.remove(filename)
             else:
-                os.makedirs(filename, exist_ok=True)
-            file.save(filename)
+                os.makedirs(os.path.dirname(filename), exist_ok=True)
+            image.save(filename)
             # Rename and convert it to PNG to be consistent
-            final_path = safe_join(str(user_id), 'profile_photo.png')
+            final_path = safe_join('users', str(user_id), 'profile_photo.png')
             final_location = safe_join(app.config['IMAGE_DIR'], final_path)
             if os.path.exists(final_path):
                 os.remove(final_path)
             else:
-                os.makedirs(final_path, exist_ok=True)
+                os.makedirs(os.path.dirname(final_path), exist_ok=True)
                 user = User.query.filter_by(user_id=user_id).first()
                 user.photo_path = final_path
                 db.session.commit()
@@ -1563,7 +1563,7 @@ api.add_resource(VideoGameAPI, '/videogame/<int:videogame_id>')
 api.add_resource(PlayerAPI, '/players/<int:player_id>')
 api.add_resource(FantasyResultAPI, '/fantasy_participants')
 
-NOT_LOGGED_IN_RESPONSE = [{'error': 'login required'}, 401]
+NOT_LOGGED_IN_RESPONSE = ({'error': 'login required'}, 401)
 
 
 def make_pagination_reqparser():
