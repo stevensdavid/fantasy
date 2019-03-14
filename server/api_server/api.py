@@ -598,11 +598,22 @@ class ImagesAPI(Resource):
                         schema:
                             type: string
                             format: binary
+            404:
+                description: File not found
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
-        with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
-            return send_file(io.BytesIO(img.read()),
-                             mimetype='image/png', as_attachment=True,
-                             attachment_filename=os.path.split(fname)[1])
+        try:
+            with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
+                return send_file(io.BytesIO(img.read()),
+                                mimetype='image/png', as_attachment=True,
+                                attachment_filename=os.path.split(fname)[1])
+        except FileNotFoundError:
+            return {'error': 'File not found'}, 404
 
 
 class UploadImageAPI(Resource):
@@ -824,7 +835,8 @@ class DraftsAPI(Resource):
                 league.turn = users.index(user_id) + (1 if league.ascending
                                                       else - 1)
                 db.session.commit()
-            emit('turn-change', {'turn': league.turn})
+            emit('turn-change', {'turn': league.turn},
+                 namespace='/leagues', room=league_id)
         return fantasy_draft_schema.jsonify(draft)
 
     def delete(self, league_id, user_id):
@@ -1510,7 +1522,7 @@ class FantasyResultAPI(Resource):
         db.session.delete(fantasy_result)
         # Remove all drafts by the user
         FantasyDraft.query.filter(FantasyDraft.league_id == args['leagueId'],
-                            FantasyDraft.user_id == args['userId']).delete()
+                                  FantasyDraft.user_id == args['userId']).delete()
         try:
             db.session.commit()
         except IntegrityError:
