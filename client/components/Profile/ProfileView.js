@@ -119,15 +119,24 @@ export class ProfileView extends React.Component {
     // Upload the image using the fetch and FormData APIs
     let formData = new FormData();
     // Assume "photo" is the name of the form field the server expects
-    formData.append('photo', { uri: localUri, name: filename, type });
-
-    return await fetch(global.server + '/images/' + global.userID, {
-      method: 'POST',
-      body: formData,
-      header: {
-        'content-type': 'multipart/form-data',
-      },
-    });
+    formData.append('file', { uri: localUri, name: filename, type });
+    try {
+      result = await fetch(global.server + '/images/' + global.userID, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'content-type': 'multipart/form-data',
+          Authorization: "bearer " + global.token
+        },
+      });
+    } catch (err) {
+      console.log(err)
+      Alert.alert('Unsuccesful')
+    }
+    if (result.status !== 204) {
+      text = await result.text();
+      Alert.alert(text);
+    }
   }
 
   render() {
