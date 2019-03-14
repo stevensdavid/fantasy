@@ -71,7 +71,7 @@ export default class FollowersView extends React.Component {
       </View>
     );
   }else {
-    return <Text style={styles.headerText}>No followers</Text>
+    return <Text style={styles.headerText}>No followers, Sad...</Text>
   }} 
 }
 
