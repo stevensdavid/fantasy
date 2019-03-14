@@ -24,7 +24,6 @@ class User(db.Model, Serializeable):
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(255), nullable=False)
     pw = db.Column(db.String(255), nullable=False)
-    salt = db.Column(db.String(255), nullable=False)
     photo_path = db.Column(db.String(255))
 
     def __repr__(self):
@@ -37,9 +36,9 @@ class Friends(db.Model, Serializeable):
         "User.user_id"), primary_key=True)
     friend_id = db.Column(db.Integer, db.ForeignKey(
         "User.user_id"), primary_key=True)
-    user = db.relationship('User', backref=db.backref('followers'),
+    user = db.relationship('User', backref=db.backref('following'),
                            foreign_keys=[user_id])
-    friend = db.relationship('User', backref=db.backref('following'),
+    friend = db.relationship('User', backref=db.backref('followers'),
                              foreign_keys=[friend_id])
 
     def __repr__(self):
