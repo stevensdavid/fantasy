@@ -60,6 +60,21 @@ export class LeagueList extends React.Component {
   }
 
   render() {
+    const deleteButton = (
+      <View
+        style={[styles.buttonContainer, styles.deleteButton, {}]}
+        onPress={() => this.props.onPress()}
+      >
+        <Icon
+          containerStyle={{ alignSelf: "center"}}
+          name="delete"
+          type="material"
+          color="#eff"
+          size={42}
+        />
+      </View>
+    );
+
     return (
       <View style={{ minWidth: "100%" }}>
         <ScrollableListContainer
@@ -67,8 +82,8 @@ export class LeagueList extends React.Component {
           onItemClick={key => {
             this.openLeagueView(key);
           }}
-          enableDeleteSwipe={true}
-          onItemDelete={leagueID => this.deleteLeague(leagueID)}
+          rightButton={deleteButton}
+          rightButtonClick={leagueID => this.deleteLeague(leagueID)}
           loading={this.state.loading}
         />
         <AddButton
@@ -91,5 +106,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 16,
     right: 26
+  },
+  buttonContainer: {
+    minHeight: 70,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf:'center',
+    minWidth: 70,
+    marginRight: 10,
+    marginTop: "45%",
+    borderRadius: 70 / 2
+  },
+  deleteButton: {
+    backgroundColor: "#b3002d"
   }
 });
