@@ -56,7 +56,12 @@ export class LeagueList extends React.Component {
   }
 
   openLeagueView(selectedLeague) {
-    this.props.navigation.navigate("League", { leagueID: selectedLeague });
+    let league = this.props.leagues.filter(x => x.league_id == selectedLeague)[0];
+    if (league.is_snake) {
+      this.props.navigation.navigate("SnakeLeague", { leagueID: selectedLeague });
+    } else {
+      this.props.navigation.navigate("League", { leagueID: selectedLeague });
+    }
   }
 
   render() {
