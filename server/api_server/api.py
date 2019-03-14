@@ -140,14 +140,12 @@ class UsersAPI(Resource):
         parser.add_argument('email', type=str)
         parser.add_argument('pw', type=str)
         args = parser.parse_args(strict=False)
-        salt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(args['pw'], salt)
+        hashed = bcrypt.hashpw(args['pw'], bcrypt.gensalt())
         user = User(tag=args['tag'],
                     first_name=args['firstName'],
                     last_name=args['lastName'],
                     email=args['email'].lower(),
                     pw=hashed,
-                    salt=salt,
                     photo_path=None)
         db.session.add(user)
         db.session.commit()
@@ -204,9 +202,7 @@ class UsersAPI(Resource):
                     setattr(user, key, value)
             # Handle passwords separately as they need rehashing
             if args['pw']:
-                salt = bcrypt.gensalt()
-                hashed = bcrypt.hashpw(args['pw'], salt)
-                user.salt = salt
+                hashed = bcrypt.hashpw(args['pw'], bcrypt.gensalt())
                 user.pw = hashed
             db.session.commit()
             return user_schema.jsonify(user)

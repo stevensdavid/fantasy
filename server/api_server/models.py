@@ -24,7 +24,6 @@ class User(db.Model, Serializeable):
     last_name = db.Column(db.String(50))
     email = db.Column(db.String(255), nullable=False)
     pw = db.Column(db.String(255), nullable=False)
-    salt = db.Column(db.String(255), nullable=False)
     photo_path = db.Column(db.String(255))
 
     def __repr__(self):
