@@ -62,6 +62,7 @@ export default class FriendsView extends React.Component {
       .then(res => {
         if (res.status === 200) {
           Alert.alert("Success!", "You now follow: " + this.state.tag);
+          this.setState({isFollowing: true});
         } else {
           throw res.body;
         }
@@ -108,6 +109,13 @@ export default class FriendsView extends React.Component {
           );
         } else if (response.status === 200) {
           response.json().then(responseJSON => {
+              responseJSON.followers.map((follower) => {
+                  console.log(follower.user_id);
+                  console.log(global.userID);
+                  if (follower.user_id === global.userID) {
+                    this.setState({isFollowing: true});
+                  }
+              });
             this.setState({
               email: responseJSON.email,
               firstName: responseJSON.first_name,

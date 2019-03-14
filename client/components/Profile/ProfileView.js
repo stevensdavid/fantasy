@@ -91,7 +91,7 @@ export class ProfileView extends React.Component {
         name="chevron-right"
         type="material"
         color="#222"
-        size={50}
+        size={45}
       />
     );
 
@@ -141,7 +141,7 @@ export class ProfileView extends React.Component {
           >
             <View style={styles.linkContainer}>
               <Text
-                style={[styles.inputs, { fontWeight: "bold" }]}
+                style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
                 underlineColorAndroid="transparent"
               >
                 Followers: {this.state.nFollowers}
@@ -155,7 +155,7 @@ export class ProfileView extends React.Component {
           >
             <View style={styles.linkContainer}>
               <Text
-                style={[styles.inputs, { fontWeight: "bold" }]}
+                style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
                 underlineColorAndroid="transparent"
               >
                 Following: {this.state.nFollowing}
@@ -169,7 +169,7 @@ export class ProfileView extends React.Component {
           >
             <View style={styles.linkContainer}>
               <Text
-                style={[styles.inputs, { fontWeight: "bold" }]}
+                style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
                 underlineColorAndroid="transparent"
               >
                 Leagues: {this.state.nLeagues}
