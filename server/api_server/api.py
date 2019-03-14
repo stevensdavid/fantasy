@@ -1511,7 +1511,7 @@ class FantasyResultAPI(Resource):
             FantasyResult.league_id == args['leagueId']).first()
         db.session.delete(fantasy_result)
         # Remove all drafts by the user
-        FantasyDraft.filter(FantasyDraft.league_id == args['leagueId'],
+        FantasyDraft.query.filter(FantasyDraft.league_id == args['leagueId'],
                             FantasyDraft.user_id == args['userId']).delete()
         try:
             db.session.commit()
