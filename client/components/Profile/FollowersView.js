@@ -3,21 +3,11 @@ import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
-export default class FriendsView extends React.Component {
+export default class FollowersView extends React.Component {
   static navigationOptions = ({navigation}) => {
     return {
-    title: "Friends",
-    headerRight: (
-      <TouchableOpacity onPress={() => navigation.navigate("AddFriend")}>
-        <Icon
-          containerStyle={{ alignSelf: "center", alignItems: "center", marginRight: 10 }}
-          name="add"
-          type="material"
-          size={35}
-          color="#b3002d"
-        />
-      </TouchableOpacity>
-    )}
+    title: "Followers"
+    }
   };
 
   constructor(props) {
@@ -31,12 +21,24 @@ export default class FriendsView extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchFriends(this.state.userID);
+    this.fetchFollowers(this.state.userID);
+    this.subs = [
+      this.props.navigation.addListener("didFocus", payload => {
+        if (global.newUserInfo) {
+          this.fetchFollowers(this.state.userID);
+        }
+      })
+    ];
   }
 
-  fetchFriends(userID) {
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
+  }
+
+  fetchFollowers(userID) {
     newData = [];
-    fetch(global.server + "/friends/" + userID + "?page=1&perPage=20", {
+    this.setState({loading: true});
+    fetch(global.server + "/followers/" + userID + "?page=1&perPage=20", {
       method: "GET"
     })
       .then(res => {
@@ -81,7 +83,7 @@ export default class FriendsView extends React.Component {
       </View>
     );
   }else {
-    return <Text style={styles.headerText}>No friends, why not follow one?</Text>
+    return <Text style={styles.headerText}>No followers, Sad...</Text>
   }} 
 }
 

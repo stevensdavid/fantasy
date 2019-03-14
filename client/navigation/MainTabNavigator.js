@@ -19,12 +19,11 @@ import EditProfileView from '../components/Profile/EditProfile';
 import LeagueView from '../components/League/LeagueView';
 import CreateLeagueForm from '../components/League/CreateLeagueForm';
 import EditDraftView from '../components/League/EditDraftView';
-import FriendsView from '../components/Profile/FriendsView';
+import FollowingView from '../components/Profile/FollowingView';
 import FriendView from '../components/Profile/FriendView';
 import AddFriendView from '../components/Profile/AddFriend';
+import FollowersView from '../components/Profile/FollowersView';
 
-//TODO: Remove this.
-import LinksScreen from '../screens/LinksScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -53,7 +52,8 @@ const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
   Register: RegisterView,
   EditProfile: EditProfileView,
-  Friends: FriendsView,
+  Following: FollowingView,
+  Followers: FollowersView,
   Friend: FriendView,
   AddFriend: AddFriendView
 });

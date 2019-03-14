@@ -62,6 +62,7 @@ export default class FriendsView extends React.Component {
       .then(res => {
         if (res.status === 200) {
           Alert.alert("Success!", "You now follow: " + this.state.tag);
+          global.newUserInfo = true;
           this.setState({isFollowing: true});
         } else {
           throw res.body;
@@ -84,6 +85,7 @@ export default class FriendsView extends React.Component {
       .then(res => {
         if (res.status === 200) {
           Alert.alert("Success!", "You no longer follow: " + this.state.tag);
+          global.newUserInfo = true;
         } else {
           throw res.body;
         }
