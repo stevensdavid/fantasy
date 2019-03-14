@@ -35,6 +35,7 @@ export default class FriendsView extends React.Component {
 
     this.reloadInfo = this.reloadInfo.bind(this);
     this.addFollow = this.addFollow.bind(this);
+    this.deleteFollow = this.deleteFollow.bind(this);
 
     this.friendID = this.props.navigation.getParam("friendID", -1);
   }
@@ -47,8 +48,46 @@ export default class FriendsView extends React.Component {
     this.getFriendInfo(this.friendID);
   }
 
-  addFollow(userID, friendID) {
+  addFollow(friendID) {
+    fetch(global.server + "/friends/" + global.userID, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + global.token
+      },
+      body: JSON.stringify({
+        friendId: friendID
+      })
+    })
+      .then(res => {
+        if (res.status === 200) {
+          Alert.alert("Success!", "You now follow: " + this.state.tag);
+        } else {
+          throw res.body;
+        }
+      })
+      .catch(err => console.error(err));
+  }
 
+  deleteFollow(friendID) {
+    fetch(global.server + "/friends/" + global.userID, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "bearer " + global.token
+      },
+      body: JSON.stringify({
+        friendId: friendID
+      })
+    })
+      .then(res => {
+        if (res.status === 200) {
+          Alert.alert("Success!", "You no longer follow: " + this.state.tag);
+        } else {
+          throw res.body;
+        }
+      })
+      .catch(err => console.error(err));
   }
 
   httpGetHeaders = {};
@@ -165,9 +204,18 @@ export default class FriendsView extends React.Component {
           <HideAbleView hide={this.state.isFollowing}>
             <TouchableHighlight
               style={[styles.buttonContainer, styles.loginButton]}
-              onPress={() => this.addFollow(global.userID, this.friendID)}
+              onPress={() => this.addFollow(this.friendID)}
             >
               <Text style={styles.loginText}>Follow</Text>
+            </TouchableHighlight>
+          </HideAbleView>
+
+          <HideAbleView hide={!this.state.isFollowing}>
+            <TouchableHighlight
+              style={[styles.buttonContainer, styles.loginButton]}
+              onPress={() => this.deleteFollow(this.friendID)}
+            >
+              <Text style={styles.loginText}>Unfollow</Text>
             </TouchableHighlight>
           </HideAbleView>
         </View>
