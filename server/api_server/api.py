@@ -1554,7 +1554,7 @@ api.add_resource(TournamentsAPI, '/tournaments',
 api.add_resource(FriendsAPI, '/friends/<int:user_id>')
 api.add_resource(FollowersAPI, '/followers/<int:user_id>')
 api.add_resource(FeaturedTournamentsAPI, '/featured')
-api.add_resource(ImagesAPI, '/images/<str:param>')
+api.add_resource(ImagesAPI, '/images/<param>')
 api.add_resource(DraftsAPI, '/drafts/<int:league_id>/<int:user_id>')
 api.add_resource(LeagueAPI, '/leagues/<int:league_id>', '/leagues')
 api.add_resource(EntrantsAPI, '/entrants/<int:event_id>')
