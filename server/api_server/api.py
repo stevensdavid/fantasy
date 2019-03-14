@@ -598,11 +598,22 @@ class ImagesAPI(Resource):
                         schema:
                             type: string
                             format: binary
+            404:
+                description: File not found
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
-        with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
-            return send_file(io.BytesIO(img.read()),
-                             mimetype='image/png', as_attachment=True,
-                             attachment_filename=os.path.split(fname)[1])
+        try:
+            with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
+                return send_file(io.BytesIO(img.read()),
+                                mimetype='image/png', as_attachment=True,
+                                attachment_filename=os.path.split(fname)[1])
+        except FileNotFoundError:
+            return {'error': 'File not found'}, 404
 
 
 class UploadImageAPI(Resource):
