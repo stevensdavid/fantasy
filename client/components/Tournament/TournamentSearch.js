@@ -1,7 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View, Alert } from 'react-native';
+import { StyleSheet, View, Alert } from 'react-native';
 import { SearchBar } from 'react-native-elements';
-import { TournamentView } from '../Tournament/TournamentView';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 
