@@ -138,6 +138,7 @@ export class ProfileView extends React.Component {
           </View>
 
           <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("Followers")}
           >
             <View style={styles.linkContainer}>
               <Text
@@ -151,7 +152,7 @@ export class ProfileView extends React.Component {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Friends")}
+            onPress={() => this.props.navigation.navigate("Following")}
           >
             <View style={styles.linkContainer}>
               <Text
