@@ -13,6 +13,7 @@ with open('database_url') as file:
     app.config['SQLALCHEMY_DATABASE_URI'] = file.readline()
 app.config['MYSQL_DATABASE_CHARSET'] = 'utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SECRET_KEY"] = "secret!"
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 app.config['IMAGE_DIR'] = os.getcwd() + '/images'
@@ -22,4 +23,4 @@ app.config['SWAGGER'] = {
     "uiversion": 3
 }
 swagger = Swagger(app)
-socketio = SocketIO(app)
+socketio = SocketIO(app, ping_timeout=30)

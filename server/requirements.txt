@@ -12,3 +12,4 @@ APScheduler==3.5.3
 marshmallow==2.18.1
 Pillow==5.4.1
 python_bcrypt==0.3.2
+eventlet==0.24.1
