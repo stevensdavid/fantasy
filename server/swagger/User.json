@@ -85,12 +85,6 @@
           "user_id":{
             "type":"integer",
             "format":"int32"
-          },
-          "tag":{
-            "type":"string"
-          },
-          "photo_path":{
-            "type":"string"
           }
         }
       }
@@ -103,12 +97,6 @@
           "user_id":{
             "type":"integer",
             "format":"int32"
-          },
-          "tag":{
-            "type":"string"
-          },
-          "photo_path":{
-            "type":"string"
           }
         }
       }
