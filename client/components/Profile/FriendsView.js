@@ -48,11 +48,13 @@ export default class FriendsView extends React.Component {
       })
       .then(friendsData => {
         if (friendsData.length > 0) {
-          newData.push({
-            key: friendsData.user_id,
-            title: friendsData.tag,
-            description: friendsData.first_name + " " + friendsData.last_name,
+          friendsData.map((friend) => {
+            newData.push({
+            key: friend.user_id.toString(),
+            title: friend.tag,
+            description: friend.first_name + " " + friend.last_name,
             img_uri: "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+          });
           });
         }
       })
@@ -72,6 +74,9 @@ export default class FriendsView extends React.Component {
           data={this.state.data}
           loading={this.state.loading}
           showSearchBar={true}
+          onItemClick={key =>
+              this.props.navigation.push("Friend", { friendID: key })
+            }
         />
       </View>
     );
