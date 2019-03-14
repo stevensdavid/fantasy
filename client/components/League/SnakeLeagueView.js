@@ -14,7 +14,7 @@ export default class SnakeLeagueView extends React.Component {
       data: []
     };
 
-    this.socket = SocketIOClient(global.server, { nsp: "/leagues" });
+    this.socket = SocketIOClient("https://dstevens.se:5000", { nsp: "/leagues", upgrade:false });
     this.socket.on("left-room", this.leftRoom);
     this.socket.on("joined-room", this.joinedRoom);
     this.socket.on("turn-change", this.turnChange);
@@ -56,9 +56,10 @@ export default class SnakeLeagueView extends React.Component {
 
   newDraft() {}
 
+  handlePress(userID) {}
+
   componentDidMount() {
     this.socket.connect();
-    this.socket.send("join", this.socketIdentifier);
     this.fetchLeagueInfo(this.leagueID);
     // server should answer with joined-room
   }
@@ -124,10 +125,6 @@ export default class SnakeLeagueView extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  mainContainerStyle: {
-    flexDirection: "column",
-    flex: 1
-  },
   floatingButtonStyle: {
     alignSelf: "flex-end",
     position: "absolute",
