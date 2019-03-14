@@ -12,6 +12,10 @@ import { Icon } from 'react-native-elements';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 export default class FriendsView extends React.Component {
+    static navigationOptions = {
+        title:'User'
+    }
+
   constructor(props) {
     super(props);
 
