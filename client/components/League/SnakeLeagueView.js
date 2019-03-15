@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import SocketIOClient from "socket.io-client";
-import {ScrollableListContainer} from '../Container/ScrollableListContainer';
-import {AddButton} from '../Button/AddButton';
+import { ScrollableListContainer } from "../Container/ScrollableListContainer";
+import { AddButton } from "../Button/AddButton";
 
 export default class SnakeLeagueView extends React.Component {
   constructor(props) {
@@ -11,19 +11,14 @@ export default class SnakeLeagueView extends React.Component {
     this.state = {
       loading: true,
       league: {},
-      data: []
+      data: [],
+      turn: -1
     };
-
-    this.socket = SocketIOClient("https://dstevens.se:5000", { nsp: "/leagues", upgrade:false });
-    this.socket.on("left-room", this.leftRoom);
-    this.socket.on("joined-room", this.joinedRoom);
-    this.socket.on("turn-change", this.turnChange);
-    this.socket.on("new-draft", this.newDraft);
 
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
     this.socketIdentifier = {
       userID: global.userID,
-      league_id: this.leagueID,
+      leagueID: this.leagueID,
       token: global.token
     };
 
@@ -48,18 +43,76 @@ export default class SnakeLeagueView extends React.Component {
     */
   }
 
-  leftRoom() {}
+  leftRoom(leftUser) {
+    console.log(leftUser.tag + " left the room");
+    copyData = this.state.data;
+    for (var i in copyData) {
+      if (data[i].key == leftUser.user_id) {
+        data[i].titleStyle = { color: "gray" };
+        break;
+      }
+    }
+    this.setState({
+      data: copyData
+    });
+  }
 
-  joinedRoom() {}
+  joinedRoom(joinedUser) {
+    console.log(joinedUser.tag + " joined the room");
+    copyData = this.state.data;
+    for (var i in copyData) {
+      if (data[i].key == joinedUser.user_id) {
+        data[i].titleStyle = { color: "black" };
+        break;
+      }
+    }
+    this.setState({
+      data: copyData
+    });
+  }
 
-  turnChange() {}
+  turnChange(userID) {
+    copyData = this.state.data;
+    for (var i in copyData) {
+      if (data[i].key == userID) {
+        data[i].status = "[DRAFT]";
+      } else {
+        data[i].status = "";
+      }
+    }
+    this.setState({
+      data: copyData
+    });
+  }
 
-  newDraft() {}
+  newDraft(draft) {
+    copyData = this.state.data;
+    for (var i in copyData) {
+      if (data[i].key == draft.user_id) {
+        data[i].description = data[i].description + "\n" + draft.player.tag;
+        break;
+      }
+    }
+    this.setState({
+      data: copyData
+    });
+  }
 
   handlePress(userID) {}
 
   componentDidMount() {
+    this.socket = SocketIOClient(global.server + "/leagues", {
+      secure: true,
+      reconnect: true,
+      transports: ["websocket"]
+    });
+    this.socket.on("left-room", this.leftRoom);
+    this.socket.on("joined-room", this.joinedRoom);
+    this.socket.on("turn-change", this.turnChange);
+    this.socket.on("new-draft", this.newDraft);
+
     this.socket.connect();
+    this.socket.emit("join", this.socketIdentifier);
     this.fetchLeagueInfo(this.leagueID);
     // server should answer with joined-room
   }
@@ -69,14 +122,14 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   async fetchLeagueInfo(leagueID) {
-      let league_obj = {};
+    let league_obj = {};
     try {
       let res = await fetch(global.server + "/leagues/" + leagueID);
       league_obj = await res.json();
     } catch (err) {
       console.error(err);
     }
-    
+
     this.setState({ league: league_obj });
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>
@@ -92,10 +145,13 @@ export default class SnakeLeagueView extends React.Component {
       return {
         key: k.toString(),
         title: participants[k].tag,
+        titleStyle: { color: "gray" },
+        status: "",
         description: participants[k].draft.join("\n")
       };
     });
     this.setState({ data: newData, loading: false });
+    this.setState({ turn: this.state.league.turn });
   }
 
   render() {

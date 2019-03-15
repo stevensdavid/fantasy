@@ -35,7 +35,6 @@ export class LoginForm extends React.Component {
     }
 
     tryLogin (ema,pass) {
-      this.setState({loading: true});
       fetch(global.server + '/login', {
         method: "POST",
         headers: {'Content-Type': 'application/json'},

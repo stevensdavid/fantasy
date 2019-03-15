@@ -6,7 +6,8 @@ import {
   TouchableHighlight,
   Image,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView
 } from "react-native";
 import { ImagePicker, Permissions } from "expo";
 import { Icon } from "react-native-elements";
@@ -80,7 +81,7 @@ export class ProfileView extends React.Component {
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length,
-              photo_path: (hasPhoto ? responseJSON.photo_path : null),
+              photo_path: hasPhoto ? responseJSON.photo_path : null
             });
             this.setState({ loading: false });
           });
@@ -177,7 +178,12 @@ export class ProfileView extends React.Component {
             <Image
               style={{ width: 100, height: 100, borderRadius: 10 }}
               resizeMode="cover"
-              source={{ uri: (this.state.photo_path != null ? global.server + '/images/' + this.state.photo_path : 'https://cdn.cwsplatform.com/assets/no-photo-available.png') }}
+              source={{
+                uri:
+                  this.state.photo_path != null
+                    ? global.server + "/images/" + this.state.photo_path
+                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+              }}
             />
           </TouchableOpacity>
           <View style={{ marginRight: 80 }}>
@@ -191,112 +197,116 @@ export class ProfileView extends React.Component {
             >
               #{this.state.tag}
             </Text>
-            <Text style={{ marginLeft:4, fontSize: 14, color: "#b3002d" }}>Score: 0</Text>
+            <Text style={{ marginLeft: 4, fontSize: 14, color: "#b3002d" }}>
+              Score: 0
+            </Text>
           </View>
         </View>
-        <View style={styles.container}>
-          <View style={styles.textContainer}>
-            <Text
-              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
-              underlineColorAndroid="transparent"
-            >
-              {this.state.firstName}
-            </Text>
-          </View>
-
-          <View style={styles.textContainer}>
-            <Text
-              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
-              underlineColorAndroid="transparent"
-            >
-              {this.state.lastName}
-            </Text>
-          </View>
-
-          <View style={styles.textContainer}>
-            <Text
-              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
-              underlineColorAndroid="transparent"
-            >
-              {this.state.email}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Followers")}
-          >
-            <View style={styles.linkContainer}>
+        <ScrollView>
+          <View style={styles.container}>
+            <View style={styles.textContainer}>
               <Text
-                style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
+                style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
                 underlineColorAndroid="transparent"
               >
-                Followers: {this.state.nFollowers}
+                {this.state.firstName}
               </Text>
-              {rightArrow}
             </View>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Following")}
-          >
-            <View style={styles.linkContainer}>
+            <View style={styles.textContainer}>
               <Text
-                style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
+                style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
                 underlineColorAndroid="transparent"
               >
-                Following: {this.state.nFollowing}
+                {this.state.lastName}
               </Text>
-              {rightArrow}
             </View>
-          </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Leagues")}
-          >
-            <View style={styles.linkContainer}>
+            <View style={styles.textContainer}>
               <Text
-                style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
+                style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
                 underlineColorAndroid="transparent"
               >
-                Leagues: {this.state.nLeagues}
+                {this.state.email}
               </Text>
-              {rightArrow}
             </View>
-          </TouchableOpacity>
 
-          <View style={{ flexDirection: "row" }}>
-            <TouchableHighlight
-              style={[styles.buttonContainer, styles.loginButton]}
-              onPress={() =>
-                this.props.navigation.navigate("EditProfile", {
-                  reload: this.reloadInfo
-                })
-              }
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("Followers")}
             >
-              <View style={{ flexDirection: "row" }}>
-                <Text style={styles.loginText}>Edit</Text>
-                <Icon
-                  containerStyle={{
-                    marginLeft: 5,
-                    alignSelf: "center",
-                    alignItems: "center"
-                  }}
-                  name="edit"
-                  type="material"
-                  color="#eff"
-                  size={18}
-                />
+              <View style={styles.linkContainer}>
+                <Text
+                  style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
+                  underlineColorAndroid="transparent"
+                >
+                  Followers: {this.state.nFollowers}
+                </Text>
+                {rightArrow}
               </View>
-            </TouchableHighlight>
+            </TouchableOpacity>
 
-            <TouchableHighlight
-              style={[styles.buttonContainer, styles.loginButton]}
-              onPress={() => this.props.setToken(null)}
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("Following")}
             >
-              <Text style={styles.loginText}>Logout</Text>
-            </TouchableHighlight>
+              <View style={styles.linkContainer}>
+                <Text
+                  style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
+                  underlineColorAndroid="transparent"
+                >
+                  Following: {this.state.nFollowing}
+                </Text>
+                {rightArrow}
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate("Leagues")}
+            >
+              <View style={styles.linkContainer}>
+                <Text
+                  style={[styles.inputs, { fontSize: 20, fontWeight: "bold" }]}
+                  underlineColorAndroid="transparent"
+                >
+                  Leagues: {this.state.nLeagues}
+                </Text>
+                {rightArrow}
+              </View>
+            </TouchableOpacity>
+
+            <View style={{ flexDirection: "row" }}>
+              <TouchableHighlight
+                style={[styles.buttonContainer, styles.loginButton]}
+                onPress={() =>
+                  this.props.navigation.navigate("EditProfile", {
+                    reload: this.reloadInfo
+                  })
+                }
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={styles.loginText}>Edit</Text>
+                  <Icon
+                    containerStyle={{
+                      marginLeft: 5,
+                      alignSelf: "center",
+                      alignItems: "center"
+                    }}
+                    name="edit"
+                    type="material"
+                    color="#eff"
+                    size={18}
+                  />
+                </View>
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                style={[styles.buttonContainer, styles.loginButton]}
+                onPress={() => this.props.setToken(null)}
+              >
+                <Text style={styles.loginText}>Logout</Text>
+              </TouchableHighlight>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }

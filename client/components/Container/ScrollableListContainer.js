@@ -121,7 +121,7 @@ export class ScrollableListContainer extends React.Component {
                       <View />
                     )}
                     <View style={{ justifyContent: "center" }}>
-                      <Text style={styles.headerText}>{item.title}</Text>
+                      <Text style={[styles.headerText, item.titleStyle]}>{item.title + " " + (item.status ? item.status : '')}</Text>
                       <Text style={styles.descriptionText}>
                         {item.description ? item.description : ""}
                       </Text>
