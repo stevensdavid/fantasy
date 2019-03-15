@@ -30,7 +30,11 @@ export class LeaguesHome extends React.Component {
 
   newLeague(newLeagueID) {
     this.fetchLeagues();
-    this.props.navigation.navigate("League", { leagueID: newLeagueID })
+    if(this.props.navigation.getParam("isSnake", false)) {
+      this.props.navigation.navigate("SnakeLeague", { leagueID: newLeagueID })
+    } else {
+      this.props.navigation.navigate("League", { leagueID: newLeagueID })
+    }
   }
 
   componentWillUnmount() {
