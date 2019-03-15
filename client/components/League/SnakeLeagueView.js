@@ -134,8 +134,8 @@ export default class SnakeLeagueView extends React.Component {
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
         if (global.newParticipantsInfo) {
-          this.componentDidMount();
           global.newParticipantsInfo = false;
+          this.componentDidMount();
         }
       })
     ];

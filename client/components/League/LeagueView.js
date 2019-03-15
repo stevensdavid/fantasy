@@ -53,9 +53,9 @@ export default class LeagueView extends React.Component {
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
         if (global.newDraft || global.newParticipantsInfo) {
-          this.componentDidMount();
           global.newDraft = false;
           global.newParticipantsInfo = false;
+          this.componentDidMount();
         }
       })
     ];
