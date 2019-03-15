@@ -1257,7 +1257,7 @@ class EntrantsAPI(Resource):
         parser = make_pagination_reqparser()
         args = parser.parse_args()
         entrants = Entrant.query.filter(Entrant.event_id == event_id).order_by(
-            Entrant.seed, Entrant.player.tag).paginate(
+            Entrant.seed).paginate(
                 page=args['page'], per_page=args['perPage']
         ).items
         if not entrants or entrants[0].seed is None:
@@ -1267,7 +1267,7 @@ class EntrantsAPI(Resource):
             # Rerun query
             entrants = Entrant.query.filter(
                 Entrant.event_id == event_id
-            ).order_by(Entrant.seed, Entrant.player.tag).paginate(
+            ).order_by(Entrant.seed).paginate(
                 page=args['page'], per_page=args['perPage']
             ).items
         return entrants_schema.jsonify(entrants)
