@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import SocketIOClient from "socket.io-client";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
@@ -38,8 +38,8 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   leftRoom(userID) {
-    if(!this.state.isMounted) {return}
     console.log(userID + " left the room");
+    if(!this.state.isMounted) {return}
     this.setState({
       data: this.state.data.map(x => x.key  == userID ? 
         Object.assign(x, {titleStyle: {color: "gray"}})
@@ -48,8 +48,8 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   joinedRoom(userID) {
-    if(!this.state.isMounted) {return}
     console.log(userID + " joined the room");
+    if(!this.state.isMounted) {return}
     this.setState({
       data: this.state.data.map(x => x.key  == userID ? 
         Object.assign(x, {titleStyle: {color: "black"}})
@@ -58,26 +58,35 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   turnChange(userID) {
+    console.log(userID);
+    this.setState({
+      turn: userID
+    });
     if(!this.state.isMounted) {return}
-    console.log(userID +"s turn now");
     this.setState({
       data: this.state.data.map(x => x.key  == userID? 
-        Object.assign(x, {status: "[DRAFT]"})
+        Object.assign(x, {status: "[DRAFTER]"})
         : Object.assign(x, {status: ""}))
     });
   }
 
   newDraft(draft) {
-    if(!this.state.isMounted) {return}
     console.log("New draft!");
+    if(!this.state.isMounted) { console.log("returning"); return}
     this.setState({
-      data: this.state.data.map(x => x.key  == draft.user_id? 
-        Object.assign(x, {description: x.description + "\n" + draft.player.tag})
+      data: this.state.data.map(x => x.key  == draft.user.user_id ? 
+        Object.assign(x, {description: x.description + draft.player.tag + "\n"})
         : x)
     });
   }
 
-  handlePress(userID) {}
+  handlePress(userID) {
+    if (userID == global.userID && this.state.turn == global.userID){
+      this.props.navigation.navigate("EditDraft", {league: this.state.league});
+    } else {
+      Alert.alert('It is not your turn');
+    }
+  }
 
   componentDidMount() {
     this.setState({isMounted: true}, () => {
@@ -131,7 +140,7 @@ export default class SnakeLeagueView extends React.Component {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
-        status: "",
+        status: k == league_obj.turn ? "[DRAFT]" : "",
         description: participants[k].draft.join("\n")
       };
     });

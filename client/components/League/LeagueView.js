@@ -45,6 +45,19 @@ export default class LeagueView extends React.Component {
         this.setState({ data: newData })
         this.setState({ loading: false })
       }).catch(err => console.error(err));
+
+    this.subs = [
+      this.props.navigation.addListener("didFocus", payload => {
+        if (global.newDraft) {
+          this.componentDidMount();
+          global.newDraft = false;
+        }
+      })
+    ];
+  }
+
+  componentWillUnmount() {
+    this.subs.forEach(sub => sub.remove());
   }
 
   handlePress(userID) {

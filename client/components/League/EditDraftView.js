@@ -50,7 +50,22 @@ export default class EditDraftView extends React.Component {
                 }
             })
         });
-        let draftedPlayers = this.state.draft.reduce((newObj, x) => Object.assign(newObj, { [x.player.player_id]: x.player }), {});
+        // Build a hashmap to enable checking if a player has been drafted
+        // in O(1) by checking if the key is in the object
+        let draftedPlayers = null;
+        if (this.state.league.is_snake){
+            draftedPlayers = this.state.league.fantasy_drafts.reduce(
+                (newObj, x) => Object.assign(
+                    newObj, {[x.player.player_id] : x.player}
+                    ), {}
+                );
+        } else {
+            draftedPlayers = this.state.draft.reduce(
+                (newObj, x) => Object.assign(
+                    newObj, { [x.player.player_id]: x.player }
+                    ), {}
+                );
+        }
         this.setState({
             formattedEntrants: this.state.entrants.filter(
                 x => !(x.player.player_id in draftedPlayers)
@@ -84,6 +99,7 @@ export default class EditDraftView extends React.Component {
                 })
             }).then(res => {
                 if (res.status === 200) {
+                    global.newDraft = true;
                     return res.json();
                 } else {
                     throw (res.body)
@@ -91,10 +107,16 @@ export default class EditDraftView extends React.Component {
             }).then(newDraft => {
                 this.setState({ draft: this.state.draft.concat(newDraft) });
                 this.setFormattedLists();
+                if(this.state.league.is_snake){
+                    this.props.navigation.goBack();
+                }
             }).catch(err => console.error(err));
     }
 
     removePlayer(playerID) {
+        if(this.state.league.is_snake){
+            return;
+        }
         fetch(global.server + '/drafts/' + this.state.league.league_id + '/' + global.userID,
             {
                 method: 'DELETE',
