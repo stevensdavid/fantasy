@@ -23,7 +23,7 @@ export default class LeagueView extends React.Component {
       console.error("LeagueView: League ID was not received successfully");
       return;
     }
-    this.setState({ loading: false });
+    this.setState({ loading: true });
     fetch(global.server + "/leagues/" + this.leagueID)
       .then(res => res.json())
       .then(league_obj => {
@@ -52,9 +52,10 @@ export default class LeagueView extends React.Component {
 
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
-        if (global.newDraft) {
-          this.componentDidMount();
+        if (global.newDraft || global.newParticipantsInfo) {
           global.newDraft = false;
+          global.newParticipantsInfo = false;
+          this.componentDidMount();
         }
       })
     ];

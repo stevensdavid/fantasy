@@ -47,6 +47,7 @@ export default class LeagueParticipantsView extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
+          global.newParticipantsInfo = true;
           this.fetchParticipants();
         } else {
           throw res;
@@ -70,6 +71,7 @@ export default class LeagueParticipantsView extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
+          global.newParticipantsInfo = true;
           this.fetchParticipants();
         } else {
           throw res;
@@ -188,7 +190,7 @@ export default class LeagueParticipantsView extends React.Component {
     );
 
     return (
-      <View>
+      <View style={{flex: 1}}>
         <ScrollableListContainer
           searchBarPlaceholder="Search participants..."
           style={{maxHeight: 300}}
@@ -212,7 +214,7 @@ export default class LeagueParticipantsView extends React.Component {
             marginRight: 7
           }}
         />
-        <View>
+        <View style={{flex: 2}}>
           <SearchBar
             placeholder="Search user..."
             onChangeText={this.updateSearch}
@@ -222,9 +224,8 @@ export default class LeagueParticipantsView extends React.Component {
             inputStyle={styles.searchInput}
             placeholderTextColor="#b3002d"
           />
-          <View>
+          <View style={{flex: 2, marginBottom: 5}}>
             <ScrollableListContainer
-              style={{maxHeight: 240}}
               emptyText="Nothing to show"
               data={this.state.data}
               rightButton={addButton}

@@ -8,6 +8,7 @@ global.server = "https://dstevens.se:5000";
 global.userID = null;
 global.newUserInfo = false;
 global.newDraft = false;
+global.newParticipantsInfo= false;
 
 // Socket.IO has a harmless warning on react native which can safely be ignored
 console.ignoredYellowBox = ['Remote debugger'];

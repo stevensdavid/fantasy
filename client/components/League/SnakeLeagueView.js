@@ -128,6 +128,17 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({
+      loading: true
+    });
+    this.subs = [
+      this.props.navigation.addListener("didFocus", payload => {
+        if (global.newParticipantsInfo) {
+          global.newParticipantsInfo = false;
+          this.componentDidMount();
+        }
+      })
+    ];
     this.setState({ isMounted: true }, () => {
       this.fetchLeagueInfo(this.leagueID)
         .then(() => {
@@ -152,6 +163,7 @@ export default class SnakeLeagueView extends React.Component {
 
   componentWillUnmount() {
     this.setState({ isMounted: false });
+    this.subs.forEach(sub => sub.remove());
     this.socket.emit("leave", this.socketIdentifier);
   }
 
@@ -160,6 +172,9 @@ export default class SnakeLeagueView extends React.Component {
       console.log("return");
       return;
     }
+    this.setState({
+      loading: true
+    });
     let league_obj = {};
     try {
       let res = await fetch(global.server + "/leagues/" + leagueID);
