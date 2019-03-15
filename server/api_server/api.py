@@ -1,4 +1,3 @@
-import api_server.socket_controller
 """
 Main module for the restful Flask API. 
 """
