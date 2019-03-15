@@ -62,20 +62,18 @@ class SmashGG:
                                   json={
                                       'query': gql_query,
                                       'variables': gql_vars %
-                                      (event_id, per_page, page)
+                                      (event_id, page, per_page)
                                   },
                                   headers={"Authorization":
                                            f"Bearer {self.api_key}"})
-            if r.json()['data']['event']['standings'] is not None:
+            if r.json()['data']['event']['standings']['nodes']:
                 for standing in r.json()['data']['event']['standings']['nodes']:
-                    insert_stmt = insert(Placement).values(
-                        event_id=event_id,
-                        player_id=standing['entrant']['participants'][0]
-                                          ['playerId'],
+                    place = Placement(
+                        event_id=event_id, 
+                        player_id=standing['entrant']['participants'][0]['playerId'],
                         place=standing['placement']
-                    ).on_duplicate_key_update(place=standing['placement'],
-                                              status='U')
-                    db.session.execute(insert_stmt)
+                    )
+                    db.session.merge(place)
             page += 1
             read += per_page
         db.session.commit()
