@@ -80,7 +80,7 @@ export class LoginForm extends React.Component {
     return (
       <View
         style={styles.container}
-        pointerEvents={this.state.loading ? "none" : "auto"}
+        pointerEvents={() => this.state.loading ? 'none' : 'auto'}
       >
         <View style={styles.iconContainer}>{icon}</View>
         <View style={styles.inputContainer}>
