@@ -91,6 +91,7 @@ export default class LeagueParticipantsView extends React.Component {
     })
       .then(res => {
         if (res.status === 200) {
+          global.newParticipantsInfo = true;
           return res.json();
         } else {
           throw res;
