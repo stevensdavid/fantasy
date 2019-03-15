@@ -832,10 +832,10 @@ class DraftsAPI(Resource):
                 # Turn should repeat to form snake
             else:
                 # Turn should change
-                league.turn = users.index(user_id) + (1 if league.draft_ascending
-                                                      else - 1)
-                db.session.commit()
-            emit('turn-change', {'turn': league.turn},
+                league.turn = users[users.index(user_id) + (1 if league.draft_ascending
+                                                            else - 1)]
+            db.session.commit()
+            emit('turn-change', league.turn,
                  namespace='/leagues', room=league_id)
         return fantasy_draft_schema.jsonify(draft)
 
