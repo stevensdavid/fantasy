@@ -30,7 +30,7 @@ from .marshmallow_schemas import (ConstantsSchema, EntrantSchema, EventSchema,
                                   VideoGameSchema)
 from .models import (Constants, Entrant, Event, FantasyDraft, FantasyLeague,
                      FantasyResult, Friends, Player, Tournament, User,
-                     VideoGame)
+                     VideoGame, Placement)
 from .smashgg import SmashGG
 
 smashgg = SmashGG()
@@ -1629,10 +1629,56 @@ def routine_update():
     ).all()
     for event in events_new_results:
         smashgg.update_standing(event.event_id)
+        # Update fantasy results
+        drafts = FantasyDraft.query.filter(
+            FantasyDraft.league.has(FantasyLeague.event_id == event.event_id)
+        ).all()
+        league_results = {}
+        for draft in drafts:
+            league, user = draft.league_id, draft.user_id
+            if league not in league_results:
+                league_results[league] = {}
+            if user not in league_results[league]:
+                league_results[league][user] = 0
+            placement = Placement.query.filter_by(event_id=event.event_id,
+                player_id=draft.player_id).first()
+            if placement:
+                league_results[league][user] += _score(placement.place)
+        for league, user_result in league_results.items():
+            for user, score in user_result.items():
+                result = FantasyResult(league_id=league, user_id=user,
+                                       score=score)
+                db.session.merge(result)
     # Update the timestamp
     constants.last_event_update = time.time()
     db.session.commit()
 
+def _score(place, num_entrants):
+    scoring = {}
+    scoring[1] = 380
+    scoring[2] = 360
+    scoring[3] = 340
+    scoring[4] = 320
+    scoring[5] = 300
+    for p in range(6, 7 + 1):
+        scoring[p] = 270
+    for p in range(8, 9 + 1):
+        scoring[p] = 240
+    for p in range(10, 13 + 1):
+        scoring[p] = 210
+    for p in range(14, 17 + 1):
+        scoring[p] = 180
+    for p in range(18, 25 + 1):
+        scoring[p] = 150
+    for p in range(26, 33 + 1):
+        scoring[p] = 120
+    for p in range(34, 49 + 1):
+        scoring[p] = 90
+    for p in range(50, 65 + 1):
+        scoring[p] = 60
+    for p in range(66, 97 + 1):
+        scoring[p] = 30
+    return scoring[place] if place in scoring else 0
 
 # This import has to happen after all initialization
 import api_server.socket_controller
