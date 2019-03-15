@@ -572,7 +572,6 @@ class FeaturedTournamentsAPI(Resource):
                     items:
                         import: "swagger/Tournament.json"
         """
-        print('Get for featured')
         tournaments = Tournament.query.filter(
             Tournament.is_featured & (Tournament.ends_at > time.time())).all()
         return tournaments_schema.jsonify(tournaments)
