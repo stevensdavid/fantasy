@@ -572,7 +572,6 @@ class FeaturedTournamentsAPI(Resource):
                     items:
                         import: "swagger/Tournament.json"
         """
-        print('Get for featured')
         tournaments = Tournament.query.filter(
             Tournament.is_featured & (Tournament.ends_at > time.time())).all()
         return tournaments_schema.jsonify(tournaments)
@@ -796,7 +795,7 @@ class DraftsAPI(Resource):
         if len(current_draft) >= league.draft_size:
             return {
                 "error": f"The user's draft is full. The draft size limit for "
-                         f"league {league.name} is {league.draft_size_limit}."
+                         f"league {league.name} is {league.draft_size}."
             }, 400
         if league.is_snake and league.turn != user_id:
             return {
@@ -834,6 +833,8 @@ class DraftsAPI(Resource):
                 # Turn should change
                 league.turn = users[users.index(user_id) + (1 if league.draft_ascending
                                                             else - 1)]
+            if len(first_draft) == league.draft_size and len(last_draft) == league.draft_size:
+                league.turn = None
             db.session.commit()
             emit('turn-change', league.turn,
                  namespace='/leagues', room=league_id)
