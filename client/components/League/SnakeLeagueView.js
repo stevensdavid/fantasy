@@ -78,6 +78,9 @@ export default class SnakeLeagueView extends React.Component {
         Object.assign(x, {description: x.description + draft.player.tag + "\n"})
         : x)
     });
+    this.setState({
+      league: Object.assign(this.state.league, {fantasy_drafts: this.state.league.fantasy_drafts.concat(draft)})
+    })
   }
 
   handlePress(userID) {
@@ -141,7 +144,7 @@ export default class SnakeLeagueView extends React.Component {
         title: participants[k].tag,
         titleStyle: { color: "gray" },
         status: k == league_obj.turn ? "[DRAFT]" : "",
-        description: participants[k].draft.join("\n")
+        description: participants[k].draft ? participants[k].draft.join("\n") + "\n" : ''
       };
     });
     this.setState({ data: newData, loading: false });
