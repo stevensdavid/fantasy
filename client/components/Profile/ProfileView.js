@@ -77,7 +77,7 @@ export class ProfileView extends React.Component {
               firstName: responseJSON.first_name,
               lastName: responseJSON.last_name,
               tag: responseJSON.tag,
-              tagFontSize: Math.min((38 * 8) / responseJSON.tag.length, 98),
+              tagFontSize: Math.min((38 * 8) / responseJSON.tag.length, 60),
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length,

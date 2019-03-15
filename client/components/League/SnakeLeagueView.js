@@ -95,7 +95,12 @@ export default class SnakeLeagueView extends React.Component {
     if (userID == global.userID && this.state.turn == global.userID){
       this.props.navigation.navigate("EditDraft", {league: this.state.league});
     } else {
-      Alert.alert('It is not your turn');
+      if(this.state.league.turn == null) {
+        Alert.alert('Drafting is over');
+      } else {
+        Alert.alert('It is not your turn');
+      }
+      
     }
   }
 
@@ -171,7 +176,7 @@ export default class SnakeLeagueView extends React.Component {
           onItemClick={userID => this.handlePress(userID)}
         />
         <AddButton
-          hide={this.state.league.owner != global.userID || this.state.loading}
+          hide={this.state.league.owner != global.userID || this.state.loading || this.state.league.turn == null}
           buttonName="edit"
           containerStyle={styles.floatingButtonStyle}
           onPress={() =>
