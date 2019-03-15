@@ -60,7 +60,7 @@ export class LoginForm extends React.Component {
   }
 
   render() {
-    const icon = this.state.loading ? (
+    const topIcon = this.state.loading ? (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator
           animating={this.props.loading}
@@ -82,7 +82,7 @@ export class LoginForm extends React.Component {
         style={styles.container}
         pointerEvents={this.state.loading ? "none" : "auto"}
       >
-        <View style={styles.iconContainer}>{icon}</View>
+        <View style={styles.iconContainer}>{topIcon}</View>
         <View style={styles.inputContainer}>
           <Icon
             name={Platform.OS === "ios" ? "ios-mail" : "md-mail"}
@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent"
   },
   inputContainer: {
+
     borderBottomColor: "#F5FCFF",
     backgroundColor: "#FFFFFF",
     borderRadius: 30,
