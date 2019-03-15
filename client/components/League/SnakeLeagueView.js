@@ -14,14 +14,6 @@ export default class SnakeLeagueView extends React.Component {
       data: []
     };
 
-    this.socket = SocketIOClient(global.server + '/leagues', {
-      secure: true, reconnect: true, transports: ['websocket']
-    });
-    this.socket.on("left-room", this.leftRoom);
-    this.socket.on("joined-room", this.joinedRoom);
-    this.socket.on("turn-change", this.turnChange);
-    this.socket.on("new-draft", this.newDraft);
-
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
     this.socketIdentifier = {
       userID: global.userID,
@@ -61,6 +53,14 @@ export default class SnakeLeagueView extends React.Component {
   handlePress(userID) { }
 
   componentDidMount() {
+    this.socket = SocketIOClient(global.server + '/leagues', {
+      secure: true, reconnect: true, transports: ['websocket']
+    });
+    this.socket.on("left-room", this.leftRoom);
+    this.socket.on("joined-room", this.joinedRoom);
+    this.socket.on("turn-change", this.turnChange);
+    this.socket.on("new-draft", this.newDraft);
+
     this.socket.connect();
     this.fetchLeagueInfo(this.leagueID);
     // server should answer with joined-room
