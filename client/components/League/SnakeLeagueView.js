@@ -176,7 +176,7 @@ export default class SnakeLeagueView extends React.Component {
           onItemClick={userID => this.handlePress(userID)}
         />
         <AddButton
-          hide={this.state.league.owner != global.userID || this.state.loading}
+          hide={this.state.league.owner != global.userID || this.state.loading || this.state.league.turn == null}
           buttonName="edit"
           containerStyle={styles.floatingButtonStyle}
           onPress={() =>
