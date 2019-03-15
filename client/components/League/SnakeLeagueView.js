@@ -12,7 +12,8 @@ export default class SnakeLeagueView extends React.Component {
       loading: true,
       league: {},
       data: [],
-      turn: -1
+      turn: -1,
+      isMounted: false,
     };
 
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
@@ -22,106 +23,90 @@ export default class SnakeLeagueView extends React.Component {
       token: global.token
     };
 
-    // klienten ska skicka
-    // join, leave
 
-    // servern skickar
-    // joined-room, left-room, turn-change, new-draft
-
-    /*
-    My draft
-    []
-    Available
-    []
-
-
-    My draft
-    (DRAFT)
-    []
-    Adams draft
-    []
-    */
+    this.fetchLeagueInfo = this.fetchLeagueInfo.bind(this);
+    this.joinedRoom = this.joinedRoom.bind(this);
+    this.leftRoom = this.leftRoom.bind(this);
+    this.turnChange = this.turnChange.bind(this);
+    this.newDraft = this.newDraft.bind(this);
+    this.connected = this.connected.bind(this);
   }
 
-  leftRoom(leftUser) {
-    console.log(leftUser.tag + " left the room");
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == leftUser.user_id) {
-        data[i].titleStyle = { color: "gray" };
-        break;
-      }
-    }
+  connected(users) {
+    if(!this.state.isMounted) {return}
+    users.map(x => this.joinedRoom(x));
+  }
+
+  leftRoom(userID) {
+    if(!this.state.isMounted) {return}
+    console.log(userID + " left the room");
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == userID ? 
+        Object.assign(x, {titleStyle: {color: "gray"}})
+        : x)
     });
   }
 
-  joinedRoom(joinedUser) {
-    console.log(joinedUser.tag + " joined the room");
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == joinedUser.user_id) {
-        data[i].titleStyle = { color: "black" };
-        break;
-      }
-    }
+  joinedRoom(userID) {
+    if(!this.state.isMounted) {return}
+    console.log(userID + " joined the room");
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == userID ? 
+        Object.assign(x, {titleStyle: {color: "black"}})
+        : x)
     });
   }
 
   turnChange(userID) {
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == userID) {
-        data[i].status = "[DRAFT]";
-      } else {
-        data[i].status = "";
-      }
-    }
+    if(!this.state.isMounted) {return}
+    console.log(userID +"s turn now");
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == userID? 
+        Object.assign(x, {status: "[DRAFT]"})
+        : Object.assign(x, {status: ""}))
     });
   }
 
   newDraft(draft) {
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == draft.user_id) {
-        data[i].description = data[i].description + "\n" + draft.player.tag;
-        break;
-      }
-    }
+    if(!this.state.isMounted) {return}
+    console.log("New draft!");
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == draft.user_id? 
+        Object.assign(x, {description: x.description + "\n" + draft.player.tag})
+        : x)
     });
   }
 
   handlePress(userID) {}
 
   componentDidMount() {
-    this.socket = SocketIOClient(global.server + "/leagues", {
-      secure: true,
-      reconnect: true,
-      transports: ["websocket"]
+    this.setState({isMounted: true}, () => {
+      this.fetchLeagueInfo(this.leagueID).then(() => {
+        this.socket = SocketIOClient(global.server + "/leagues", {
+          secure: true,
+          reconnect: true,
+          transports: ["websocket"]
+        });
+        this.socket.on("connected", this.connected);
+        this.socket.on("left-room", this.leftRoom);
+        this.socket.on("joined-room", this.joinedRoom);
+        this.socket.on("turn-change", this.turnChange);
+        this.socket.on("new-draft", this.newDraft);
+    
+        this.socket.connect();
+        this.socket.emit("join", this.socketIdentifier);
+      // server should answer with joined-room
+      }).catch(err => console.error(err));   
     });
-    this.socket.on("left-room", this.leftRoom);
-    this.socket.on("joined-room", this.joinedRoom);
-    this.socket.on("turn-change", this.turnChange);
-    this.socket.on("new-draft", this.newDraft);
-
-    this.socket.connect();
-    this.socket.emit("join", this.socketIdentifier);
-    this.fetchLeagueInfo(this.leagueID);
-    // server should answer with joined-room
   }
 
   componentWillUnmount() {
-    this.socket.send("leave", this.socketIdentifier);
+    this.setState({isMounted: false});
+    this.socket.emit("leave", this.socketIdentifier);
   }
 
   async fetchLeagueInfo(leagueID) {
+    if(!this.state.isMounted) { console.log("return"); return}
     let league_obj = {};
     try {
       let res = await fetch(global.server + "/leagues/" + leagueID);
