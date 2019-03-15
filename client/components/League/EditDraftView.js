@@ -17,7 +17,6 @@ export default class EditDraftView extends React.Component {
       formattedEntrants: [],
       loading: true
     };
-    console.log("State: " + JSON.stringify(this.state));
     this.setFormattedLists = this.setFormattedLists.bind(this);
     this.getEntrants = this.getEntrants.bind(this);
     this.removePlayer = this.removePlayer.bind(this);
@@ -61,7 +60,6 @@ export default class EditDraftView extends React.Component {
     // Build a hashmap to enable checking if a player has been drafted
     // in O(1) by checking if the key is in the object
     let draftedPlayers = null;
-    console.log(JSON.stringify(this.state));
     const reducer = (newObj, x) =>
       Object.assign(newObj, { [x.player.player_id]: x.player });
     if (this.state.league.is_snake) {
