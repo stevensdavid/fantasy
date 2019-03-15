@@ -15,14 +15,13 @@ def join_league_room(msg):
         FantasyResult.query.filter_by(league_id=league_id,
                                       user_id=user_id).first()):
         # The user is a part of the league they are trying to join
-        user = User.query.filter_by(user_id=user_id).first()
-        join_room(league_id, namespace='/leagues')
+        join_room(league_id, namespace='/leagues', sid=request.sid)
         if not league_id in ROOM_MEMBERS:
             ROOM_MEMBERS[league_id] = set()
-        ROOM_MEMBERS[league_id].add(user)
-        emit('connected', users_schema.dump(ROOM_MEMBERS[league_id]), 
+        ROOM_MEMBERS[league_id].add(user_id)
+        emit('connected',list(ROOM_MEMBERS[league_id]), 
              namespace='/leagues', room=request.sid)
-        emit('joined-room', user_schema.dump(user),
+        emit('joined-room', user_id,
              namespace='/leagues', room=league_id) 
 
 @socketio.on('leave', namespace='/leagues')
@@ -32,12 +31,11 @@ def leave_league_room(msg):
         send('Unauthorized')
         return
     league_id = msg['leagueID']
-    user = User.query.filter_by(user_id=user_id).first()
-    leave_room(league_id)
+    leave_room(league_id, namespace='/leagues', sid=request.sid)
     if league_id in ROOM_MEMBERS:
         try:
-            ROOM_MEMBERS[league_id].remove(user)
+            ROOM_MEMBERS[league_id].remove(user_id)
         except KeyError:
             pass
-    emit('left-room', user_schema.dump(user),
-         namespace='/leagues', emit=league_id)
+    emit('left-room', user_id,
+         namespace='/leagues', room=league_id)
