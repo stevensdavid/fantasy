@@ -50,7 +50,22 @@ export default class EditDraftView extends React.Component {
                 }
             })
         });
-        let draftedPlayers = this.state.draft.reduce((newObj, x) => Object.assign(newObj, { [x.player.player_id]: x.player }), {});
+        // Build a hashmap to enable checking if a player has been drafted
+        // in O(1) by checking if the key is in the object
+        let draftedPlayers = null;
+        if (this.state.league.is_snake){
+            draftedPlayers = this.state.league.fantasy_drafts.reduce(
+                (newObj, x) => Object.assign(
+                    newObj, {[x.player.player_id] : x.player}
+                    ), {}
+                );
+        } else {
+            draftedPlayers = this.state.draft.reduce(
+                (newObj, x) => Object.assign(
+                    newObj, { [x.player.player_id]: x.player }
+                    ), {}
+                );
+        }
         this.setState({
             formattedEntrants: this.state.entrants.filter(
                 x => !(x.player.player_id in draftedPlayers)
