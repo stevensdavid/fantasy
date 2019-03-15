@@ -71,7 +71,7 @@ export default class SnakeLeagueView extends React.Component {
     console.log("New draft!");
     if(!this.state.isMounted) { console.log("returning"); return}
     this.setState({
-      data: this.state.data.map(x => x.key  == draft.user_id? 
+      data: this.state.data.map(x => x.key  == draft.user.user_id ? 
         Object.assign(x, {description: x.description + "\n" + draft.player.tag})
         : x)
     });
