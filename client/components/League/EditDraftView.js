@@ -92,7 +92,11 @@ export default class EditDraftView extends React.Component {
 
   draftPlayer(playerID) {
     if (this.state.draft.length >= this.state.league.draft_size) {
-      Alert.alert("Your draft is full, please remove a player.");
+      if(this.state.league.is_snake) {
+        Alert.alert("Your draft is done");
+      } else {
+        Alert.alert("Your draft is full, please remove a player.");
+      }
       return;
     }
     fetch(
