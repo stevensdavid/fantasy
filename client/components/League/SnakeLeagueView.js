@@ -207,7 +207,7 @@ export default class SnakeLeagueView extends React.Component {
     });
     this.setState({
       data: newData,
-      done: league_obj.turn == null,
+      done: league_obj.turn == null || (league_obj.event.start_at * 1000 < Date.now),
       loading: false
     });
     this.setState({ turn: this.state.league.turn });

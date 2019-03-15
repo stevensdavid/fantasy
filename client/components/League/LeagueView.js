@@ -11,7 +11,8 @@ export default class LeagueView extends React.Component {
     this.state = {
       data: [],
       loading: true,
-      league: {}
+      league: {},
+      done: false
     };
     this.componentDidMount = this.componentDidMount.bind(this);
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
@@ -27,7 +28,13 @@ export default class LeagueView extends React.Component {
     fetch(global.server + "/leagues/" + this.leagueID)
       .then(res => res.json())
       .then(league_obj => {
-        this.setState({ league: league_obj });
+        console.log(league_obj.event.start_at*1000 < Date.now);
+        console.log(league_obj.event.start_at *1000 + " < " + Date.now()+"?");
+        
+        this.setState({
+          league: league_obj,
+          done: league_obj.event.start_at * 1000 < Date.now
+        });
         let participants = this.state.league.fantasy_results.reduce(
           (newObj, x) =>
             Object.assign(newObj, {
@@ -91,7 +98,9 @@ export default class LeagueView extends React.Component {
         <View>
           <AddButton
             hide={
-              this.state.league.owner != global.userID || this.state.loading
+              this.state.league.owner != global.userID ||
+              this.state.loading ||
+              this.state.done
             }
             buttonName="edit"
             containerStyle={styles.floatingButtonStyle}
