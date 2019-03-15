@@ -58,11 +58,14 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   turnChange(userID) {
-    console.log(userID +"s turn now");
+    console.log(userID);
+    this.setState({
+      turn: userID
+    });
     if(!this.state.isMounted) {return}
     this.setState({
       data: this.state.data.map(x => x.key  == userID? 
-        Object.assign(x, {status: "[DRAFT]"})
+        Object.assign(x, {status: "[DRAFTER]"})
         : Object.assign(x, {status: ""}))
     });
   }
