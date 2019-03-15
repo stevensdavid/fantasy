@@ -13,6 +13,7 @@ export default class SnakeLeagueView extends React.Component {
       league: {},
       data: [],
       turn: -1,
+      done: false,
       isMounted: false,
     };
 
@@ -58,6 +59,13 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   turnChange(userID) {
+    if(userID == null) {
+      this.setState({
+        data: this.state.data.map(x => Object.assign(x, {status: ""}))
+      });
+      this.setState({done: true});
+      return;
+    }
     console.log(userID);
     this.setState({
       turn: userID
@@ -143,11 +151,11 @@ export default class SnakeLeagueView extends React.Component {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
-        status: k == league_obj.turn ? "[DRAFT]" : "",
+        status: k == league_obj.turn ? "[DRAFTER]" : "",
         description: participants[k].draft ? participants[k].draft.join("\n") + "\n" : ''
       };
     });
-    this.setState({ data: newData, loading: false });
+    this.setState({ data: newData, done: league_obj.turn == null, loading: false });
     this.setState({ turn: this.state.league.turn });
   }
 
