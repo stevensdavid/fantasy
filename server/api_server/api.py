@@ -1653,7 +1653,7 @@ def routine_update():
     constants.last_event_update = time.time()
     db.session.commit()
 
-def _score(place, num_entrants):
+def _score(place):
     scoring = {}
     scoring[1] = 380
     scoring[2] = 360
