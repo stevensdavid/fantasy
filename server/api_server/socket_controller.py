@@ -9,8 +9,8 @@ ROOM_MEMBERS = {}
 
 @socketio.on('join', namespace='/leagues')
 def join_league_room(msg):
-    user_id = msg['userID']
-    league_id = msg['leagueID']
+    user_id = int(msg['userID'])
+    league_id = int(msg['leagueID'])
     if (user_is_logged_in(user_id, msg['token']) and 
         FantasyResult.query.filter_by(league_id=league_id,
                                       user_id=user_id).first()):
@@ -26,11 +26,11 @@ def join_league_room(msg):
 
 @socketio.on('leave', namespace='/leagues')
 def leave_league_room(msg):
-    user_id = msg['userID']
+    user_id = int(msg['userID'])
     if not user_is_logged_in(user_id, msg['token']):
         send('Unauthorized')
         return
-    league_id = msg['leagueID']
+    league_id = int(msg['leagueID'])
     leave_room(league_id, namespace='/leagues', sid=request.sid)
     if league_id in ROOM_MEMBERS:
         try:

@@ -572,6 +572,7 @@ class FeaturedTournamentsAPI(Resource):
                     items:
                         import: "swagger/Tournament.json"
         """
+        print('Get for featured')
         tournaments = Tournament.query.filter(
             Tournament.is_featured & (Tournament.ends_at > time.time())).all()
         return tournaments_schema.jsonify(tournaments)
@@ -819,20 +820,19 @@ class DraftsAPI(Resource):
         if league.is_snake:
             emit('new-draft', fantasy_draft_schema.dump(draft),
                  namespace='/leagues', room=league_id)
-            users = sorted(map(lambda x: x.user, league.fantasy_results),
-                           key=lambda x: x.user_id)
+            users = sorted(map(lambda x: x.user.user_id, league.fantasy_results))
             first_draft = FantasyDraft.query.filter_by(
-                league_id=league_id, user_id=users[0].user_id
+                league_id=league_id, user_id=users[0]
             ).all()
             last_draft = FantasyDraft.query.filter_by(
-                league_id=league_id, user_id=users[-1].user_id
+                league_id=league_id, user_id=users[-1]
             ).all()
             if len(first_draft) == len(last_draft):
-                league.ascending = not league.ascending
+                league.draft_ascending = not league.draft_ascending
                 # Turn should repeat to form snake
             else:
                 # Turn should change
-                league.turn = users.index(user_id) + (1 if league.ascending
+                league.turn = users.index(user_id) + (1 if league.draft_ascending
                                                       else - 1)
                 db.session.commit()
             emit('turn-change', {'turn': league.turn},
