@@ -150,7 +150,7 @@ class FantasyLeagueSchema(ma.ModelSchema):
         model = FantasyLeague
     event = ma.Nested(
         EventSchema,
-        only=["tournament", "name", "event_id"]
+        only=["tournament", "name", "event_id", "start_at"]
     )
     fantasy_drafts = ma.Nested(
         FantasyDraftSchema,
