@@ -67,7 +67,7 @@ export default class CreateLeagueForm extends React.Component {
         }).then(participant_res => {
             if (participant_res.status == 200) {
                 this.props.navigation.goBack();
-                this.props.navigation.navigate("Leagues", {newData: true, leagueID: this.leagueID});
+                this.props.navigation.navigate("Leagues", {newData: true, leagueID: this.leagueID, isSnake: this.state.isSnake});
             } else {
                 throw ('Add league owner to league error');
             }
