@@ -75,7 +75,7 @@ class SmashGG:
                         place=standing['placement']
                     ).on_duplicate_key_update(place=standing['placement'],
                                               status='U')
-                    db.execute(insert_stmt)
+                    db.session.execute(insert_stmt)
             page += 1
             read += per_page
         db.session.commit()
