@@ -803,7 +803,7 @@ class DraftsAPI(Resource):
                          f"yours"
             }, 400
         if (league.is_snake and FantasyDraft.query.filter_by(
-                league_id=league_id, player_id=args['playerId']).exists()):
+                league_id=league_id, player_id=args['playerId']).first()):
             return {"error": f"This player has already been drafted"}, 400
         draft = FantasyDraft(league_id=league_id,
                              user_id=user_id, player_id=args['playerId'])
