@@ -1614,8 +1614,7 @@ def routine_update():
     # Get all events that start after the last update and have a league
     events_new_attendants = Event.query.filter(
         Event.start_at > constants.last_event_update,
-        FantasyLeague.query.filter(
-            FantasyLeague.event_id == Event.event_id).exists()
+        Event.fantasy_leagues.any()
     ).all()
     for event in events_new_attendants:
         smashgg.get_entrants_in_event(event.event_id)
@@ -1624,8 +1623,7 @@ def routine_update():
     events_new_results = Event.query.filter(
         Event.start_at < time.time(),
         Event.tournament.has(Tournament.ends_at > constants.last_event_update),
-        FantasyLeague.query.filter(
-            FantasyLeague.event_id == Event.event_id).exists()
+        Event.fantasy_leagues.any()
     ).all()
     for event in events_new_results:
         smashgg.update_standing(event.event_id)
