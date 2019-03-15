@@ -7,18 +7,15 @@ from . import socketio
 @socketio.on('join', namespace='/leagues')
 def join_league_room(msg):
     user_id = msg['userID']
-    if not user_is_logged_in(user_id, msg['token']):
-        send('Unauthorized')
-        return
     league_id = msg['leagueID']
-    if FantasyResult.query.filter_by(league_id=league_id,
-                                     user_id=user_id).exists():
+    if (user_is_logged_in(user_id, msg['token']) and 
+        FantasyResult.query.filter_by(league_id=league_id,
+                                      user_id=user_id).first()):
         # The user is a part of the league they are trying to join
         user = User.query.filter_by(user_id=user_id).first()
         join_room(league_id, namespace='/leagues')
         emit('joined-room', user_schema.dump(user),
-             namespace='/leagues', room=league_id)
-
+             namespace='/leagues', room=league_id) 
 
 @socketio.on('leave', namespace='/leagues')
 def leave_league_room(msg):
