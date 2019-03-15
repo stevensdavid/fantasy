@@ -84,6 +84,7 @@ export default class EditDraftView extends React.Component {
                 })
             }).then(res => {
                 if (res.status === 200) {
+                    global.newDraft = true;
                     return res.json();
                 } else {
                     throw (res.body)
@@ -91,10 +92,16 @@ export default class EditDraftView extends React.Component {
             }).then(newDraft => {
                 this.setState({ draft: this.state.draft.concat(newDraft) });
                 this.setFormattedLists();
+                if(this.state.league.is_snake){
+                    this.props.navigation.goBack();
+                }
             }).catch(err => console.error(err));
     }
 
     removePlayer(playerID) {
+        if(this.state.league.is_snake){
+            return;
+        }
         fetch(global.server + '/drafts/' + this.state.league.league_id + '/' + global.userID,
             {
                 method: 'DELETE',
