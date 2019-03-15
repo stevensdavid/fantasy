@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   },
   cardContainer: {
-    height: 120,
+    minHeight: 120,
     borderRadius: 10
   },
   image: {

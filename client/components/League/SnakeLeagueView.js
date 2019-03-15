@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
 import SocketIOClient from "socket.io-client";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
@@ -12,7 +12,9 @@ export default class SnakeLeagueView extends React.Component {
       loading: true,
       league: {},
       data: [],
-      turn: -1
+      turn: -1,
+      done: false,
+      isMounted: false,
     };
 
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
@@ -22,106 +24,109 @@ export default class SnakeLeagueView extends React.Component {
       token: global.token
     };
 
-    // klienten ska skicka
-    // join, leave
 
-    // servern skickar
-    // joined-room, left-room, turn-change, new-draft
-
-    /*
-    My draft
-    []
-    Available
-    []
-
-
-    My draft
-    (DRAFT)
-    []
-    Adams draft
-    []
-    */
+    this.fetchLeagueInfo = this.fetchLeagueInfo.bind(this);
+    this.joinedRoom = this.joinedRoom.bind(this);
+    this.leftRoom = this.leftRoom.bind(this);
+    this.turnChange = this.turnChange.bind(this);
+    this.newDraft = this.newDraft.bind(this);
+    this.connected = this.connected.bind(this);
   }
 
-  leftRoom(leftUser) {
-    console.log(leftUser.tag + " left the room");
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == leftUser.user_id) {
-        data[i].titleStyle = { color: "gray" };
-        break;
-      }
-    }
+  connected(users) {
+    if(!this.state.isMounted) {return}
+    users.map(x => this.joinedRoom(x));
+  }
+
+  leftRoom(userID) {
+    console.log(userID + " left the room");
+    if(!this.state.isMounted) {return}
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == userID ? 
+        Object.assign(x, {titleStyle: {color: "gray"}})
+        : x)
     });
   }
 
-  joinedRoom(joinedUser) {
-    console.log(joinedUser.tag + " joined the room");
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == joinedUser.user_id) {
-        data[i].titleStyle = { color: "black" };
-        break;
-      }
-    }
+  joinedRoom(userID) {
+    console.log(userID + " joined the room");
+    if(!this.state.isMounted) {return}
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == userID ? 
+        Object.assign(x, {titleStyle: {color: "black"}})
+        : x)
     });
   }
 
   turnChange(userID) {
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == userID) {
-        data[i].status = "[DRAFT]";
-      } else {
-        data[i].status = "";
-      }
+    if(userID == null) {
+      this.setState({
+        data: this.state.data.map(x => Object.assign(x, {status: ""}))
+      });
+      this.setState({done: true});
+      return;
     }
+    console.log(userID);
     this.setState({
-      data: copyData
+      turn: userID
+    });
+    if(!this.state.isMounted) {return}
+    this.setState({
+      data: this.state.data.map(x => x.key  == userID? 
+        Object.assign(x, {status: "[DRAFTER]"})
+        : Object.assign(x, {status: ""}))
     });
   }
 
   newDraft(draft) {
-    copyData = this.state.data;
-    for (var i in copyData) {
-      if (data[i].key == draft.user_id) {
-        data[i].description = data[i].description + "\n" + draft.player.tag;
-        break;
-      }
-    }
+    console.log("New draft!");
+    if(!this.state.isMounted) { console.log("returning"); return}
     this.setState({
-      data: copyData
+      data: this.state.data.map(x => x.key  == draft.user.user_id ? 
+        Object.assign(x, {description: x.description + draft.player.tag + "\n"})
+        : x)
     });
+    this.setState({
+      league: Object.assign(this.state.league, {fantasy_drafts: this.state.league.fantasy_drafts.concat(draft)})
+    })
   }
 
-  handlePress(userID) {}
+  handlePress(userID) {
+    if (userID == global.userID && this.state.turn == global.userID){
+      this.props.navigation.navigate("EditDraft", {league: this.state.league});
+    } else {
+      Alert.alert('It is not your turn');
+    }
+  }
 
   componentDidMount() {
-    this.socket = SocketIOClient(global.server + "/leagues", {
-      secure: true,
-      reconnect: true,
-      transports: ["websocket"]
+    this.setState({isMounted: true}, () => {
+      this.fetchLeagueInfo(this.leagueID).then(() => {
+        this.socket = SocketIOClient(global.server + "/leagues", {
+          secure: true,
+          reconnect: true,
+          transports: ["websocket"]
+        });
+        this.socket.on("connected", this.connected);
+        this.socket.on("left-room", this.leftRoom);
+        this.socket.on("joined-room", this.joinedRoom);
+        this.socket.on("turn-change", this.turnChange);
+        this.socket.on("new-draft", this.newDraft);
+    
+        this.socket.connect();
+        this.socket.emit("join", this.socketIdentifier);
+      // server should answer with joined-room
+      }).catch(err => console.error(err));   
     });
-    this.socket.on("left-room", this.leftRoom);
-    this.socket.on("joined-room", this.joinedRoom);
-    this.socket.on("turn-change", this.turnChange);
-    this.socket.on("new-draft", this.newDraft);
-
-    this.socket.connect();
-    this.socket.emit("join", this.socketIdentifier);
-    this.fetchLeagueInfo(this.leagueID);
-    // server should answer with joined-room
   }
 
   componentWillUnmount() {
-    this.socket.send("leave", this.socketIdentifier);
+    this.setState({isMounted: false});
+    this.socket.emit("leave", this.socketIdentifier);
   }
 
   async fetchLeagueInfo(leagueID) {
+    if(!this.state.isMounted) { console.log("return"); return}
     let league_obj = {};
     try {
       let res = await fetch(global.server + "/leagues/" + leagueID);
@@ -146,11 +151,11 @@ export default class SnakeLeagueView extends React.Component {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
-        status: "",
-        description: participants[k].draft.join("\n")
+        status: k == league_obj.turn ? "[DRAFTER]" : "",
+        description: participants[k].draft ? participants[k].draft.join("\n") + "\n" : ''
       };
     });
-    this.setState({ data: newData, loading: false });
+    this.setState({ data: newData, done: league_obj.turn == null, loading: false });
     this.setState({ turn: this.state.league.turn });
   }
 
