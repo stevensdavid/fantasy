@@ -1622,7 +1622,7 @@ def routine_update():
     # Get all events that have started, end after the last update and have a
     # league
     events_new_results = Event.query.filter(
-        Event.start_at > time.time(),
+        Event.start_at < time.time(),
         Event.tournament.has(Tournament.ends_at > constants.last_event_update),
         FantasyLeague.query.filter(
             FantasyLeague.event_id == Event.event_id).exists()
