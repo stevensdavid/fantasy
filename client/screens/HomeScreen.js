@@ -1,11 +1,9 @@
 import React from 'react';
 import {
-  Image,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { WebBrowser } from 'expo';
@@ -23,11 +21,14 @@ export default class HomeScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
 
+        <View>
         <Text style={styles.headerText}>Featured Tournaments</Text>
-        <TournamentCoverFlow navigation={this.props.navigation}/>
-
+        <TournamentCoverFlow fetchPoint="/featured" navigation={this.props.navigation}/>
+        </View>
+        <View style={{marginBottom: 20}}>
         <Text style={styles.headerText}>Upcoming Tournaments</Text>
-        <TournamentCoverFlow navigation={this.props.navigation}/>
+        <TournamentCoverFlow fetchPoint="/tournaments" navigation={this.props.navigation}/>
+        </View>
         {/*
           <View style={styles.welcomeContainer}>
             <Image
