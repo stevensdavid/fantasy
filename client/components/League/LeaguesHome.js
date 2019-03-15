@@ -13,19 +13,27 @@ export class LeaguesHome extends React.Component {
     super(props);
     this.state = {
       leagues: [],
-      loading: true
+      loading: true,
+      token: global.token
     }
     this.fetchLeagues = this.fetchLeagues.bind(this);
   }
 
   componentDidMount() {
-    this.fetchLeagues();
-
-    this.subs = [
-      this.props.navigation.addListener('didFocus', () => {this.props.navigation.getParam("newData", false) ? 
+    this.navigationWillFocusListener = this.props.navigation.addListener('willFocus', () => {
+        this.props.navigation.getParam("newData", false) ? 
         this.newLeague(this.props.navigation.getParam("leagueID", -1)) 
-        : {}}),
-    ]; 
+        : {}
+    })
+
+    this.fetchLeagues();
+  }
+
+  componentDidUpdate() {
+    if(this.state.token != global.token) {
+      this.setState({token: global.token});
+      this.fetchLeagues();
+    }
   }
 
   newLeague(newLeagueID) {
@@ -37,8 +45,8 @@ export class LeaguesHome extends React.Component {
     }
   }
 
-  componentWillUnmount() {
-    this.subs.forEach(sub => sub.remove());
+  componentWillUnmount () {
+    this.navigationWillFocusListener.remove()
   }
 
   fetchLeagues() {
@@ -51,9 +59,9 @@ export class LeaguesHome extends React.Component {
     fetch(global.server + '/leagues?userId=' + global.userID, { method: 'GET' }).then(response => {
       return response.json();
     }).then(obj => {
-      this.setState({ leagues: obj, loading: false });
+      this.setState({ leagues: obj, loading: false});
     }).catch(err => {
-      this.setState({ loading: false });
+      this.setState({ loading: false});
     });
   }
 
