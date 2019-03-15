@@ -99,8 +99,10 @@ class UsersAPI(Resource):
         parser.add_argument('tag', str)
         args = parser.parse_args(strict=True)
         # users = User.query.all()
-        users = User.query.filter(User.tag.like(f'%{args["tag"]}%')).paginate(
-            page=args['page'], per_page=args['perPage']).items
+        users = User.query.filter(User.tag.like(f'%{args["tag"]}%')).order_by(
+            User.tag).paginate(
+                page=args['page'], per_page=args['perPage']
+        ).items
         return users_schema.jsonify(users)
 
     def post(self):
@@ -321,8 +323,11 @@ class TournamentsAPI(Resource):
         # tournaments = Tournament.query.all()
         tournaments = Tournament.query.filter(
             Tournament.name.like(
-                f'%{args["name"] if args["name"] is not None else ""}%')
-        ).paginate(page=args['page'], per_page=args['perPage']).items
+                f'%{args["name"] if args["name"] is not None else ""}%'),
+            Tournament.ends_at > time.time() if args["name"] is None else True
+        ).order_by(Tournament.ends_at).paginate(
+            page=args['page'], per_page=args['perPage']
+        ).items
         return tournaments_schema.jsonify(tournaments)
 
 
@@ -371,7 +376,9 @@ class FriendsAPI(Resource):
             ).exists()
             & User.tag.like(
                 f'%{args["tag"] if args["tag"] is not None else ""}%')
-        ).paginate(page=args['page'], per_page=args['perPage']).items
+        ).order_by(User.tag).paginate(
+            page=args['page'], per_page=args['perPage']
+        ).items
         return users_schema.jsonify(friends)
 
     def post(self, user_id):
@@ -539,7 +546,9 @@ class FollowersAPI(Resource):
             ).exists()
             & User.tag.like(
                 f'%{args["tag"] if args["tag"] is not None else ""}%')
-        ).paginate(page=args['page'], per_page=args['perPage']).items
+        ).order_by(User.tag).paginate(
+            page=args['page'], per_page=args['perPage']
+        ).items
         return users_schema.jsonify(friends)
 
 
@@ -573,7 +582,8 @@ class FeaturedTournamentsAPI(Resource):
                         import: "swagger/Tournament.json"
         """
         tournaments = Tournament.query.filter(
-            Tournament.is_featured & (Tournament.ends_at > time.time())).all()
+            Tournament.is_featured & (Tournament.ends_at > time.time())
+        ).order_by(Tournament.ends_at).all()
         return tournaments_schema.jsonify(tournaments)
 
 
@@ -610,8 +620,8 @@ class ImagesAPI(Resource):
         try:
             with open(safe_join(app.config['IMAGE_DIR'], fname), 'rb') as img:
                 return send_file(io.BytesIO(img.read()),
-                                mimetype='image/png', as_attachment=True,
-                                attachment_filename=os.path.split(fname)[1])
+                                 mimetype='image/png', as_attachment=True,
+                                 attachment_filename=os.path.split(fname)[1])
         except FileNotFoundError:
             return {'error': 'File not found'}, 404
 
@@ -1246,17 +1256,19 @@ class EntrantsAPI(Resource):
         parser = make_pagination_reqparser()
         args = parser.parse_args()
         entrants = Entrant.query.filter(Entrant.event_id == event_id).order_by(
-            Entrant.seed).paginate(page=args['page'], per_page=args['perPage']
-                                   ).items
+            Entrant.seed).paginate(
+                page=args['page'], per_page=args['perPage']
+        ).items
         if not entrants or entrants[0].seed is None:
             # The seeding is not yet complete. In most cases this also means
             # that signups are not yet complete, so update both using the API
             smashgg.get_entrants_in_event(event_id)
             # Rerun query
             entrants = Entrant.query.filter(
-                Entrant.event_id == event_id).order_by(
-                    Entrant.seed).paginate(
-                        page=args['page'], per_page=args['perPage']).items
+                Entrant.event_id == event_id
+            ).order_by(Entrant.seed).paginate(
+                page=args['page'], per_page=args['perPage']
+            ).items
         return entrants_schema.jsonify(entrants)
 
 
@@ -1620,6 +1632,7 @@ def routine_update():
     # Update the timestamp
     constants.last_event_update = time.time()
     db.session.commit()
+
 
 # This import has to happen after all initialization
 import api_server.socket_controller
