@@ -142,8 +142,10 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({ isMounted: true }, () => {
       this.fetchLeagueInfo(this.leagueID)
         .then(() => {
-          const currentTime = Math.round(new Date().getTime() / 1000)
-          this.setState({ done: currentTime > this.state.league.event.start_at })
+          const currentTime = Math.round(new Date().getTime() / 1000);
+          this.setState({
+            done: currentTime > this.state.league.event.start_at
+          });
           this.socket = SocketIOClient(global.server + "/leagues", {
             secure: true,
             reconnect: true,
@@ -189,7 +191,12 @@ export default class SnakeLeagueView extends React.Component {
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>
         Object.assign(newObj, {
-          [x.user.user_id]: { tag: x.user.tag, draft: [], score: null, photo_path: x.user.photo_path }
+          [x.user.user_id]: {
+            tag: x.user.tag,
+            draft: [],
+            score: null,
+            photo_path: x.user.photo_path
+          }
         }),
       {}
     );
@@ -197,28 +204,33 @@ export default class SnakeLeagueView extends React.Component {
       participants[draft.user_id].draft.push(draft.player.tag);
     }
     for (result of this.state.league.fantasy_results) {
-      participants[result.user.user_id].score = result.score
+      participants[result.user.user_id].score = result.score;
     }
     const newData = Object.keys(participants).map(k => {
       return {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
-        status: k == league_obj.turn ? "[DRAFTER]" :
-          (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
+        status:
+          k == league_obj.turn
+            ? "[DRAFTER]"
+            : participants[k].score !== null
+            ? ` (${participants[k].score}p)`
+            : "",
         description: participants[k].draft
           ? participants[k].draft.join("\n") + "\n"
           : "",
         score: participants[k].score,
         img_uri:
-                  participants[k].photo_path != null
-                    ? global.server + "/images/" + participants[k].photo_path
-                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+          participants[k].photo_path != null
+            ? global.server + "/images/" + participants[k].photo_path
+            : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
       };
     });
     this.setState({
-      data: newData.sort((a,b) => b.score - a.score),
-      done: league_obj.turn == null || (league_obj.event.start_at * 1000 < Date.now),
+      data: newData.sort((a, b) => b.score - a.score),
+      done:
+        league_obj.turn == null || league_obj.event.start_at * 1000 < Date.now,
       loading: false
     });
     this.setState({ turn: this.state.league.turn });
@@ -226,15 +238,20 @@ export default class SnakeLeagueView extends React.Component {
 
   render() {
     return (
-      <View>
-        <View style={{ minHeight: "100%" }}>
+      <View style={{ minHeight: "100%", flex: 1 }}>
+        <View style={{ flex: 1 }}>
           <Text
             style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}
           >
             {this.state.league.name}
           </Text>
-          {(this.state.done || this.state.turn == null) && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
+          {(this.state.done || this.state.turn == null) && (
+            <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
+              Drafting closed
+            </Text>
+          )}
           <ScrollableListContainer
+            style={{ flex: 1 }}
             loading={this.state.loading}
             data={this.state.data}
             onItemClick={userID => this.handlePress(userID)}
