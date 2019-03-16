@@ -90,6 +90,8 @@ export class LoginForm extends React.Component {
             color={this.state.emailFocus ? "black" : "silver"}
           />
           <TextInput
+            ref={input => (this.emailInput = input)}
+            onSubmitEditing={() => this.passwordInput.focus()}
             onFocus={() => {
               this.setState({ emailFocus: true });
             }}
@@ -112,6 +114,10 @@ export class LoginForm extends React.Component {
             color={this.state.passwordFocus ? "black" : "silver"}
           />
           <TextInput
+            ref={input => (this.passwordInput = input)}
+            onSubmitEditing={() =>
+              this.tryLogin(this.state.email, this.state.password)
+            }
             onFocus={() => {
               this.setState({ passwordFocus: true });
             }}
@@ -160,7 +166,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent"
   },
   inputContainer: {
-
     borderBottomColor: "#F5FCFF",
     backgroundColor: "#FFFFFF",
     borderRadius: 30,
