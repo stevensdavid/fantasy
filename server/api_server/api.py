@@ -32,6 +32,7 @@ from .models import (Constants, Entrant, Event, FantasyDraft, FantasyLeague,
                      FantasyResult, Friends, Player, Tournament, User,
                      VideoGame, Placement)
 from .smashgg import SmashGG
+from .socket_controller import SOCKETS
 
 smashgg = SmashGG()
 
@@ -1650,6 +1651,7 @@ def routine_update():
     # Update the timestamp
     constants.last_event_update = time.time()
     db.session.commit()
+    emit('routine-update', broadcast=True)
 
 def _score(place):
     scoring = {}
