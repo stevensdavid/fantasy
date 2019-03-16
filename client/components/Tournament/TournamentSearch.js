@@ -49,10 +49,7 @@ export class TournamentSearch extends React.Component {
     componentDidMount() {
         this.searchAndSetTournaments('');
     }
-
-    componentWillUnmount () {
-        this.componentDidMount.remove()
-    }
+    
     constructor(props){
         super(props);
 

@@ -90,7 +90,7 @@ export class TournamentCoverFlow extends React.Component {
                   source={{
                     uri: tournamentInfo.ext_icon_url
                       ? tournamentInfo.ext_icon_url
-                      : "https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif"
+                      : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
                   }}
                 />
                 <Text

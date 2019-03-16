@@ -35,7 +35,12 @@ export default class LeagueView extends React.Component {
         let participants = this.state.league.fantasy_results.reduce(
           (newObj, x) =>
             Object.assign(newObj, {
-              [x.user.user_id]: { tag: x.user.tag, draft: [], score: null, photo_path: x.user.photo_path }
+              [x.user.user_id]: {
+                tag: x.user.tag,
+                draft: [],
+                score: null,
+                photo_path: x.user.photo_path
+              }
             }),
           {}
         );
@@ -43,24 +48,27 @@ export default class LeagueView extends React.Component {
           participants[draft.user_id].draft.push(draft.player.tag);
         }
         for (result of this.state.league.fantasy_results) {
-          participants[result.user.user_id].score = result.score
+          participants[result.user.user_id].score = result.score;
         }
         const newData = Object.keys(participants).map(k => {
           return {
             key: k.toString(),
             title: participants[k].tag,
-            status: participants[k].score !== null ? ` (${participants[k].score}p)` : '',
+            status:
+              participants[k].score !== null
+                ? ` (${participants[k].score}p)`
+                : "",
             description: participants[k].draft.join("\n"),
             score: participants[k].score,
             img_uri:
-                  participants[k].photo_path != null
-                    ? global.server + "/images/" + participants[k].photo_path
-                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+              participants[k].photo_path != null
+                ? global.server + "/images/" + participants[k].photo_path
+                : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
           };
         });
-        this.setState({ data: newData.sort((a,b) => b.score - a.score) });
-        const currentTime = Math.round(new Date().getTime() / 1000)
-        this.setState({ done: currentTime > this.state.league.event.start_at })
+        this.setState({ data: newData.sort((a, b) => b.score - a.score) });
+        const currentTime = Math.round(new Date().getTime() / 1000);
+        this.setState({ done: currentTime > this.state.league.event.start_at });
         this.setState({ loading: false });
       })
       .catch(err => console.error(err));
@@ -90,15 +98,20 @@ export default class LeagueView extends React.Component {
 
   render() {
     return (
-      <View>
-        <View style={{ minHeight: "100%" }}>
+      <View style={{ minHeight: "100%", flex: 1 }}>
+        <View style={{ flex: 1 }}>
           <Text
             style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}
           >
             {this.state.league.name}
           </Text>
-          {this.state.done && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
+          {this.state.done && (
+            <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
+              Drafting closed
+            </Text>
+          )}
           <ScrollableListContainer
+            style={{ flex: 1 }}
             loading={this.state.loading}
             data={this.state.data}
             onItemClick={userID => this.handlePress(userID)}

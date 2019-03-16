@@ -30,7 +30,8 @@ export default class FriendsView extends React.Component {
       tagFontSize: 42,
       loading: false,
       infoTextSize: 24,
-      isFollowing: false
+      isFollowing: false,
+      photo_path: null
     };
 
     this.reloadInfo = this.reloadInfo.bind(this);
@@ -63,7 +64,7 @@ export default class FriendsView extends React.Component {
         if (res.status === 200) {
           Alert.alert("Success!", "You now follow: " + this.state.tag);
           global.newUserInfo = true;
-          this.setState({isFollowing: true});
+          this.setState({ isFollowing: true, nFollowers: this.state.nFollowers + 1 });
         } else {
           throw res.body;
         }
@@ -86,6 +87,7 @@ export default class FriendsView extends React.Component {
         if (res.status === 200) {
           Alert.alert("Success!", "You no longer follow: " + this.state.tag);
           global.newUserInfo = true;
+          this.setState({ isFollowing: false, nFollowers: this.state.nFollowers - 1 });
         } else {
           throw res.body;
         }
@@ -111,13 +113,13 @@ export default class FriendsView extends React.Component {
           );
         } else if (response.status === 200) {
           response.json().then(responseJSON => {
-              responseJSON.followers.map((follower) => {
-                  console.log(follower.user_id);
-                  console.log(global.userID);
-                  if (follower.user_id === global.userID) {
-                    this.setState({isFollowing: true});
-                  }
-              });
+            responseJSON.followers.map(follower => {
+              console.log(follower.user_id);
+              console.log(global.userID);
+              if (follower.user_id === global.userID) {
+                this.setState({ isFollowing: true });
+              }
+            });
             this.setState({
               email: responseJSON.email,
               firstName: responseJSON.first_name,
@@ -126,7 +128,8 @@ export default class FriendsView extends React.Component {
               tagFontSize: Math.min((38 * 8) / responseJSON.tag.length, 60),
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
-              nLeagues: responseJSON.fantasy_leagues.length
+              nLeagues: responseJSON.fantasy_leagues.length,
+              photo_path: responseJSON.photo_path
             });
             this.setState({ loading: false });
           });
@@ -147,7 +150,16 @@ export default class FriendsView extends React.Component {
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.headerContent}>
-          <Icon name="portrait" type="material" color="black" size={104} />
+          <Image
+            style={{ width: 100, height: 100, borderRadius: 10 }}
+            resizeMode="cover"
+            source={{
+              uri:
+                this.state.photo_path != null
+                  ? global.server + "/images/" + this.state.photo_path
+                  : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+            }}
+          />
           <View style={{ marginRight: 80 }}>
             <Text
               style={{

@@ -7,14 +7,13 @@ import {
   Text,
   Image,
   Alert,
-  TouchableHighlight,
   Dimensions
 } from "react-native";
-import { Icon} from "react-native-elements";
+import { Icon } from "react-native-elements";
 import Spinner from "react-native-loading-spinner-overlay";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
-import { HideAbleView } from '../View/HideAbleView';
+import { HideAbleView } from "../View/HideAbleView";
 
 export default class EventView extends React.Component {
   static navigationOptions = {
@@ -32,7 +31,7 @@ export default class EventView extends React.Component {
       playerData: null,
       loadingPlayers: true,
       hasEntrants: false,
-      token: global.token,
+      token: global.token
     };
 
     this.fetchEventInfo = this.fetchEventInfo.bind(this);
@@ -48,8 +47,12 @@ export default class EventView extends React.Component {
     this.fetchEventInfo();
 
     this.subs = [
-      this.props.navigation.addListener('didFocus', () => {this.state.token != global.token? this.setState({token: global.token}): {}}),
-    ]; 
+      this.props.navigation.addListener("didFocus", () => {
+        this.state.token != global.token
+          ? this.setState({ token: global.token })
+          : {};
+      })
+    ];
   }
 
   componentWillUnmount() {
@@ -98,7 +101,9 @@ export default class EventView extends React.Component {
               playerData: event.entrants.map(p => {
                 return {
                   key: p.player.player_id.toString(),
-                  img_uri: p.player.ext_photo_url ? p.player.ext_photo_url : "https://cdn.cwsplatform.com/assets/no-photo-available.png",
+                  img_uri: p.player.ext_photo_url
+                    ? p.player.ext_photo_url
+                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png",
                   title: p.player.tag,
                   description: p.seed
                 };
@@ -167,7 +172,28 @@ export default class EventView extends React.Component {
               {this.state.eventInfo.name}
             </Text>
           </View>
-          <AddButton text="Create Fantasy League" textStyle={{color: 'white', margin: 15, fontSize:18, fontWeight: "bold"}} containerStyle={{alignItems: 'center'}} buttonStyle={{alignSelf: 'center'}} onPress={() => this.props.navigation.navigate("CreateLeague", {eventId: this.eventID})} hide={!this.state.token} containerStyle={{margin:10}}/>
+          <AddButton
+            text="Create Fantasy League"
+            textStyle={{
+              color: "white",
+              margin: 15,
+              fontSize: 18,
+              fontWeight: "bold"
+            }}
+            containerStyle={{ alignItems: "center" }}
+            buttonStyle={{ alignSelf: "center" }}
+            onPress={() => {
+              if(global.token || this.state.token) {
+                this.props.navigation.navigate("CreateLeague", {
+                  eventId: this.eventID
+                })
+              } else {
+                Alert.alert("Info", "Log in before creating a league");
+                this.props.navigation.navigate("Leagues");
+              }
+            }}
+            containerStyle={{ margin: 10 }}
+          />
           <HideAbleView hide={!this.state.hasEntrants}>
             <Text style={{ fontSize: 40, alignSelf: "center" }}>Entrants</Text>
             <ScrollableListContainer

@@ -24,14 +24,14 @@ export default class FollowView extends React.Component {
     this.fetchUsers(this.state.term);
   }
 
-  updateSearch = (value) => {
-        this.setState({term:  value});
-        this.fetchUsers(value);
-    };
+  updateSearch = value => {
+    this.setState({ term: value });
+    this.fetchUsers(value);
+  };
 
   fetchUsers(term) {
     newData = [];
-    this.setState({loading: true});
+    this.setState({ loading: true });
     fetch(global.server + "/users?tag=" + term, {
       method: "GET"
     })
@@ -50,8 +50,9 @@ export default class FollowView extends React.Component {
                 key: user.user_id.toString(),
                 title: user.tag,
                 description: user.first_name + " " + user.last_name,
-                img_uri:
-                  "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+                img_uri: user.photo_path
+                  ? global.server + "/images/" + user.photo_path
+                  : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
               });
             }
           });
@@ -80,7 +81,7 @@ export default class FollowView extends React.Component {
         />
         <View style={{ marginBottom: 120 }}>
           <ScrollableListContainer
-            emptyText = "Nothing to show"
+            emptyText="Nothing to show"
             data={this.state.data}
             onItemClick={key =>
               this.props.navigation.push("Friend", { friendID: key })

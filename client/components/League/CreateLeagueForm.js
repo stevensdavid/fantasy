@@ -34,6 +34,11 @@ export default class CreateLeagueForm extends React.Component {
     }
 
     createLeague(stateInfo) {
+        if(!global.token) {
+            Alert.alert("Alert", "Please log in before creating a league");
+            this.props.navigation.goBack();
+            return;
+        }
         fetch(global.server + '/leagues', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'bearer ' + global.token },
@@ -146,6 +151,7 @@ const styles = StyleSheet.create({
     },
     inputs: {
         height: 45,
+        width: '100%',
         marginLeft: 16,
         borderBottomColor: '#FFFFFF',
     },

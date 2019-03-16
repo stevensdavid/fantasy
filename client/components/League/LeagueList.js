@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, TouchableHighlight, Dimensions } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
@@ -94,7 +94,10 @@ export class LeagueList extends React.Component {
         <AddButton
           hide={this.state.loading}
           containerStyle={styles.floatingButtonStyle}
-          onPress={() => this.props.navigation.navigate("Search")}
+          onPress={() => {
+            Alert.alert("Info", "Select tournament and event to create a league");
+            this.props.navigation.navigate("Search");
+          }}
         />
       </View>
     );

@@ -55,7 +55,10 @@ export default class FollowersView extends React.Component {
             key: friend.user_id.toString(),
             title: friend.tag,
             description: friend.first_name + " " + friend.last_name,
-            img_uri: "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+            img_uri:
+            friend.photo_path != null
+              ? global.server + "/images/" + friend.photo_path
+              : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
           });
           });
         }
