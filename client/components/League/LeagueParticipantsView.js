@@ -107,7 +107,9 @@ export default class LeagueParticipantsView extends React.Component {
                 title: user.tag,
                 description: user.first_name + " " + user.last_name,
                 img_uri:
-                  "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+                  user.photo_path != null
+                    ? global.server + "/images/" + user.photo_path
+                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
               });
             }
           });
@@ -143,7 +145,9 @@ export default class LeagueParticipantsView extends React.Component {
                 key: result.user.user_id.toString(),
                 title: result.user.tag,
                 img_uri:
-                  "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+                  result.user.photo_path != null
+                    ? global.server + "/images/" + result.user.photo_path
+                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
               });
             }
           });
@@ -165,7 +169,7 @@ export default class LeagueParticipantsView extends React.Component {
         onPress={() => this.props.onPress()}
       >
         <Icon
-          containerStyle={{ alignSelf: "center"}}
+          containerStyle={{ alignSelf: "center" }}
           name="delete"
           type="material"
           color="#eff"
@@ -190,7 +194,7 @@ export default class LeagueParticipantsView extends React.Component {
     );
 
     const leftArrow = (
-      <View style={{flexDirection: "row"}}>
+      <View style={{ flexDirection: "row" }}>
         <Icon
           containerStyle={{
             height: 45,

@@ -189,7 +189,7 @@ export default class SnakeLeagueView extends React.Component {
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>
         Object.assign(newObj, {
-          [x.user.user_id]: { tag: x.user.tag, draft: [], score: null }
+          [x.user.user_id]: { tag: x.user.tag, draft: [], score: null, photo_path: x.user.photo_path }
         }),
       {}
     );
@@ -209,7 +209,11 @@ export default class SnakeLeagueView extends React.Component {
         description: participants[k].draft
           ? participants[k].draft.join("\n") + "\n"
           : "",
-        score: participants[k].score
+        score: participants[k].score,
+        img_uri:
+                  participants[k].photo_path != null
+                    ? global.server + "/images/" + participants[k].photo_path
+                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
       };
     });
     this.setState({
