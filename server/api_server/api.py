@@ -1537,26 +1537,29 @@ class FantasyResultAPI(Resource):
         parser.add_argument('userId', type=int)
         parser.add_argument('leagueId', type=int)
         args = parser.parse_args(strict=True)
-        league = FantasyLeague.query.filter_by(
-            league_id=args['leagueId']).first()
+        user_id, league_id = args['userId'], args['leagueId']
+        league = FantasyLeague.query.filter_by(league_id=league_id).first()
         if not league:
             return {'error': 'League not found'}, 400
         if (not user_is_logged_in(league.owner_id)
-                and not user_is_logged_in(args['userId'])):
+                and not user_is_logged_in(user_id)):
             return NOT_LOGGED_IN_RESPONSE
         # Participation is marked by presence of a FantasyResult entity
-        fantasy_result = FantasyResult.query.filter(
-            FantasyResult.user_id == args['userId'],
-            FantasyResult.league_id == args['leagueId']).first()
+        fantasy_result = FantasyResult.query.filter_by(
+            user_id=user_id, league_id=league_id).first()
         db.session.delete(fantasy_result)
         # Remove all drafts by the user
-        FantasyDraft.query.filter(FantasyDraft.league_id == args['leagueId'],
-                                  FantasyDraft.user_id == args['userId']).delete()
+        FantasyDraft.query.filter_by(
+            league_id=league_id, user_id=user_id).delete()
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
             return {'error': 'User or league not found'}, 400
+        deleted_user_schema = FantasyResultSchema(only=["user"])
+        # Inform connected participants that the user has been removed
+        emit('deleted-participant', deleted_user_schema.dump(fantasy_result),
+             namespace='/leagues', room=league_id)
         schema = FantasyResultSchema(only=["league_id", "user_id", "score"])
         return schema.jsonify(fantasy_result)
 
