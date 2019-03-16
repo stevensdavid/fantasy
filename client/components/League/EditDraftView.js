@@ -77,7 +77,7 @@ export default class EditDraftView extends React.Component {
             img_uri: x.player.ext_photo_url
               ? x.player.ext_photo_url
               : "https://cdn.cwsplatform.com/assets/no-photo-available.png",
-            description: "Seed: " + x.player.seed
+            description: x.seed !== null ? "Seed: " + x.seed : ''
           };
         })
     });

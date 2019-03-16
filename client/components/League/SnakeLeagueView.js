@@ -142,6 +142,8 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({ isMounted: true }, () => {
       this.fetchLeagueInfo(this.leagueID)
         .then(() => {
+          const currentTime = Math.round(new Date().getTime() / 1000)
+          this.setState({ done: currentTime > this.state.league.event.start_at })
           this.socket = SocketIOClient(global.server + "/leagues", {
             secure: true,
             reconnect: true,
@@ -187,27 +189,32 @@ export default class SnakeLeagueView extends React.Component {
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>
         Object.assign(newObj, {
-          [x.user.user_id]: { tag: x.user.tag, draft: [] }
+          [x.user.user_id]: { tag: x.user.tag, draft: [], score: null }
         }),
       {}
     );
     for (draft of this.state.league.fantasy_drafts) {
       participants[draft.user_id].draft.push(draft.player.tag);
     }
+    for (result of this.state.league.fantasy_results) {
+      participants[result.user.user_id].score = result.score
+    }
     const newData = Object.keys(participants).map(k => {
       return {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
-        status: k == league_obj.turn ? "[DRAFTER]" : "",
+        status: k == league_obj.turn ? "[DRAFTER]" :
+          (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
         description: participants[k].draft
           ? participants[k].draft.join("\n") + "\n"
-          : ""
+          : "",
+        score: participants[k].score
       };
     });
     this.setState({
-      data: newData,
-      done: league_obj.turn == null,
+      data: newData.sort((a,b) => b.score - a.score),
+      done: league_obj.turn == null || (league_obj.event.start_at * 1000 < Date.now),
       loading: false
     });
     this.setState({ turn: this.state.league.turn });
@@ -222,6 +229,7 @@ export default class SnakeLeagueView extends React.Component {
           >
             {this.state.league.name}
           </Text>
+          {(this.state.done || this.state.turn == null) && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
           <ScrollableListContainer
             loading={this.state.loading}
             data={this.state.data}
@@ -233,7 +241,8 @@ export default class SnakeLeagueView extends React.Component {
             hide={
               this.state.league.owner != global.userID ||
               this.state.loading ||
-              this.state.league.turn == null
+              this.state.league.turn == null ||
+              this.state.done
             }
             buttonName="edit"
             containerStyle={styles.floatingButtonStyle}

@@ -26,6 +26,7 @@ import FollowersView from '../components/Profile/FollowersView';
 import LeagueParticipantsView from '../components/League/LeagueParticipantsView';
 import SnakeLeagueView from '../components/League/SnakeLeagueView';
 
+let localToken = global.token;
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen,
@@ -98,6 +99,16 @@ LeaguesStack.navigationOptions = {
     }
     />
   ),
+  tabBarOnPress({ navigation, defaultHandler }) {
+    // perform your logic here
+    if(localToken != global.token) {
+      localToken= global.token;
+      navigation.navigate("Leagues");
+    }
+    // this is mandatory to perform the actual switch
+    // don't call this if you want to prevent focus
+    defaultHandler();
+  }
 };
 
 const SearchStack = createStackNavigator({

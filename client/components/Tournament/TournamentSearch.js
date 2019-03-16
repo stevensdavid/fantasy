@@ -25,7 +25,7 @@ export class TournamentSearch extends React.Component {
                           key: '' + tournamentInfo.tournament_id,
                           img_uri: (tournamentInfo.ext_icon_url != null ? tournamentInfo.ext_icon_url : 'https://cdn.cwsplatform.com/assets/no-photo-available.png'),
                           title: tournamentInfo.name,
-                          description: 'Number of events:' + tournamentInfo.events.length + "\nEnds at: " + date.toDateString(),
+                          description: "Ends at: " + date.toDateString(),
                       });
                   })
                   this.setState({

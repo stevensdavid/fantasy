@@ -11,7 +11,8 @@ export default class LeagueView extends React.Component {
     this.state = {
       data: [],
       loading: true,
-      league: {}
+      league: {},
+      done: false
     };
     this.componentDidMount = this.componentDidMount.bind(this);
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
@@ -27,25 +28,35 @@ export default class LeagueView extends React.Component {
     fetch(global.server + "/leagues/" + this.leagueID)
       .then(res => res.json())
       .then(league_obj => {
-        this.setState({ league: league_obj });
+        this.setState({
+          league: league_obj,
+          done: league_obj.event.start_at * 1000 < Date.now
+        });
         let participants = this.state.league.fantasy_results.reduce(
           (newObj, x) =>
             Object.assign(newObj, {
-              [x.user.user_id]: { tag: x.user.tag, draft: [] }
+              [x.user.user_id]: { tag: x.user.tag, draft: [], score: null }
             }),
           {}
         );
         for (draft of this.state.league.fantasy_drafts) {
           participants[draft.user_id].draft.push(draft.player.tag);
         }
+        for (result of this.state.league.fantasy_results) {
+          participants[result.user.user_id].score = result.score
+        }
         const newData = Object.keys(participants).map(k => {
           return {
             key: k.toString(),
             title: participants[k].tag,
-            description: participants[k].draft.join("\n")
+            status: participants[k].score !== null ? ` (${participants[k].score}p)` : '',
+            description: participants[k].draft.join("\n"),
+            score: participants[k].score
           };
         });
-        this.setState({ data: newData });
+        this.setState({ data: newData.sort((a,b) => b.score - a.score) });
+        const currentTime = Math.round(new Date().getTime() / 1000)
+        this.setState({ done: currentTime > this.state.league.event.start_at })
         this.setState({ loading: false });
       })
       .catch(err => console.error(err));
@@ -66,7 +77,7 @@ export default class LeagueView extends React.Component {
   }
 
   handlePress(userID) {
-    if (userID == global.userID) {
+    if (userID == global.userID && !this.state.done) {
       this.props.navigation.navigate("EditDraft", {
         league: this.state.league
       });
@@ -82,6 +93,7 @@ export default class LeagueView extends React.Component {
           >
             {this.state.league.name}
           </Text>
+          {this.state.done && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
           <ScrollableListContainer
             loading={this.state.loading}
             data={this.state.data}
@@ -91,7 +103,9 @@ export default class LeagueView extends React.Component {
         <View>
           <AddButton
             hide={
-              this.state.league.owner != global.userID || this.state.loading
+              this.state.league.owner != global.userID ||
+              this.state.loading ||
+              this.state.done
             }
             buttonName="edit"
             containerStyle={styles.floatingButtonStyle}
