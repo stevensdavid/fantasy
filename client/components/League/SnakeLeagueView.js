@@ -202,7 +202,7 @@ export default class SnakeLeagueView extends React.Component {
     const newData = Object.keys(participants).map(k => {
       return {
         key: k.toString(),
-        title: participants[k].tag + (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
+        title: participants[k].tag,
         titleStyle: { color: "gray" },
         status: k == league_obj.turn ? "[DRAFTER]" :
           (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
@@ -228,6 +228,7 @@ export default class SnakeLeagueView extends React.Component {
           >
             {this.state.league.name}
           </Text>
+          {(this.state.done || this.state.turn == null) && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
           <ScrollableListContainer
             loading={this.state.loading}
             data={this.state.data}
