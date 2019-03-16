@@ -28,9 +28,6 @@ export default class LeagueView extends React.Component {
     fetch(global.server + "/leagues/" + this.leagueID)
       .then(res => res.json())
       .then(league_obj => {
-        console.log(league_obj.event.start_at*1000 < Date.now);
-        console.log(league_obj.event.start_at *1000 + " < " + Date.now()+"?");
-        
         this.setState({
           league: league_obj,
           done: league_obj.event.start_at * 1000 < Date.now
