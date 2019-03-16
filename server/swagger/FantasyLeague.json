@@ -26,6 +26,9 @@
               },
               "tag":{
                 "type":"string"
+              },
+              "photo_path":{
+                "type":"string"
               }
             }
           },
