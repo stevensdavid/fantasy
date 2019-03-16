@@ -92,6 +92,7 @@ export default class LeagueView extends React.Component {
           >
             {this.state.league.name}
           </Text>
+          {this.state.done && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
           <ScrollableListContainer
             loading={this.state.loading}
             data={this.state.data}

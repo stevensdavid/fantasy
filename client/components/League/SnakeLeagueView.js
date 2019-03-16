@@ -131,8 +131,6 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({
       loading: true
     });
-    const currentTime = Math.round(new Date().getTime() / 1000)
-    this.setState({ done: currentTime > this.state.league.event.start_at })
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
         if (global.newParticipantsInfo) {
@@ -144,6 +142,8 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({ isMounted: true }, () => {
       this.fetchLeagueInfo(this.leagueID)
         .then(() => {
+          const currentTime = Math.round(new Date().getTime() / 1000)
+          this.setState({ done: currentTime > this.state.league.event.start_at })
           this.socket = SocketIOClient(global.server + "/leagues", {
             secure: true,
             reconnect: true,
