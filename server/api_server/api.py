@@ -1452,26 +1452,34 @@ class FantasyResultAPI(Resource):
         parser.add_argument('userId', type=int)
         parser.add_argument('leagueId', type=int)
         args = parser.parse_args(strict=True)
-        league = FantasyLeague.query.filter_by(
-            league_id=args['leagueId']).first()
+        user_id = args['userId']
+        league_id = args['leagueId']
+        league = FantasyLeague.query.filter_by(league_id=league_id).first()
         if not league:
             return {'error': 'League not found'}, 400
         if league.is_snake and league.fantasy_drafts:
             return {'error': 'Cannot join an in-progress snake draft'}, 400
         if ((not user_is_logged_in(league.owner_id)
-             and not user_is_logged_in(args['userId']))
+             and not user_is_logged_in(user_id))
                 or (not league.public
                     and not user_is_logged_in(league.owner_id))):
             return NOT_LOGGED_IN_RESPONSE
         # Participation is marked by presence of a FantasyResult entity
-        fantasy_result = FantasyResult(user_id=args['userId'],
-                                       league_id=args['leagueId'])
+        fantasy_result = FantasyResult(user_id=user_id, league_id=league_id)
         db.session.add(fantasy_result)
         try:
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
             return {'error': 'User or league not found'}, 400
+        # Inform the user that they've been added to a league
+        if user_id in SOCKETS:
+            emit('new-league', fantasy_league_schema.dump(league),
+                 room=SOCKETS[user_id])
+        new_user = User.query.filter_by(user_id=user_id).first()
+        # Inform connected participants that there is a new participant
+        emit('new-participant', user_schema.dump(new_user),
+             namespace='/leagues', room=league_id)
         return fantasy_result_schema.jsonify(fantasy_result)
 
     def delete(self):
