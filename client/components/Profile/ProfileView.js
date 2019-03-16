@@ -299,7 +299,11 @@ export class ProfileView extends React.Component {
 
               <TouchableHighlight
                 style={[styles.buttonContainer, styles.loginButton]}
-                onPress={() => this.props.setToken(null)}
+                onPress={() => {
+                  global.webSocket.emit('disconnect');
+                  this.props.setToken(null);
+                  global.userID = null;
+                }}
               >
                 <Text style={styles.loginText}>Logout</Text>
               </TouchableHighlight>
