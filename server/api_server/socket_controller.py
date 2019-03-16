@@ -8,7 +8,7 @@ ROOM_MEMBERS = {}
 SOCKETS = {}
 
 
-@socketio.on('connect', namespace='/')
+@socketio.on('login', namespace='/')
 def user_connected(msg):
     user_id = int(msg['userID'])
     if user_is_logged_in(user_id, msg['token']):

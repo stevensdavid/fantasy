@@ -16,8 +16,6 @@ export default class LeagueParticipantsView extends React.Component {
       participantsData: [],
       userID: global.userID,
       term: "",
-      loading: true,
-      loadingParticipants: true
     };
 
     this.fetchUsers = this.fetchUsers.bind(this);
@@ -32,7 +30,6 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   addLeagueParticipant(userID) {
-    this.setState({ loadingParticipants: true });
     fetch(global.server + "/fantasy_participants", {
       method: "POST",
       headers: {
@@ -56,7 +53,6 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   deleteLeagueParticipant(userID) {
-    this.setState({ loadingParticipants: true });
     fetch(global.server + "/fantasy_participants", {
       method: "DELETE",
       headers: {
@@ -86,7 +82,6 @@ export default class LeagueParticipantsView extends React.Component {
 
   fetchUsers(term) {
     newData = [];
-    this.setState({ loading: true });
     fetch(global.server + "/users?tag=" + term, {
       method: "GET"
     })
@@ -124,8 +119,7 @@ export default class LeagueParticipantsView extends React.Component {
       })
       .then(() => {
         this.setState({
-          data: newData,
-          loading: false
+          data: newData
         });
       })
       .catch(err => console.log(err));
@@ -133,7 +127,6 @@ export default class LeagueParticipantsView extends React.Component {
 
   fetchParticipantsAndUsers() {
     newParticipantsData = [];
-    this.setState({ loadingParticipants: true, loading: true});
     fetch(global.server + "/leagues/" + this.leagueId, {
       method: "GET"
     })
@@ -162,8 +155,7 @@ export default class LeagueParticipantsView extends React.Component {
       })
       .then(() => {
         this.setState({
-          participantsData: newParticipantsData,
-          loadingParticipants: false
+          participantsData: newParticipantsData
         }, () => this.fetchUsers(this.state.term));
       })
       .catch(err => console.log(err));
@@ -233,7 +225,6 @@ export default class LeagueParticipantsView extends React.Component {
           onItemClick={key =>
             this.props.navigation.push("Friend", { friendID: key })
           }
-          loading={this.state.loadingParticipants}
         />
         <View
           style={{
@@ -265,7 +256,6 @@ export default class LeagueParticipantsView extends React.Component {
               onItemClick={key =>
                 this.props.navigation.push("Friend", { friendID: key })
               }
-              loading={this.state.loading}
             />
           </View>
         </View>
