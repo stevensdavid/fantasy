@@ -43,20 +43,27 @@ export default class LeagueView extends React.Component {
           participants[draft.user_id].draft.push(draft.player.tag);
         }
         for (result of this.state.league.fantasy_results) {
-          participants[result.user.user_id].score = result.score
+          participants[result.user.user_id].score = result.score;
         }
         const newData = Object.keys(participants).map(k => {
           return {
             key: k.toString(),
             title: participants[k].tag,
-            status: participants[k].score !== null ? ` (${participants[k].score}p)` : '',
+            status:
+              participants[k].score !== null
+                ? ` (${participants[k].score}p)`
+                : "",
             description: participants[k].draft.join("\n"),
-            score: participants[k].score
+            score: participants[k].score,
+            img_uri:
+              participants[k].user.photo_path != null
+                ? global.server + "/images/" + participants[k].user.photo_path
+                : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
           };
         });
-        this.setState({ data: newData.sort((a,b) => b.score - a.score) });
-        const currentTime = Math.round(new Date().getTime() / 1000)
-        this.setState({ done: currentTime > this.state.league.event.start_at })
+        this.setState({ data: newData.sort((a, b) => b.score - a.score) });
+        const currentTime = Math.round(new Date().getTime() / 1000);
+        this.setState({ done: currentTime > this.state.league.event.start_at });
         this.setState({ loading: false });
       })
       .catch(err => console.error(err));
@@ -93,7 +100,11 @@ export default class LeagueView extends React.Component {
           >
             {this.state.league.name}
           </Text>
-          {this.state.done && <Text style={{ alignSelf: "center", fontStyle:'italic' }}>Drafting closed</Text>}
+          {this.state.done && (
+            <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
+              Drafting closed
+            </Text>
+          )}
           <ScrollableListContainer
             loading={this.state.loading}
             data={this.state.data}
