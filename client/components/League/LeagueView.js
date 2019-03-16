@@ -50,10 +50,11 @@ export default class LeagueView extends React.Component {
             key: k.toString(),
             title: participants[k].tag,
             status: participants[k].score !== null ? ` (${participants[k].score}p)` : '',
-            description: participants[k].draft.join("\n")
+            description: participants[k].draft.join("\n"),
+            score: participants[k].score
           };
         });
-        this.setState({ data: newData });
+        this.setState({ data: newData.sort((a,b) => b.score - a.score) });
         const currentTime = Math.round(new Date().getTime() / 1000)
         this.setState({ done: currentTime > this.state.league.event.start_at })
         this.setState({ loading: false });

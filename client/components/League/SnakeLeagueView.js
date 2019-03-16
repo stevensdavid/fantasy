@@ -208,11 +208,12 @@ export default class SnakeLeagueView extends React.Component {
           (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
         description: participants[k].draft
           ? participants[k].draft.join("\n") + "\n"
-          : ""
+          : "",
+        score: participants[k].score
       };
     });
     this.setState({
-      data: newData,
+      data: newData.sort((a,b) => b.score - a.score),
       done: league_obj.turn == null || (league_obj.event.start_at * 1000 < Date.now),
       loading: false
     });
