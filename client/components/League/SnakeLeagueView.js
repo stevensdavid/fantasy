@@ -187,19 +187,23 @@ export default class SnakeLeagueView extends React.Component {
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>
         Object.assign(newObj, {
-          [x.user.user_id]: { tag: x.user.tag, draft: [] }
+          [x.user.user_id]: { tag: x.user.tag, draft: [], score: null }
         }),
       {}
     );
     for (draft of this.state.league.fantasy_drafts) {
       participants[draft.user_id].draft.push(draft.player.tag);
     }
+    for (result of this.state.league.fantasy_results) {
+      participants[result.user.user_id].score = result.score
+    }
     const newData = Object.keys(participants).map(k => {
       return {
         key: k.toString(),
-        title: participants[k].tag,
+        title: participants[k].tag + (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
         titleStyle: { color: "gray" },
-        status: k == league_obj.turn ? "[DRAFTER]" : "",
+        status: k == league_obj.turn ? "[DRAFTER]" :
+          (participants[k].score !== null ? ` (${participants[k].score}p)` : ''),
         description: participants[k].draft
           ? participants[k].draft.join("\n") + "\n"
           : ""
