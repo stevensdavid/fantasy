@@ -28,7 +28,7 @@ export class ProfileView extends React.Component {
       photo_path: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
       tagFontSize: 42,
       loading: false,
-      infoTextSize: 24
+      infoTextSize: 16
     };
 
     this.reloadInfo = this.reloadInfo.bind(this);
@@ -217,7 +217,7 @@ export class ProfileView extends React.Component {
                 style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
                 underlineColorAndroid="transparent"
               >
-                {this.state.firstName}
+                Name: {this.state.firstName + " " + this.state.lastName} 
               </Text>
             </View>
 
@@ -226,16 +226,7 @@ export class ProfileView extends React.Component {
                 style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
                 underlineColorAndroid="transparent"
               >
-                {this.state.lastName}
-              </Text>
-            </View>
-
-            <View style={styles.textContainer}>
-              <Text
-                style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
-                underlineColorAndroid="transparent"
-              >
-                {this.state.email}
+                Email: {this.state.email}
               </Text>
             </View>
 
