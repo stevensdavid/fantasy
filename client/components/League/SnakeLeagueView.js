@@ -29,6 +29,8 @@ export default class SnakeLeagueView extends React.Component {
     this.leftRoom = this.leftRoom.bind(this);
     this.turnChange = this.turnChange.bind(this);
     this.newDraft = this.newDraft.bind(this);
+    this.newParticipant = this.newParticipant.bind(this);
+    this.deletedParticipant = this.deletedParticipant.bind(this);
     this.connected = this.connected.bind(this);
   }
 
@@ -172,7 +174,7 @@ export default class SnakeLeagueView extends React.Component {
     // but they will have a fantasy result that needs to be appended to our state
     // and the user has to be appended to our presented data. 
     this.setState({
-      league: Object.assign(league, {
+      league: Object.assign(this.state.league, {
         fantasy_results: this.state.league.fantasy_results.concat({
           user: {
             photo_path: user.photo_path,
@@ -189,7 +191,7 @@ export default class SnakeLeagueView extends React.Component {
         title: user.tag,
         titleStyle: { color: "gray" },
         status:
-          user.user_id == league_obj.turn
+          user.user_id == this.state.league.turn
             ? "[DRAFTER]"
             : "",
         score: null,
@@ -198,23 +200,23 @@ export default class SnakeLeagueView extends React.Component {
             ? global.server + "/images/" + user.photo_path
             : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
       })
-    })
+    }, () => Alert.alert('League changed', `${user.tag} joined the league.`));
   }
 
   deletedParticipant(userID) {
-    let user = x.fantasy_results.filter(x => x.user.user_id == userID);
+    let user = this.state.league.fantasy_results.filter(x => x.user.user_id == userID);
     if (user.length > 0) {
       // user should only contain one element
       // Remove the player from the league state
       this.setState({
-        league: Object.assign(league, {
+        league: Object.assign(this.state.league, {
           fantasy_results: this.state.league.fantasy_results.filter(x => x.user.user_id != userID),
-          fantasy_drafts: x.fantasy_drafts.filter(x => x.user_id != userID)
+          fantasy_drafts: this.state.league.fantasy_drafts.filter(x => x.user_id != userID)
         })
       });
       // Remove the player from data
-      this.setState({ data: this.state.data.filter(x => x.key != userID) });
-      Alert.alert('League changed', `${user[0].user.tag} left the league.`)
+      this.setState({ data: this.state.data.filter(x => x.key != userID) },
+        () => Alert.alert('League changed', `${user[0].user.tag} left the league.`));
     }
   }
 
