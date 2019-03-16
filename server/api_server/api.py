@@ -1,3 +1,5 @@
+from api_server.socket_controller import SOCKETS
+import api_server.socket_controller
 """
 Main module for the restful Flask API. 
 """
@@ -16,7 +18,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from flask import (Flask, make_response, request, safe_join, send_file,
                    send_from_directory)
 from flask_restful import Api, Resource, reqparse, inputs
-from flask_socketio import send, emit
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
@@ -827,8 +828,8 @@ class DraftsAPI(Resource):
                          "existent entity."
             }, 400
         if league.is_snake:
-            emit('new-draft', fantasy_draft_schema.dump(draft),
-                 namespace='/leagues', room=league_id)
+            socketio.emit('new-draft', fantasy_draft_schema.dump(draft),
+                          namespace='/leagues', room=league_id)
             users = sorted(
                 map(lambda x: x.user.user_id, league.fantasy_results))
             first_draft = FantasyDraft.query.filter_by(
@@ -847,8 +848,8 @@ class DraftsAPI(Resource):
             if len(first_draft) == league.draft_size and len(last_draft) == league.draft_size:
                 league.turn = None
             db.session.commit()
-            emit('turn-change', league.turn,
-                 namespace='/leagues', room=league_id)
+            socketio.emit('turn-change', league.turn,
+                          namespace='/leagues', room=league_id)
         return fantasy_draft_schema.jsonify(draft)
 
     def delete(self, league_id, user_id):
@@ -1064,8 +1065,8 @@ class LeagueAPI(Resource):
         for user in [x.user_id for x in league.fantasy_results]:
             # Inform all participating users that the league has been removed
             if user.user_id in SOCKETS:
-                emit('league-removed', schema.jsonify(league),
-                     room=SOCKETS[user.user_id])
+                socketio.emit('league-removed', schema.jsonify(league),
+                              namespace='/', room=SOCKETS[user.user_id])
         return schema.jsonify(league)
 
     def post(self):
@@ -1472,14 +1473,14 @@ class FantasyResultAPI(Resource):
             db.session.commit()
         # Inform the user that they've been added to a league
         if user_id in SOCKETS:
-            emit('new-league', fantasy_league_schema.dump(league),
-                 room=SOCKETS[user_id])
+            socketio.emit('new-league', fantasy_league_schema.dump(league),
+                          namespace='/', room=SOCKETS[user_id])
         new_user = User.query.filter_by(user_id=user_id).first()
         # Inform connected participants that there is a new participant
-        emit('new-participant', user_schema.dump(new_user),
-             namespace='/leagues', room=league_id)
-        emit('turn-change', league.turn,
-             namespace='/leagues', room=league_id)
+        socketio.emit('new-participant', user_schema.dump(new_user),
+                      namespace='/leagues', room=league_id)
+        socketio.emit('turn-change', league.turn,
+                      namespace='/leagues', room=league_id)
         return fantasy_result_schema.jsonify(fantasy_result)
 
     def delete(self):
@@ -1569,9 +1570,10 @@ class FantasyResultAPI(Resource):
             db.session.commit()
         deleted_user_schema = FantasyResultSchema(only=["user"])
         # Inform connected participants that the user has been removed
-        emit('deleted-participant', deleted_user_schema.dump(fantasy_result),
-             namespace='/leagues', room=league_id)
-        emit('turn-change', league.turn, namespace='/leagues', room=league_id)
+        socketio.emit('deleted-participant', deleted_user_schema.dump(
+            fantasy_result), namespace='/leagues', room=league_id)
+        socketio.emit('turn-change', league.turn,
+                      namespace='/leagues', room=league_id)
         schema = FantasyResultSchema(only=["league_id", "user_id", "score"])
         return schema.jsonify(fantasy_result)
 
@@ -1681,7 +1683,7 @@ def routine_update():
     # Update the timestamp
     constants.last_event_update = time.time()
     db.session.commit()
-    emit('routine-update', namespace='/', broadcast=True)
+    socketio.emit('routine-update', namespace='/', broadcast=True)
 
 
 def _score(place):
@@ -1713,8 +1715,7 @@ def _score(place):
 
 
 # This import has to happen after all initialization
-import api_server.socket_controller
-from api_server.socket_controller import SOCKETS
+
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
