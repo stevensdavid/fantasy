@@ -6,7 +6,8 @@ import {
   FlatList,
   Text,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions
 } from "react-native";
 import { Card, Icon, SearchBar } from "react-native-elements";
 import { HideAbleView } from "../View/HideAbleView";
@@ -76,7 +77,11 @@ export class ScrollableListContainer extends React.Component {
           }
         >
           <SearchBar
-            placeholder= {this.props.searchBarPlaceholder? this.props.searchBarPlaceholder : "Search"}
+            placeholder={
+              this.props.searchBarPlaceholder
+                ? this.props.searchBarPlaceholder
+                : "Search"
+            }
             onChangeText={text => this.searchFilterFunction(text)}
             containerStyle={styles.searchContainer}
             value={this.state.search}
@@ -110,7 +115,7 @@ export class ScrollableListContainer extends React.Component {
                 }}
               >
                 <Card containerStyle={styles.cardContainer}>
-                  <View style={{ flexDirection: "row" }}>
+                  <View style={{flexDirection: "row", alignItems: 'stretch'}}>
                     {item.img_uri ? (
                       <Image
                         resizeMode="cover"
@@ -121,10 +126,22 @@ export class ScrollableListContainer extends React.Component {
                       <View />
                     )}
                     <View style={{ justifyContent: "center" }}>
-                      <Text style={[styles.headerText, item.titleStyle]}>{item.title + " " + (item.status ? item.status : '')}</Text>
+                      <Text style={[styles.headerText, item.titleStyle]}>
+                        {item.title + " " + (item.status ? item.status : "")}
+                      </Text>
                       <Text style={styles.descriptionText}>
                         {item.description ? item.description : ""}
                       </Text>
+                    </View>
+                    <View
+                      style={{
+                        flex:1,
+                        alignSelf: "flex-end",
+                        alignItems: 'flex-end',
+                        justifyContent: 'flex-end'
+                      }}
+                    >
+                      {this.props.rightCardComponent}
                     </View>
                   </View>
                 </Card>
@@ -132,8 +149,11 @@ export class ScrollableListContainer extends React.Component {
             </Swipeout>
           )}
         />
-        <HideAbleView style={{alignItems: 'center', justifyContent:'center'}} hide={!(this.props.emptyText && this.state.show.length === 0)}>
-          <Text style={{fontSize: 21}}>{this.props.emptyText}</Text>
+        <HideAbleView
+          style={{ alignItems: "center", justifyContent: "center" }}
+          hide={!(this.props.emptyText && this.state.show.length === 0)}
+        >
+          <Text style={{ fontSize: 21 }}>{this.props.emptyText}</Text>
         </HideAbleView>
       </View>
     );
@@ -145,6 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   },
   cardContainer: {
+    right:2,
     minHeight: 120,
     borderRadius: 10
   },
@@ -161,7 +182,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     marginLeft: 10,
-    marginRight: 70,
+    marginRight: 90,
     fontSize: 12,
     fontWeight: "bold"
   },

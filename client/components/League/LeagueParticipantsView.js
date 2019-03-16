@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { SearchBar, Icon } from "react-native-elements";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 
@@ -23,7 +23,7 @@ export default class LeagueParticipantsView extends React.Component {
     this.fetchUsers = this.fetchUsers.bind(this);
     this.fetchParticipants = this.fetchParticipants.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
-    
+
     this.leagueId = this.props.navigation.getParam("leagueID", -1);
   }
 
@@ -165,7 +165,7 @@ export default class LeagueParticipantsView extends React.Component {
         onPress={() => this.props.onPress()}
       >
         <Icon
-          containerStyle={{ alignSelf: "center" }}
+          containerStyle={{ alignSelf: "center"}}
           name="delete"
           type="material"
           color="#eff"
@@ -189,16 +189,36 @@ export default class LeagueParticipantsView extends React.Component {
       </View>
     );
 
+    const leftArrow = (
+      <View style={{flexDirection: "row"}}>
+        <Icon
+          containerStyle={{
+            height: 45,
+            marginLeft: 2,
+            marginBottom: 17,
+            justifyContent: "center",
+            alignSelf: "center",
+            alignItems: "center"
+          }}
+          name="keyboard-backspace"
+          type="material"
+          color="gray"
+          size={45}
+        />
+      </View>
+    );
+
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <ScrollableListContainer
           searchBarPlaceholder="Search participants..."
-          style={{maxHeight: 300}}
+          style={{ maxHeight: 300 }}
           showSearchBar={true}
           emptyText="No participants"
           data={this.state.participantsData}
           rightButton={deleteButton}
           rightButtonClick={userID => this.deleteLeagueParticipant(userID)}
+          rightCardComponent={leftArrow}
           onItemClick={key =>
             this.props.navigation.push("Friend", { friendID: key })
           }
@@ -214,7 +234,7 @@ export default class LeagueParticipantsView extends React.Component {
             marginRight: 7
           }}
         />
-        <View style={{flex: 2}}>
+        <View style={{ flex: 2 }}>
           <SearchBar
             placeholder="Search user..."
             onChangeText={this.updateSearch}
@@ -224,12 +244,13 @@ export default class LeagueParticipantsView extends React.Component {
             inputStyle={styles.searchInput}
             placeholderTextColor="#b3002d"
           />
-          <View style={{flex: 2, marginBottom: 5}}>
+          <View style={{ flex: 2, marginBottom: 5 }}>
             <ScrollableListContainer
               emptyText="Nothing to show"
               data={this.state.data}
               rightButton={addButton}
               rightButtonClick={userID => this.addLeagueParticipant(userID)}
+              rightCardComponent={leftArrow}
               onItemClick={key =>
                 this.props.navigation.push("Friend", { friendID: key })
               }
