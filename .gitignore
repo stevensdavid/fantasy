@@ -1,4 +1,4 @@
-images
+server/*images*
 .vscode
 *.zip
 *.key
