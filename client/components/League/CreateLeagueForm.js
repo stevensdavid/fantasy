@@ -82,6 +82,8 @@ export default class CreateLeagueForm extends React.Component {
                 <View style={styles.inputContainer}>
                     <Text>League name</Text>
                     <TextInput style={styles.inputs}
+                    ref={input => (this.leagueName = input)}
+            onSubmitEditing={() => this.draftSize.focus()}
                         placeholder="Press to type..."
                         keyboardType="default"
                         underlineColorAndroid='transparent'
@@ -91,8 +93,9 @@ export default class CreateLeagueForm extends React.Component {
                 <View style={styles.inputContainer}>
                     <Text>Draft size</Text>
                     <TextInput style={styles.inputs}
+                    ref={input => (this.draftSize = input)}
                         defaultValue="5"
-                        keyboardType="numeric"
+                        keyboardType="number-pad"
                         underlineColorAndroid='transparent'
                         onChangeText={(draftSize) => this.setState({ draftSize })}
                     />
