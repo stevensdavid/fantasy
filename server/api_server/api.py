@@ -32,7 +32,6 @@ from .models import (Constants, Entrant, Event, FantasyDraft, FantasyLeague,
                      FantasyResult, Friends, Player, Tournament, User,
                      VideoGame, Placement)
 from .smashgg import SmashGG
-from .socket_controller import SOCKETS
 
 smashgg = SmashGG()
 
@@ -1682,7 +1681,7 @@ def routine_update():
     # Update the timestamp
     constants.last_event_update = time.time()
     db.session.commit()
-    emit('routine-update', broadcast=True)
+    emit('routine-update', namespace='/', broadcast=True)
 
 
 def _score(place):
@@ -1715,6 +1714,7 @@ def _score(place):
 
 # This import has to happen after all initialization
 import api_server.socket_controller
+from api_server.socket_controller import SOCKETS
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
