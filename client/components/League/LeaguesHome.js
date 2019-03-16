@@ -21,7 +21,6 @@ export class LeaguesHome extends React.Component {
 
   componentDidMount() {
     this.navigationWillFocusListener = this.props.navigation.addListener('willFocus', () => {
-      console.log("will focus");
         this.props.navigation.getParam("newData", false) ? 
         this.newLeague(this.props.navigation.getParam("leagueID", -1)) 
         : {}
@@ -31,7 +30,6 @@ export class LeaguesHome extends React.Component {
   }
 
   componentDidUpdate() {
-    console.log("DidUpdate");
     if(this.state.token != global.token) {
       this.setState({token: global.token});
       this.fetchLeagues();
