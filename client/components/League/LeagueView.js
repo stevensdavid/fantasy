@@ -54,6 +54,8 @@ export default class LeagueView extends React.Component {
           };
         });
         this.setState({ data: newData });
+        const currentTime = Math.round(new Date().getTime() / 1000)
+        this.setState({ done: currentTime > this.state.league.event.start_at })
         this.setState({ loading: false });
       })
       .catch(err => console.error(err));
@@ -74,7 +76,7 @@ export default class LeagueView extends React.Component {
   }
 
   handlePress(userID) {
-    if (userID == global.userID) {
+    if (userID == global.userID && !this.state.done) {
       this.props.navigation.navigate("EditDraft", {
         league: this.state.league
       });

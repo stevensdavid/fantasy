@@ -131,6 +131,8 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({
       loading: true
     });
+    const currentTime = Math.round(new Date().getTime() / 1000)
+    this.setState({ done: currentTime > this.state.league.event.start_at })
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
         if (global.newParticipantsInfo) {
@@ -237,7 +239,8 @@ export default class SnakeLeagueView extends React.Component {
             hide={
               this.state.league.owner != global.userID ||
               this.state.loading ||
-              this.state.league.turn == null
+              this.state.league.turn == null ||
+              this.state.done
             }
             buttonName="edit"
             containerStyle={styles.floatingButtonStyle}
