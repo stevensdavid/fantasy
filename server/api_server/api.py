@@ -1,3 +1,4 @@
+import api_server.socket_controller
 """
 Main module for the restful Flask API. 
 """
@@ -830,7 +831,8 @@ class DraftsAPI(Resource):
         if league.is_snake:
             emit('new-draft', fantasy_draft_schema.dump(draft),
                  namespace='/leagues', room=league_id)
-            users = sorted(map(lambda x: x.user.user_id, league.fantasy_results))
+            users = sorted(
+                map(lambda x: x.user.user_id, league.fantasy_results))
             first_draft = FantasyDraft.query.filter_by(
                 league_id=league_id, user_id=users[0]
             ).all()
@@ -1068,6 +1070,11 @@ class LeagueAPI(Resource):
         db.session.commit()
         schema = FantasyLeagueSchema(
             exclude=["owner", "event", "fantasy_drafts", "fantasy_results"])
+        for user in [x.user_id for x in league.fantasy_results]:
+            # Inform all participating users that the league has been removed
+            if user.user_id in SOCKETS:
+                emit('league-removed', schema.jsonify(league),
+                     room=SOCKETS[user.user_id])
         return schema.jsonify(league)
 
     def post(self):
@@ -1640,7 +1647,7 @@ def routine_update():
             if user not in league_results[league]:
                 league_results[league][user] = 0
             placement = Placement.query.filter_by(event_id=event.event_id,
-                player_id=draft.player_id).first()
+                                                  player_id=draft.player_id).first()
             if placement:
                 league_results[league][user] += _score(placement.place)
         for league, user_result in league_results.items():
@@ -1652,6 +1659,7 @@ def routine_update():
     constants.last_event_update = time.time()
     db.session.commit()
     emit('routine-update', broadcast=True)
+
 
 def _score(place):
     scoring = {}
@@ -1680,8 +1688,8 @@ def _score(place):
         scoring[p] = 30
     return scoring[place] if place in scoring else 0
 
+
 # This import has to happen after all initialization
-import api_server.socket_controller
 
 
 def main():
