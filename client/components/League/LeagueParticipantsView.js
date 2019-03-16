@@ -21,15 +21,14 @@ export default class LeagueParticipantsView extends React.Component {
     };
 
     this.fetchUsers = this.fetchUsers.bind(this);
-    this.fetchParticipants = this.fetchParticipants.bind(this);
+    this.fetchParticipantsAndUsers = this.fetchParticipantsAndUsers.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
 
     this.leagueId = this.props.navigation.getParam("leagueID", -1);
   }
 
   componentDidMount() {
-    this.fetchUsers(this.state.term);
-    this.fetchParticipants();
+    this.fetchParticipantsAndUsers();
   }
 
   addLeagueParticipant(userID) {
@@ -48,7 +47,7 @@ export default class LeagueParticipantsView extends React.Component {
       .then(res => {
         if (res.status === 200) {
           global.newParticipantsInfo = true;
-          this.fetchParticipants();
+          this.componentDidMount();
         } else {
           throw res;
         }
@@ -72,7 +71,7 @@ export default class LeagueParticipantsView extends React.Component {
       .then(res => {
         if (res.status === 200) {
           global.newParticipantsInfo = true;
-          this.fetchParticipants();
+          this.componentDidMount();
         } else {
           throw res;
         }
@@ -102,15 +101,23 @@ export default class LeagueParticipantsView extends React.Component {
         if (userData.length > 0) {
           userData.map(user => {
             if (user.user_id !== global.userID) {
-              newData.push({
-                key: user.user_id.toString(),
-                title: user.tag,
-                description: user.first_name + " " + user.last_name,
-                img_uri:
-                  user.photo_path != null
-                    ? global.server + "/images/" + user.photo_path
-                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
-              });
+              addUser = true;
+              for(let participant of this.state.participantsData){                
+                if(participant['key'] == user.user_id.toString()) {
+                  addUser = false;
+                }
+              }
+              if(addUser) {
+                newData.push({
+                  key: user.user_id.toString(),
+                  title: user.tag,
+                  description: user.first_name + " " + user.last_name,
+                  img_uri:
+                    user.photo_path != null
+                      ? global.server + "/images/" + user.photo_path
+                      : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+                });
+              }
             }
           });
         }
@@ -124,9 +131,9 @@ export default class LeagueParticipantsView extends React.Component {
       .catch(err => console.log(err));
   }
 
-  fetchParticipants() {
+  fetchParticipantsAndUsers() {
     newParticipantsData = [];
-    this.setState({ loadingParticipants: true });
+    this.setState({ loadingParticipants: true, loading: true});
     fetch(global.server + "/leagues/" + this.leagueId, {
       method: "GET"
     })
@@ -157,7 +164,7 @@ export default class LeagueParticipantsView extends React.Component {
         this.setState({
           participantsData: newParticipantsData,
           loadingParticipants: false
-        });
+        }, () => this.fetchUsers(this.state.term));
       })
       .catch(err => console.log(err));
   }
