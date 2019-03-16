@@ -47,11 +47,21 @@ export class TournamentSearch extends React.Component {
     };
 
     componentDidMount() {
+        this.subs = [
+            this.props.navigation.addListener("didFocus", payload => {
+              if(this.props.navigation.getParam("redirected", false)) {
+                  this.props.navigation.setParams({
+                      redirected: false
+                  });
+                Alert.alert("Info", "Select tournament and an event to create a league");
+              }
+            })
+          ];
         this.searchAndSetTournaments('');
     }
 
     componentWillUnmount () {
-        this.componentDidMount.remove()
+        this.subs.forEach(sub => sub.remove());
     }
     constructor(props){
         super(props);

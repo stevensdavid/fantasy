@@ -94,7 +94,7 @@ export class LeagueList extends React.Component {
         <AddButton
           hide={this.state.loading}
           containerStyle={styles.floatingButtonStyle}
-          onPress={() => this.props.navigation.navigate("Search")}
+          onPress={() => this.props.navigation.navigate("Search", {redirected: true})}
         />
       </View>
     );
