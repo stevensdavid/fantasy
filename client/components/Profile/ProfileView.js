@@ -25,12 +25,14 @@ export class ProfileView extends React.Component {
       nFollowing: 0,
       nFollowers: 0,
       nLeagues: 0,
+      photo_path: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
       tagFontSize: 42,
       loading: false,
       infoTextSize: 24
     };
 
     this.reloadInfo = this.reloadInfo.bind(this);
+    this.pickAndUploadPhoto = this.pickAndUploadPhoto.bind(this);
   }
 
   reloadInfo() {
@@ -81,7 +83,7 @@ export class ProfileView extends React.Component {
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length,
-              photo_path: hasPhoto ? responseJSON.photo_path : null
+              photo_path: hasPhoto ? global.server + "/images/" + responseJSON.photo_path : null
             });
             this.setState({ loading: false });
           });
@@ -123,6 +125,10 @@ export class ProfileView extends React.Component {
         "Unsupported file type, please choose a JPG, JPEG or PNG image"
       );
       return;
+    }else {
+      this.setState({
+        photo_path: localUri
+      });
     }
 
     // Upload the image using the fetch and FormData APIs
@@ -174,14 +180,16 @@ export class ProfileView extends React.Component {
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={this.pickAndUploadPhoto}>
+          <TouchableOpacity
+            onPress={this.pickAndUploadPhoto}
+          >
             <Image
               style={{ width: 100, height: 100, borderRadius: 10 }}
               resizeMode="cover"
               source={{
                 uri:
                   this.state.photo_path != null
-                    ? global.server + "/images/" + this.state.photo_path
+                    ? this.state.photo_path
                     : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
               }}
             />
