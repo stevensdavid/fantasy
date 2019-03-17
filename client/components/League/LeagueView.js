@@ -70,7 +70,7 @@ export default class LeagueView extends React.Component {
                 : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
           };
         });
-        this.setState({ data: newData.sort((a, b) => b.score - a.score).sort((a,b) => b.clientUser - a.clientUser) });
+        this.setState({ data: newData.sort((a, b) => b.score - a.score).sort((a, b) => b.clientUser - a.clientUser) });
         const currentTime = Math.round(new Date().getTime() / 1000);
         this.setState({ done: currentTime > this.state.league.event.start_at });
         this.setState({ loading: false });
@@ -102,7 +102,7 @@ export default class LeagueView extends React.Component {
 
   handlePress(userID) {
     if (userID == global.userID) {
-      if(!this.state.done) {
+      if (!this.state.done) {
         this.props.navigation.navigate("EditDraft", {
           league: this.state.league
         });
@@ -121,13 +121,21 @@ export default class LeagueView extends React.Component {
           >
             {this.state.league.name}
           </Text>
+          {this.state.league.fantasy_results && (
+            <Text style={{ alignSelf: "center" }}>
+              {`Owner: ${this.state.league.fantasy_results.find(
+                x => x.user.user_id == this.state.league.owner).user.tag}\n`}
+              {`Draft size: ${this.state.league.draft_size}\n`}
+            </Text>
+          )}
+
           {this.state.done && (
             <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
               Drafting closed
             </Text>
           )}
           <ScrollableListContainer
-            showSearchBar = {true}
+            showSearchBar={true}
             style={{ flex: 1 }}
             loading={this.state.loading}
             data={this.state.data}
