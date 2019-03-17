@@ -32,6 +32,7 @@ export default class SnakeLeagueView extends React.Component {
     this.newParticipant = this.newParticipant.bind(this);
     this.deletedParticipant = this.deletedParticipant.bind(this);
     this.connected = this.connected.bind(this);
+    this.leagueRemoved = this.leagueRemoved.bind(this);
   }
 
   connected(users) {
@@ -132,6 +133,8 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   componentDidMount() {
+    global.webSocket.on('removed-from-league', this.leagueRemoved);
+    global.webSocket.on('league-removed', this.leagueRemoved);
     this.setState({
       loading: true
     });
@@ -169,6 +172,12 @@ export default class SnakeLeagueView extends React.Component {
         })
         .catch(err => console.error(err));
     });
+  }
+
+  leagueRemoved(league) {
+    if (league.league_id == this.leagueID) {
+      this.props.navigation.goBack();
+    }
   }
 
   newParticipant(user) {
@@ -227,6 +236,7 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({ isMounted: false });
     this.subs.forEach(sub => sub.remove());
     this.socket.emit("leave", this.socketIdentifier);
+    global.webSocket.off('league-removed', this.leagueRemoved);
   }
 
   async fetchLeagueInfo(leagueID) {
