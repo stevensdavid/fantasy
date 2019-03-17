@@ -10,7 +10,6 @@ import {
   Dimensions
 } from "react-native";
 import { Icon } from "react-native-elements";
-import Spinner from "react-native-loading-spinner-overlay";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
 import { HideAbleView } from "../View/HideAbleView";
@@ -125,11 +124,6 @@ export default class EventView extends React.Component {
   render() {
     return (
       <View>
-        <Spinner
-          visible={this.state.loading}
-          textContent={"Loading..."}
-          textStyle={styles.spinnerTextStyle}
-        />
         <ScrollView
           style={styles.container}
           contentContainerStyle={styles.contentContainer}

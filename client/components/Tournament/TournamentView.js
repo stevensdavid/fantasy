@@ -2,7 +2,6 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Text, Image, ImageBackground, Alert, Dimensions } from 'react-native';
 import { Icon } from 'react-native-elements';
-import Spinner from 'react-native-loading-spinner-overlay';
 import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 import { HideAbleView } from '../View/HideAbleView';
 
@@ -72,7 +71,6 @@ export default class TournamentView extends React.Component {
     render() {
         return (
             <View>
-                <Spinner visible={this.state.loading} textContent={'Loading...'} textStyle={styles.spinnerTextStyle}/>
                 <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <ImageBackground resizeMode="cover" style={styles.bannerImage} source={{uri: this.state.banner_uri}} />
                 <View style={{borderBottomColor: 'silver', borderBottomWidth: 2, marginTop: 5, marginBottom: 5, marginLeft: 7, marginRight: 7}}/>

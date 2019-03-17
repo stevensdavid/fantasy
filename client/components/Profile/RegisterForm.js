@@ -4,13 +4,12 @@ import {
   Text,
   View,
   TextInput,
-  Button,
+  ActivityIndicator,
   TouchableHighlight,
   Image,
   Alert,
   Platform,
 } from "react-native";
-import Spinner from "react-native-loading-spinner-overlay";
 
 export default class RegisterForm extends React.Component {
   static navigationOptions = {
@@ -87,13 +86,19 @@ export default class RegisterForm extends React.Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return (
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator
+            animating={this.state.loading}
+            size="large"
+            color="#b3002d"
+          />
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
-        <Spinner
-          visible={this.state.loading}
-          textContent={"Loading..."}
-          textStyle={styles.spinnerTextStyle}
-        />
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputs}
@@ -199,9 +204,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
-  },
-  spinnerTextStyle: {
-    color: "#FFF"
   },
   inputContainer: {
     borderBottomColor: "#F5FCFF",

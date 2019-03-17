@@ -7,11 +7,11 @@ import {
   Image,
   Alert,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
 import { ImagePicker, Permissions } from "expo";
 import { Icon } from "react-native-elements";
-import Spinner from "react-native-loading-spinner-overlay";
 
 export class ProfileView extends React.Component {
   constructor(props) {
@@ -27,7 +27,7 @@ export class ProfileView extends React.Component {
       nLeagues: 0,
       photo_path: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
       tagFontSize: 42,
-      loading: false,
+      loading: true,
       infoTextSize: 16
     };
 
@@ -172,13 +172,19 @@ export class ProfileView extends React.Component {
       />
     );
 
+    if (this.state.loading) {
+      return (
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator
+            animating={this.state.loading}
+            size="large"
+            color="#b3002d"
+          />
+        </View>
+      );
+    }
     return (
       <View>
-        <Spinner
-          visible={this.state.loading}
-          textContent={"Loading..."}
-          textStyle={styles.spinnerTextStyle}
-        />
         <View style={styles.headerContent}>
           <TouchableOpacity
             onPress={this.pickAndUploadPhoto}
@@ -344,9 +350,6 @@ styles = StyleSheet.create({
     borderRadius: 30,
     borderBottomWidth: 1,
     width: 250
-  },
-  spinnerTextStyle: {
-    color: "#FFF"
   },
   inputs: {
     height: 45,

@@ -3,10 +3,8 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Text,
   Alert
 } from 'react-native'
-import Spinner from 'react-native-loading-spinner-overlay'
 import { LeagueList } from './LeagueList'
 
 export class LeaguesHome extends React.Component {
@@ -88,7 +86,6 @@ export class LeaguesHome extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Spinner visible={this.state.loading} textContent={'Loading'} textStyle={styles.spinnerTextStyle} />
         <LeagueList navigation={this.props.navigation} leagues={this.state.leagues}/>
       </View>
     );
@@ -99,9 +96,6 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  spinnerTextStyle: {
-    color: '#FFF',
   },
   inputContainer: {
     borderBottomColor: '#F5FCFF',

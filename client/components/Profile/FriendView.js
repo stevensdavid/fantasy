@@ -5,11 +5,11 @@ import {
   View,
   TouchableHighlight,
   Image,
+  ActivityIndicator,
   Alert,
   TouchableOpacity
 } from "react-native";
 import { Icon } from "react-native-elements";
-import Spinner from "react-native-loading-spinner-overlay";
 import { HideAbleView } from "../View/HideAbleView";
 
 export default class FriendsView extends React.Component {
@@ -28,7 +28,7 @@ export default class FriendsView extends React.Component {
       nFriends: 0,
       nLeagues: 0,
       tagFontSize: 42,
-      loading: false,
+      loading: true,
       infoTextSize: 24,
       isFollowing: false,
       photo_path: null
@@ -64,7 +64,10 @@ export default class FriendsView extends React.Component {
         if (res.status === 200) {
           Alert.alert("Success!", "You now follow: " + this.state.tag);
           global.newUserInfo = true;
-          this.setState({ isFollowing: true, nFollowers: this.state.nFollowers + 1 });
+          this.setState({
+            isFollowing: true,
+            nFollowers: this.state.nFollowers + 1
+          });
         } else {
           throw res.body;
         }
@@ -87,7 +90,10 @@ export default class FriendsView extends React.Component {
         if (res.status === 200) {
           Alert.alert("Success!", "You no longer follow: " + this.state.tag);
           global.newUserInfo = true;
-          this.setState({ isFollowing: false, nFollowers: this.state.nFollowers - 1 });
+          this.setState({
+            isFollowing: false,
+            nFollowers: this.state.nFollowers - 1
+          });
         } else {
           throw res.body;
         }
@@ -129,9 +135,9 @@ export default class FriendsView extends React.Component {
               nFollowing: responseJSON.following.length,
               nFollowers: responseJSON.followers.length,
               nLeagues: responseJSON.fantasy_leagues.length,
-              photo_path: responseJSON.photo_path
+              photo_path: responseJSON.photo_path,
+              loading: false
             });
-            this.setState({ loading: false });
           });
         }
       })
@@ -142,13 +148,19 @@ export default class FriendsView extends React.Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return (
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator
+            animating={this.state.loading}
+            size="large"
+            color="#b3002d"
+          />
+        </View>
+      );
+    }
     return (
       <View>
-        <Spinner
-          visible={this.state.loading}
-          textContent={"Loading..."}
-          textStyle={styles.spinnerTextStyle}
-        />
         <View style={styles.headerContent}>
           <Image
             style={{ width: 100, height: 100, borderRadius: 10 }}
@@ -289,9 +301,6 @@ styles = StyleSheet.create({
     borderRadius: 30,
     borderBottomWidth: 1,
     width: 250
-  },
-  spinnerTextStyle: {
-    color: "#FFF"
   },
   inputs: {
     fontSize: 26,
