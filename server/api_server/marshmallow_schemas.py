@@ -121,7 +121,8 @@ class EventSchema(ma.ModelSchema):
     # Refer by class name to avoid circular dependency
     tournament = ma.Nested(
         'TournamentSchema',
-        only=["tournament_id", "name", "ext_icon_url", "ext_banner_url"]
+        only=["tournament_id", "name", "ext_icon_url", 
+              "ext_banner_url", "ends_at"]
     )
     fantasy_leagues = ma.Nested(
         'FantasyLeagueSchema',
