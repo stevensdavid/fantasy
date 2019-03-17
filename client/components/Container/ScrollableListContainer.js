@@ -19,6 +19,8 @@ import Swipeout from "react-native-swipeout";
     style: Object holding React Native CSS for the container(Optional).
     rightButton: Enable swipe left to show rightButton React component(Optional).
     rightButtonClick(key): Function which handles the click of right button(must if rightButton is given).
+    RightCardComponent: Component to put at the far end right of the card
+    onKeyShowRightCardComponent: Key to show RightCardComponent.
     emptyText: Text to display if filtered list is empty(Optional).
     showSearchBar: self-explanatory.
     searchBarPlaceholder: self-explanatory.
