@@ -10,6 +10,7 @@ import {
   Platform
 } from "react-native";
 import { Icon } from "react-native-elements";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 /*this.tryLogin(this.state.email, this.state.password)*/
 
@@ -49,7 +50,7 @@ export class LoginForm extends React.Component {
             // TODO: Remove one of these two
             this.props.setToken(respjson.token);
             global.token = respjson.token;
-            global.webSocket.emit('login', {userID: respjson.userId, token:respjson.token})
+            global.webSocket.emit('login', { userID: respjson.userId, token: respjson.token })
           });
         }
       })
@@ -69,13 +70,13 @@ export class LoginForm extends React.Component {
         />
       </View>
     ) : (
-      <Icon
-        name={Platform.OS === "ios" ? "ios-lock" : "md-lock"}
-        type="ionicon"
-        color="#2a2a2a"
-        size={72}
-      />
-    );
+        <Icon
+          name={Platform.OS === "ios" ? "ios-lock" : "md-lock"}
+          type="ionicon"
+          color="#2a2a2a"
+          size={72}
+        />
+      );
 
     return (
       <View
@@ -83,78 +84,79 @@ export class LoginForm extends React.Component {
         pointerEvents={this.state.loading ? "none" : "auto"}
       >
         <View style={styles.iconContainer}>{topIcon}</View>
-        <View style={styles.inputContainer}>
-          <Icon
-            name={Platform.OS === "ios" ? "ios-mail" : "md-mail"}
-            type="ionicon"
-            color={this.state.emailFocus ? "black" : "silver"}
-          />
-          <TextInput
-            ref={input => (this.emailInput = input)}
-            onSubmitEditing={() => this.passwordInput.focus()}
-            onFocus={() => {
-              this.setState({ emailFocus: true });
-            }}
-            onBlur={() => {
-              this.setState({ emailFocus: false });
-            }}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            style={styles.inputs}
-            placeholder="Email"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            underlineColorAndroid="transparent"
-            onChangeText={email => this.setState({ email })}
-          />
-        </View>
+        <KeyboardAwareScrollView>
+          <View style={styles.inputContainer}>
+            <Icon
+              name={Platform.OS === "ios" ? "ios-mail" : "md-mail"}
+              type="ionicon"
+              color={this.state.emailFocus ? "black" : "silver"}
+            />
+            <TextInput
+              ref={input => (this.emailInput = input)}
+              onSubmitEditing={() => this.passwordInput.focus()}
+              onFocus={() => {
+                this.setState({ emailFocus: true });
+              }}
+              onBlur={() => {
+                this.setState({ emailFocus: false });
+              }}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              style={styles.inputs}
+              placeholder="Email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              underlineColorAndroid="transparent"
+              onChangeText={email => this.setState({ email })}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Icon
-            name={Platform.OS === "ios" ? "ios-key" : "md-key"}
-            type="ionicon"
-            color={this.state.passwordFocus ? "black" : "silver"}
-          />
-          <TextInput
-            ref={input => (this.passwordInput = input)}
-            onSubmitEditing={() =>
-              this.tryLogin(this.state.email, this.state.password)
+          <View style={styles.inputContainer}>
+            <Icon
+              name={Platform.OS === "ios" ? "ios-key" : "md-key"}
+              type="ionicon"
+              color={this.state.passwordFocus ? "black" : "silver"}
+            />
+            <TextInput
+              ref={input => (this.passwordInput = input)}
+              onSubmitEditing={() =>
+                this.tryLogin(this.state.email, this.state.password)
+              }
+              onFocus={() => {
+                this.setState({ passwordFocus: true });
+              }}
+              onBlur={() => {
+                this.setState({ passwordFocus: false });
+              }}
+              style={styles.inputs}
+              placeholder="Password"
+              autoCapitalize="none"
+              secureTextEntry={true}
+              underlineColorAndroid="transparent"
+              onChangeText={password => this.setState({ password })}
+            />
+          </View>
+
+          <TouchableHighlight
+            style={[styles.buttonContainer, styles.loginButton]}
+            onPress={() => {
+              this.setState({ loading: true });
+              this.tryLogin(this.state.email, this.state.password);
+            }}
+          >
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.buttonContainer}
+            onPress={() =>
+              this.props.navigation.navigate("Register", {
+                tryLogin: this.tryLogin
+              })
             }
-            onFocus={() => {
-              this.setState({ passwordFocus: true });
-            }}
-            onBlur={() => {
-              this.setState({ passwordFocus: false });
-            }}
-            style={styles.inputs}
-            placeholder="Password"
-            autoCapitalize="none"
-            secureTextEntry={true}
-            underlineColorAndroid="transparent"
-            onChangeText={password => this.setState({ password })}
-          />
-        </View>
-
-        <TouchableHighlight
-          style={[styles.buttonContainer, styles.loginButton]}
-          onPress={() => {
-            this.setState({ loading: true });
-            this.tryLogin(this.state.email, this.state.password);
-          }}
-        >
-          <Text style={styles.loginText}>Login</Text>
-        </TouchableHighlight>
-
-        <TouchableHighlight
-          style={styles.buttonContainer}
-          onPress={() =>
-            this.props.navigation.navigate("Register", {
-              tryLogin: this.tryLogin
-            })
-          }
-        >
-          <Text>Register</Text>
-        </TouchableHighlight>
+          >
+            <Text>Register</Text>
+          </TouchableHighlight>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

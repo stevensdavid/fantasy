@@ -7,7 +7,8 @@ import {
   TouchableHighlight,
   Alert,
   ActivityIndicator
-} from "react-native";
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default class EditProfile extends React.Component {
   static navigationOptions = {
@@ -44,7 +45,7 @@ export default class EditProfile extends React.Component {
     }
   }
 
-  size = function(obj) {
+  size = function (obj) {
     var size = 0,
       key;
     for (key in obj) {
@@ -69,11 +70,11 @@ export default class EditProfile extends React.Component {
     this.clean(user);
 
     if (userInfo.password !== userInfo.passwordConfirm) {
-      this.setState({ loading: false }) 
+      this.setState({ loading: false })
       Alert.alert(
         "Alert",
         "Passwords don't match",
-        [{ text: "OK"}],
+        [{ text: "OK" }],
         { cancelable: false }
       );
       this.setState({
@@ -142,77 +143,86 @@ export default class EditProfile extends React.Component {
     }
     return (
       <View style={styles.container}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            placeholder="First Name"
-            keyboardType="default"
-            underlineColorAndroid="transparent"
-            onChangeText={firstname => this.setState({ firstName: firstname })}
-          />
-        </View>
+        <KeyboardAwareScrollView>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.inputs}
+              placeholder="First Name"
+              ref={input => (this._firstName = input)}
+              onSubmitEditing={() => this.lastName && this.lastName.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              autoFocus={true}
+              keyboardType="default"
+              underlineColorAndroid='transparent'
+              onChangeText={(firstname) => this.setState({ firstName: firstname })} />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            placeholder="Last Name"
-            keyboardType="default"
-            underlineColorAndroid="transparent"
-            onChangeText={lastname => this.setState({ lastName: lastname })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.inputs}
+              placeholder="Last Name"
+              ref={input => (this.lastName = input)}
+              onSubmitEditing={() => this.tag && this.tag.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              keyboardType="default"
+              underlineColorAndroid='transparent'
+              onChangeText={(lastname) => this.setState({ lastName: lastname })} />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            placeholder="Tag"
-            keyboardType="default"
-            underlineColorAndroid="transparent"
-            onChangeText={t => this.setState({ tag: t })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.inputs}
+              placeholder="Tag"
+              ref={input => (this.tag = input)}
+              onSubmitEditing={() => this.email && this.email.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              keyboardType="default"
+              underlineColorAndroid='transparent'
+              onChangeText={(t) => this.setState({ tag: t })} />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            placeholder="Email"
-            keyboardType="email-address"
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            onChangeText={e_mail => this.setState({ email: e_mail })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.inputs}
+              placeholder="Email"
+              ref={input => (this.email = input)}
+              onSubmitEditing={() => this.password && this.password.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              keyboardType="email-address"
+              underlineColorAndroid='transparent'
+              autoCapitalize="none"
+              onChangeText={(e_mail) => this.setState({ email: e_mail })} />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            placeholder="Password"
-            secureTextEntry={true}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            onChangeText={pass => this.setState({ password: pass })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.inputs}
+              placeholder="Password"
+              ref={input => (this.password = input)}
+              onSubmitEditing={() => this.confirm && this.confirm.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              secureTextEntry={true}
+              underlineColorAndroid='transparent'
+              autoCapitalize="none"
+              onChangeText={(pass) => this.setState({ password: pass })} />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            placeholder="Confirm Password"
-            secureTextEntry={true}
-            autoCapitalize="none"
-            underlineColorAndroid="transparent"
-            onChangeText={passConfirm =>
-              this.setState({ passwordConfirm: passConfirm })
-            }
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.inputs}
+              placeholder="Confirm Password"
+              onSubmitEditing={() => this.tryEdit(this.state)}
+              ref={input => (this.confirm = input)}
+              placeholder="Confirm Password"
+              secureTextEntry={true}
+              autoCapitalize="none"
+              underlineColorAndroid='transparent'
+              onChangeText={(passConfirm) => this.setState({ passwordConfirm: passConfirm })} />
+          </View>
 
-        <TouchableHighlight
-          style={[styles.buttonContainer, styles.loginButton]}
-          onPress={() => this.tryEdit(this.state)}
-        >
-          <Text style={styles.loginText}>Edit</Text>
-        </TouchableHighlight>
+          <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.tryEdit(this.state)}>
+            <Text style={styles.loginText}>Edit</Text>
+          </TouchableHighlight>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

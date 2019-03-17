@@ -11,6 +11,7 @@ import {
     Alert,
     Platform
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default class CreateLeagueForm extends React.Component {
     static navigationOptions = {
@@ -84,6 +85,7 @@ export default class CreateLeagueForm extends React.Component {
     render() {
         return (
             <View style={styles.container}>
+                <KeyboardAwareScrollView>
                 <View style={styles.inputContainer}>
                     <Text style={styles.textStyle}>League name:</Text>
                     <TextInput style={styles.inputs}
@@ -104,7 +106,8 @@ export default class CreateLeagueForm extends React.Component {
                         underlineColorAndroid='transparent'
                         onChangeText={(draftSize) => this.setState({ draftSize })}
                     />
-                </View>
+                    </View>
+                </KeyboardAwareScrollView>
                 <View style={styles.inputContainer}>
                     <Text style={styles.textStyle}>Snake draft:</Text>
                     <Switch style={styles.switches}
