@@ -1051,20 +1051,29 @@ class LeagueAPI(Resource):
                         error:
                             type: string
                             description: An error message
+            404:
+                description: Not found
+                schema:
+                    type: object
+                    properties:
+                        error:
+                            type: string
+                            description: An error message
         """
         league = FantasyLeague.query.filter(
             FantasyLeague.league_id == league_id).first()
+        if not league:
+            return {'error': 'League not found'}, 404
         if not user_is_logged_in(league.owner_id):
             return NOT_LOGGED_IN_RESPONSE
         db.session.delete(league)
         db.session.commit()
         schema = FantasyLeagueSchema(
             exclude=["owner", "event", "fantasy_drafts", "fantasy_results"])
-        for user in [x.user_id for x in league.fantasy_results]:
+        for user in [x.user_id for x in league.fantasy_results if x.user_id in SOCKETS]:
             # Inform all participating users that the league has been removed
-            if user_id in SOCKETS:
-                socketio.emit('league-removed', league_id,
-                              namespace='/', room=SOCKETS[user_id])
+            socketio.emit('league-removed', league_id,
+                          namespace='/', room=SOCKETS[user])
         return schema.jsonify(league)
 
     def post(self):
