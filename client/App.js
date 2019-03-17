@@ -77,8 +77,8 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <DropdownAlert ref={ref => this.dropdown = ref} />
           <AppNavigator />
+          <DropdownAlert ref={ref => this.dropdown = ref} />
         </View>
       );
     }
