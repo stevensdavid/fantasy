@@ -56,7 +56,8 @@ export class LeaguesHome extends React.Component {
   }
 
   componentWillUnmount () {
-    this.navigationWillFocusListener.remove()
+    this.navigationWillFocusListener.remove();
+    global.webSocket.off('league-removed', this.leagueRemoved);
   }
 
   fetchLeagues() {
