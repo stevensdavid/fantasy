@@ -21,8 +21,8 @@ export default class LeagueView extends React.Component {
   }
 
   componentDidMount() {
-    global.webSocket.on('league-removed', this.leagueRemoved);
-    global.webSocket.on('removed-from-league', this.leagueRemoved);
+    global.webSocket.on("league-removed", this.leagueRemoved);
+    global.webSocket.on("removed-from-league", this.leagueRemoved);
     if (this.leagueID == -1) {
       console.error("LeagueView: League ID was not received successfully");
       return;
@@ -70,7 +70,11 @@ export default class LeagueView extends React.Component {
                 : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
           };
         });
-        this.setState({ data: newData.sort((a, b) => b.score - a.score).sort((a, b) => b.clientUser - a.clientUser) });
+        this.setState({
+          data: newData
+            .sort((a, b) => b.score - a.score)
+            .sort((a, b) => b.clientUser - a.clientUser)
+        });
         const currentTime = Math.round(new Date().getTime() / 1000);
         this.setState({ done: currentTime > this.state.league.event.start_at });
         this.setState({ loading: false });
@@ -96,8 +100,8 @@ export default class LeagueView extends React.Component {
 
   componentWillUnmount() {
     this.subs.forEach(sub => sub.remove());
-    global.webSocket.off('league-removed', this.leagueRemoved);
-    global.webSocket.off('removed-from-league', this.leagueRemoved);
+    global.webSocket.off("league-removed", this.leagueRemoved);
+    global.webSocket.off("removed-from-league", this.leagueRemoved);
   }
 
   handlePress(userID) {
@@ -113,6 +117,12 @@ export default class LeagueView extends React.Component {
   }
 
   render() {
+    const draftText = (
+      <HideAbleView hide={this.state.done} style={{ justifyContent: "center" }}>
+        <Text style={{ color: "lightgray" }}> Draft > </Text>
+      </HideAbleView>
+    );
+
     return (
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
@@ -123,9 +133,12 @@ export default class LeagueView extends React.Component {
           </Text>
           {this.state.league.fantasy_results && (
             <Text style={{ alignSelf: "center" }}>
-              {`Owner: ${this.state.league.fantasy_results.find(
-                x => x.user.user_id == this.state.league.owner).user.tag}\n`}
-              {`Draft size: ${this.state.league.draft_size}\n`}
+              {`Owner: ${
+                this.state.league.fantasy_results.find(
+                  x => x.user.user_id == this.state.league.owner
+                ).user.tag
+              }, `}
+              {`Draft size: ${this.state.league.draft_size}`}
             </Text>
           )}
 
@@ -135,6 +148,8 @@ export default class LeagueView extends React.Component {
             </Text>
           )}
           <ScrollableListContainer
+            onKeyShowRightCardComponent={global.userID}
+            rightCardComponent={draftText}
             showSearchBar={true}
             style={{ flex: 1 }}
             loading={this.state.loading}

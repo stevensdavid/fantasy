@@ -10,7 +10,6 @@ import {
   Platform
 } from "react-native";
 import { Icon } from "react-native-elements";
-import Spinner from "react-native-loading-spinner-overlay";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 /*this.tryLogin(this.state.email, this.state.password)*/
@@ -65,7 +64,7 @@ export class LoginForm extends React.Component {
     const topIcon = this.state.loading ? (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator
-          animating={this.props.loading}
+          animating={this.state.loading}
           size="large"
           color="#b3002d"
         />
@@ -180,9 +179,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     flexDirection: "row",
     alignItems: "center"
-  },
-  spinnerTextStyle: {
-    color: "#FFF"
   },
   inputs: {
     height: 45,

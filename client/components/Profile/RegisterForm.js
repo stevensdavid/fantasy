@@ -4,13 +4,12 @@ import {
   Text,
   View,
   TextInput,
-  Button,
+  ActivityIndicator,
   TouchableHighlight,
   Image,
   Alert,
   Platform
 } from "react-native";
-import Spinner from "react-native-loading-spinner-overlay";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default class RegisterForm extends React.Component {
@@ -88,8 +87,20 @@ export default class RegisterForm extends React.Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return (
+        <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <ActivityIndicator
+            animating={this.state.loading}
+            size="large"
+            color="#b3002d"
+          />
+        </View>
+      );
+    }
     return (
       <View style={styles.container}>
+<<<<<<< HEAD
         <Spinner
           visible={this.state.loading}
           textContent={"Loading..."}
@@ -110,6 +121,22 @@ export default class RegisterForm extends React.Component {
               onChangeText={firstName => this.setState({ firstName })}
             />
           </View>
+=======
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputs}
+            ref={input => (this.firstName = input)}
+            onSubmitEditing={() => this.lastName && this.lastName.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
+            placeholder="First Name"
+            keyboardType="default"
+            autoFocus={true}
+            underlineColorAndroid="transparent"
+            onChangeText={firstName => this.setState({ firstName })}
+          />
+        </View>
+>>>>>>> 5ebfb0eb81d37495fd3bcb8d63513eb60484a382
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -201,9 +228,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
-  },
-  spinnerTextStyle: {
-    color: "#FFF"
   },
   inputContainer: {
     borderBottomColor: "#F5FCFF",
