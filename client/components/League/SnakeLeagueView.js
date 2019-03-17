@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import SocketIOClient from "socket.io-client";
 import { ScrollableListContainer } from "../Container/ScrollableListContainer";
 import { AddButton } from "../Button/AddButton";
+import { HideAbleView } from "../View/HideAbleView";
 
 export default class SnakeLeagueView extends React.Component {
   constructor(props) {
@@ -48,11 +49,14 @@ export default class SnakeLeagueView extends React.Component {
       return;
     }
     this.setState({
-      data: this.state.data.map(x =>
-        x.key == userID
-          ? Object.assign(x, { titleStyle: { color: "gray" }, isOnline: 0 })
-          : x
-      ).sort((a, b) => b.isOnline - a.isOnline).sort()
+      data: this.state.data
+        .map(x =>
+          x.key == userID
+            ? Object.assign(x, { titleStyle: { color: "gray" }, statusStyle: {color: "gray", fontSize: 12}, isOnline: 0 })
+            : x
+        )
+        .sort((a, b) => b.isOnline - a.isOnline)
+        .sort()
     });
   }
 
@@ -62,11 +66,14 @@ export default class SnakeLeagueView extends React.Component {
       return;
     }
     this.setState({
-      data: this.state.data.map(x =>
-        x.key == userID
-          ? Object.assign(x, { titleStyle: { color: "black" }, isOnline: 1 })
-          : x
-      ).sort((a, b) => b.isOnline - a.isOnline).sort()
+      data: this.state.data
+        .map(x =>
+          x.key == userID
+            ? Object.assign(x, { titleStyle: { color: "black" }, statusStyle: {color: "gray", fontSize: 12}, isOnline: 1 })
+            : x
+        )
+        .sort((a, b) => b.isOnline - a.isOnline)
+        .sort()
     });
   }
 
@@ -118,7 +125,7 @@ export default class SnakeLeagueView extends React.Component {
 
   handlePress(userID) {
     if (userID == global.userID) {
-      if(this.state.turn == global.userID) {
+      if (this.state.turn == global.userID) {
         this.props.navigation.navigate("EditDraft", {
           league: this.state.league
         });
@@ -133,8 +140,8 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   componentDidMount() {
-    global.webSocket.on('removed-from-league', this.leagueRemoved);
-    global.webSocket.on('league-removed', this.leagueRemoved);
+    global.webSocket.on("removed-from-league", this.leagueRemoved);
+    global.webSocket.on("league-removed", this.leagueRemoved);
     this.setState({
       loading: true
     });
@@ -183,7 +190,7 @@ export default class SnakeLeagueView extends React.Component {
   newParticipant(user) {
     // A new user can't have a fantasy draft without triggering the new-draft event,
     // but they will have a fantasy result that needs to be appended to our state
-    // and the user has to be appended to our presented data. 
+    // and the user has to be appended to our presented data.
     this.setState({
       league: Object.assign(this.state.league, {
         fantasy_results: this.state.league.fantasy_results.concat({
@@ -196,39 +203,49 @@ export default class SnakeLeagueView extends React.Component {
         })
       })
     });
-    this.setState({
-      data: this.state.data.concat({
-        key: user.user_id.toString(),
-        title: user.tag,
-        titleStyle: { color: "gray" },
-        isOnline: 0,
-        status:
-          user.user_id == this.state.league.turn
-            ? "[DRAFTER]"
-            : "",
-        score: null,
-        img_uri:
-          user.photo_path != null
-            ? global.server + "/images/" + user.photo_path
-            : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
-      })
-    }, () => Alert.alert('League changed', `${user.tag} joined the league.`));
+    this.setState(
+      {
+        data: this.state.data.concat({
+          key: user.user_id.toString(),
+          title: user.tag,
+          titleStyle: { color: "gray" },
+          statusStyle: {color: "gray", fontSize: 12},
+          isOnline: 0,
+          status: user.user_id == this.state.league.turn ? "[DRAFTER]" : "",
+          score: null,
+          img_uri:
+            user.photo_path != null
+              ? global.server + "/images/" + user.photo_path
+              : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+        })
+      },
+      () => Alert.alert("League changed", `${user.tag} joined the league.`)
+    );
   }
 
   deletedParticipant(userID) {
-    let user = this.state.league.fantasy_results.filter(x => x.user.user_id == userID);
+    let user = this.state.league.fantasy_results.filter(
+      x => x.user.user_id == userID
+    );
     if (user.length > 0) {
       // user should only contain one element
       // Remove the player from the league state
       this.setState({
         league: Object.assign(this.state.league, {
-          fantasy_results: this.state.league.fantasy_results.filter(x => x.user.user_id != userID),
-          fantasy_drafts: this.state.league.fantasy_drafts.filter(x => x.user_id != userID)
+          fantasy_results: this.state.league.fantasy_results.filter(
+            x => x.user.user_id != userID
+          ),
+          fantasy_drafts: this.state.league.fantasy_drafts.filter(
+            x => x.user_id != userID
+          )
         })
       });
       // Remove the player from data
-      this.setState({ data: this.state.data.filter(x => x.key != userID) },
-        () => Alert.alert('League changed', `${user[0].user.tag} left the league.`));
+      this.setState(
+        { data: this.state.data.filter(x => x.key != userID) },
+        () =>
+          Alert.alert("League changed", `${user[0].user.tag} left the league.`)
+      );
     }
   }
 
@@ -236,7 +253,7 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({ isMounted: false });
     this.subs.forEach(sub => sub.remove());
     this.socket.emit("leave", this.socketIdentifier);
-    global.webSocket.off('league-removed', this.leagueRemoved);
+    global.webSocket.off("league-removed", this.leagueRemoved);
   }
 
   async fetchLeagueInfo(leagueID) {
@@ -275,11 +292,11 @@ export default class SnakeLeagueView extends React.Component {
       participants[result.user.user_id].score = result.score;
     }
     const newData = Object.keys(participants).map(k => {
-
       return {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
+        statusStyle: {color: "gray", fontSize: 12},
         isOnline: k == global.userID ? 2 : 0,
         status:
           k == league_obj.turn
@@ -298,7 +315,10 @@ export default class SnakeLeagueView extends React.Component {
       };
     });
     this.setState({
-      data: newData.sort((a, b) => b.score - a.score).sort((a, b) => b.isOnline - a.isOnline).sort(),
+      data: newData
+        .sort((a, b) => b.score - a.score)
+        .sort((a, b) => b.isOnline - a.isOnline)
+        .sort(),
       done:
         league_obj.turn == null || league_obj.event.start_at * 1000 < Date.now,
       loading: false
@@ -307,48 +327,57 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   render() {
+    const draftText = (
+      <HideAbleView hide={this.state.done} style={{ justifyContent: "center" }}>
+        <Text style={{ color: "lightgray" }}> Draft > </Text>
+      </HideAbleView>
+    );
+
     return (
-      <View style={{  flex: 1 }}>
-          <Text
-            style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}
-          >
-            {this.state.league.name}
+      <View style={{ flex: 1 }}>
+        <Text style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}>
+          {this.state.league.name}
         </Text>
         {this.state.league.fantasy_results && (
-            <Text style={{ alignSelf: "center" }}>
-              {`Owner: ${this.state.league.fantasy_results.find(
-                x => x.user.user_id == this.state.league.owner).user.tag}\n`}
+          <Text style={{ alignSelf: "center" }}>
+            {`Owner: ${
+              this.state.league.fantasy_results.find(
+                x => x.user.user_id == this.state.league.owner
+              ).user.tag
+            }\n`}
             {`Draft size: ${this.state.league.draft_size}\n`}
             Snake draft
-            </Text>
-          )}
-          {(this.state.done || this.state.turn == null) && (
-            <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
-              Drafting closed
-            </Text>
-          )}
-          <ScrollableListContainer
-            showSearchBar = {true}
-            style={{ flex: 1 }}
-            loading={this.state.loading}
-            data={this.state.data}
-            onItemClick={userID => this.handlePress(userID)}
-          />
-          <AddButton
-            hide={
-              this.state.league.owner != global.userID ||
-              this.state.loading ||
-              this.state.league.turn == null ||
-              this.state.done
-            }
-            buttonName="edit"
-            containerStyle={styles.floatingButtonStyle}
-            onPress={() =>
-              this.props.navigation.navigate("LeagueParticipants", {
-                leagueID: this.leagueID
-              })
-            }
-          />
+          </Text>
+        )}
+        {(this.state.done || this.state.turn == null) && (
+          <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
+            Drafting closed
+          </Text>
+        )}
+        <ScrollableListContainer
+          onKeyShowRightCardComponent={global.userID}
+          rightCardComponent={draftText}
+          showSearchBar={true}
+          style={{ flex: 1 }}
+          loading={this.state.loading}
+          data={this.state.data}
+          onItemClick={userID => this.handlePress(userID)}
+        />
+        <AddButton
+          hide={
+            this.state.league.owner != global.userID ||
+            this.state.loading ||
+            this.state.league.turn == null ||
+            this.state.done
+          }
+          buttonName="edit"
+          containerStyle={styles.floatingButtonStyle}
+          onPress={() =>
+            this.props.navigation.navigate("LeagueParticipants", {
+              leagueID: this.leagueID
+            })
+          }
+        />
       </View>
     );
   }
