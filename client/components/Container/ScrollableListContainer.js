@@ -116,7 +116,7 @@ export class ScrollableListContainer extends React.Component {
                 }}
               >
                 <Card containerStyle={styles.cardContainer}>
-                  <View style={{flexDirection: "row", alignItems: 'stretch'}}>
+                  <View style={{ flexDirection: "row", alignItems: "stretch" }}>
                     {item.img_uri ? (
                       <Image
                         resizeMode="cover"
@@ -134,16 +134,17 @@ export class ScrollableListContainer extends React.Component {
                         {item.description ? item.description : ""}
                       </Text>
                     </View>
-                    <View
+                    <HideAbleView
+                      hide={ this.props.onKeyShowRightCardComponent? item.key != this.props.onKeyShowRightCardComponent : false}
                       style={{
-                        flex:1,
+                        flex: 1,
                         alignSelf: "flex-end",
-                        alignItems: 'flex-end',
-                        justifyContent: 'flex-end'
+                        alignItems: "flex-end",
+                        justifyContent: "flex-end"
                       }}
                     >
                       {this.props.rightCardComponent}
-                    </View>
+                    </HideAbleView>
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   },
   cardContainer: {
-    right:2,
+    right: 2,
     minHeight: 120,
     borderRadius: 10
   },
