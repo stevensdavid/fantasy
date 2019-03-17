@@ -83,6 +83,7 @@ export class LeagueList extends React.Component {
     return (
       <View style={{ minWidth: "100%" }}>
         <ScrollableListContainer
+          showSearchBar = {true}
           data={this.state.data}
           onItemClick={key => {
             this.openLeagueView(key);

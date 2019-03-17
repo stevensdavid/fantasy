@@ -49,9 +49,9 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({
       data: this.state.data.map(x =>
         x.key == userID
-          ? Object.assign(x, { titleStyle: { color: "gray" } })
+          ? Object.assign(x, { titleStyle: { color: "gray" }, isOnline: 0 })
           : x
-      )
+      ).sort((a, b) => b.isOnline - a.isOnline).sort()
     });
   }
 
@@ -63,9 +63,9 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({
       data: this.state.data.map(x =>
         x.key == userID
-          ? Object.assign(x, { titleStyle: { color: "black" } })
+          ? Object.assign(x, { titleStyle: { color: "black" }, isOnline: 1 })
           : x
-      )
+      ).sort((a, b) => b.isOnline - a.isOnline).sort()
     });
   }
 
@@ -192,6 +192,7 @@ export default class SnakeLeagueView extends React.Component {
         key: user.user_id.toString(),
         title: user.tag,
         titleStyle: { color: "gray" },
+        isOnline: 0,
         status:
           user.user_id == this.state.league.turn
             ? "[DRAFTER]"
@@ -264,10 +265,12 @@ export default class SnakeLeagueView extends React.Component {
       participants[result.user.user_id].score = result.score;
     }
     const newData = Object.keys(participants).map(k => {
+
       return {
         key: k.toString(),
         title: participants[k].tag,
         titleStyle: { color: "gray" },
+        isOnline: k == global.userID ? 2 : 0,
         status:
           k == league_obj.turn
             ? "[DRAFTER]"
@@ -285,7 +288,7 @@ export default class SnakeLeagueView extends React.Component {
       };
     });
     this.setState({
-      data: newData.sort((a, b) => b.score - a.score),
+      data: newData.sort((a, b) => b.score - a.score).sort((a, b) => b.isOnline - a.isOnline).sort(),
       done:
         league_obj.turn == null || league_obj.event.start_at * 1000 < Date.now,
       loading: false
@@ -307,6 +310,7 @@ export default class SnakeLeagueView extends React.Component {
             </Text>
           )}
           <ScrollableListContainer
+            showSearchBar = {true}
             style={{ flex: 1 }}
             loading={this.state.loading}
             data={this.state.data}
