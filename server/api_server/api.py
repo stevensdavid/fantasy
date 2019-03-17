@@ -1072,7 +1072,7 @@ class LeagueAPI(Resource):
             exclude=["owner", "event", "fantasy_drafts", "fantasy_results"])
         for user in [x.user_id for x in league.fantasy_results if x.user_id in SOCKETS]:
             # Inform all participating users that the league has been removed
-            socketio.emit('league-removed', league_id,
+            socketio.emit('league-removed', schema.dump(league),
                           namespace='/', room=SOCKETS[user])
         return schema.jsonify(league)
 

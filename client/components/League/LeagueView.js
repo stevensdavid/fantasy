@@ -54,6 +54,7 @@ export default class LeagueView extends React.Component {
           return {
             key: k.toString(),
             title: participants[k].tag,
+            clientUser: k == global.userID ? 1 : 0,
             status:
               participants[k].score !== null
                 ? ` (${participants[k].score}p)`
@@ -66,7 +67,7 @@ export default class LeagueView extends React.Component {
                 : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
           };
         });
-        this.setState({ data: newData.sort((a, b) => b.score - a.score) });
+        this.setState({ data: newData.sort((a, b) => b.score - a.score).sort((a,b) => b.clientUser - a.clientUser) });
         const currentTime = Math.round(new Date().getTime() / 1000);
         this.setState({ done: currentTime > this.state.league.event.start_at });
         this.setState({ loading: false });
