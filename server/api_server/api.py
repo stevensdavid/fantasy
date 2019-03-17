@@ -1,3 +1,5 @@
+from api_server.socket_controller import SOCKETS
+import api_server.socket_controller
 """
 Main module for the restful Flask API. 
 """
@@ -135,6 +137,8 @@ class UsersAPI(Resource):
                 description: The created user
                 schema:
                     import: "swagger/User.json"
+            400:
+                description: Bad request
         """
         parser = reqparse.RequestParser()
         parser.add_argument('tag', type=str)
@@ -151,7 +155,11 @@ class UsersAPI(Resource):
                     pw=hashed,
                     photo_path=None)
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {'error': 'User already exists'}, 400
         return user_schema.jsonify(user)
 
     def put(self, user_id):
@@ -409,6 +417,8 @@ class FriendsAPI(Resource):
                 description: The resulting friend-pair
                 schema:
                     import: "swagger/Friends.json"
+            400:
+                description: One of the users do not exist
             401:
                 description: Unauthorized
                 schema:
@@ -422,13 +432,19 @@ class FriendsAPI(Resource):
             return NOT_LOGGED_IN_RESPONSE
         args = self._parse_put_delete()
         # Create symmetrical entities
-        friends = Friends(user_id=user_id, friend_id=args['friendId'])
+        friend_id = args['friendId']
+        friends = Friends(user_id=user_id, friend_id=friend_id)
         db.session.add(friends)
         try:
             db.session.commit()
         except IntegrityError:
-            # These users are already friends
+            # These users are already friends or don't exist
             db.session.rollback()
+            if ((not User.query.filter_by(user_id=user_id).first())
+                    or (not User.query.filter_by(user_id=friend_id).first())):
+                return {
+                    'error': 'One or both of the specified users do not exist'
+                }, 400
         return friend_schema.jsonify(friends)
 
     def delete(self, user_id):
@@ -1070,7 +1086,8 @@ class LeagueAPI(Resource):
         db.session.commit()
         schema = FantasyLeagueSchema(
             exclude=["owner", "event", "fantasy_drafts", "fantasy_results"])
-        for user in [x.user_id for x in league.fantasy_results if x.user_id in SOCKETS]:
+        for user in [x.user_id for x in league.fantasy_results
+                     if x.user_id in SOCKETS]:
             # Inform all participating users that the league has been removed
             socketio.emit('league-removed', schema.dump(league),
                           namespace='/', room=SOCKETS[user])
@@ -1126,6 +1143,8 @@ class LeagueAPI(Resource):
                 description: The created fantasy league
                 schema:
                     import: "swagger/FantasyLeague.json"
+            400:
+                description: Bad request
             401:
                 description: Unauthorized
                 schema:
@@ -1152,7 +1171,11 @@ class LeagueAPI(Resource):
                                name=args['name'],
                                is_snake=args['isSnake'])
         db.session.add(league)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            return {'error':'Bad request'}, 400
         return fantasy_league_schema.jsonify(league)
 
     def put(self, league_id):
@@ -1265,7 +1288,7 @@ class EntrantsAPI(Resource):
         entrants = Entrant.query.filter(Entrant.event_id == event_id).order_by(
             Entrant.seed).paginate(
                 page=args['page'], per_page=args['perPage']
-        ).items
+            ).items
         if not entrants or entrants[0].seed is None:
             # The seeding is not yet complete. In most cases this also means
             # that signups are not yet complete, so update both using the API
@@ -1720,8 +1743,7 @@ def _score(place):
 
 
 # This import has to happen after all initialization
-import api_server.socket_controller
-from api_server.socket_controller import SOCKETS
+
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
