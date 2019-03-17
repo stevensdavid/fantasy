@@ -92,12 +92,13 @@ export class LoginForm extends React.Component {
       );
 
     return (
-      <View
-        style={styles.container}
-        pointerEvents={this.state.loading ? "none" : "auto"}
-      >
-        <View style={styles.iconContainer}>{topIcon}</View>
-        <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView>
+        <View
+          style={styles.container}
+          pointerEvents={this.state.loading ? "none" : "auto"}
+        >
+          <View style={styles.iconContainer}>{topIcon}</View>
+
           <View style={styles.inputContainer}>
             <Icon
               name={Platform.OS === "ios" ? "ios-mail" : "md-mail"}
@@ -169,8 +170,8 @@ export class LoginForm extends React.Component {
           >
             <Text>Register</Text>
           </TouchableHighlight>
-        </KeyboardAwareScrollView>
-      </View>
+        </View>
+      </KeyboardAwareScrollView>
     );
   }
 }
