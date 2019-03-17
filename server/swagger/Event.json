@@ -37,6 +37,10 @@
         },
         "ext_banner_url":{
           "type":"string"
+        },
+        "ends_at":{
+          "type":"integer",
+          "format":"int32"
         }
       }
     },
