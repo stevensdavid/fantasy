@@ -99,6 +99,8 @@ export class LoginForm extends React.Component {
             onBlur={() => {
               this.setState({ emailFocus: false });
             }}
+            returnKeyType="next"
+            blurOnSubmit={false}
             style={styles.inputs}
             placeholder="Email"
             keyboardType="email-address"
