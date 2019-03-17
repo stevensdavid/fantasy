@@ -293,8 +293,7 @@ export default class SnakeLeagueView extends React.Component {
 
   render() {
     return (
-      <View style={{ minHeight: "100%", flex: 1 }}>
-        <View style={{ flex: 1 }}>
+      <View style={{  flex: 1 }}>
           <Text
             style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}
           >
@@ -311,8 +310,6 @@ export default class SnakeLeagueView extends React.Component {
             data={this.state.data}
             onItemClick={userID => this.handlePress(userID)}
           />
-        </View>
-        <View>
           <AddButton
             hide={
               this.state.league.owner != global.userID ||
@@ -328,7 +325,6 @@ export default class SnakeLeagueView extends React.Component {
               })
             }
           />
-        </View>
       </View>
     );
   }
