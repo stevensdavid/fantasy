@@ -1,5 +1,3 @@
-from api_server.socket_controller import SOCKETS
-import api_server.socket_controller
 """
 Main module for the restful Flask API. 
 """
@@ -1743,7 +1741,8 @@ def _score(place):
 
 
 # This import has to happen after all initialization
-
+from api_server.socket_controller import SOCKETS
+import api_server.socket_controller
 
 def main():
     if ('FANTASY_PROD' in os.environ.keys()
