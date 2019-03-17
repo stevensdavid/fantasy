@@ -15,3 +15,9 @@ The server is written in Python using Flask and a MySQL database. It can be star
 
 ### Requirements
 The requirements are listed in `server/requirements.txt` and can be installed by executing `pip3 install -r requirements.txt`, or through a virtual environment. 
+
+## Screenshots
+![Home screen](https://imgur.com/AD3grtZ)
+![Tournament view](https://imgur.com/KDdhQVb)
+![Fantasy league view](https://imgur.com/WpIkbS7)
+![Event view](https://imgur.com/RYZefo3)
