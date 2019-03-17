@@ -24,7 +24,8 @@ export class LeagueList extends React.Component {
             key: league.league_id.toString(),
             title: league.name,
             description:
-              league.event.tournament.name + ": " + league.event.name,
+              `${league.event.tournament.name}: ${league.event.name}` +
+              (league.owner == global.userID ? '\n\nThis league is yours.' : ''),
             status: Math.round(new Date().getTime() / 1000) > league.event.tournament.ends_at ?
               "(Finished)" : "",
             img_uri: league.event.tournament.ext_icon_url
