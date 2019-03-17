@@ -128,7 +128,7 @@ export class ScrollableListContainer extends React.Component {
                     ) : (
                       <View />
                     )}
-                    <View style={{ justifyContent: "center" }}>
+                    <View style={{ justifyContent: "center", flex: 1 }}>
                       <Text style={[styles.headerText, item.titleStyle]}>
                         {item.title + " " + (item.status ? item.status : "")}
                       </Text>
@@ -137,9 +137,14 @@ export class ScrollableListContainer extends React.Component {
                       </Text>
                     </View>
                     <HideAbleView
-                      hide={ this.props.onKeyShowRightCardComponent? item.key != this.props.onKeyShowRightCardComponent : false}
+                      hide={
+                        this.props.rightCardComponent
+                          ? this.props.onKeyShowRightCardComponent
+                            ? item.key != this.props.onKeyShowRightCardComponent
+                            : false
+                          : false
+                      }
                       style={{
-                        flex: 1,
                         alignSelf: "flex-end",
                         alignItems: "flex-end",
                         justifyContent: "flex-end"
