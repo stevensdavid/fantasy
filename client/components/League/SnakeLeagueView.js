@@ -307,6 +307,7 @@ export default class SnakeLeagueView extends React.Component {
             </Text>
           )}
           <ScrollableListContainer
+            showSearchBar = {true}
             style={{ flex: 1 }}
             loading={this.state.loading}
             data={this.state.data}
