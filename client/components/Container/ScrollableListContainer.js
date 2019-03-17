@@ -46,10 +46,6 @@ export class ScrollableListContainer extends React.Component {
     this._isMounted = true;
   }
 
-  componentWillMount() {
-    this._isMounted = false;
-  }
-
   componentDidUpdate(prevProps) {
     if(!this._isMounted) {
       return
@@ -79,9 +75,6 @@ export class ScrollableListContainer extends React.Component {
   }
 
   render() {
-    if(!this._isMounted) {
-      return <View></View>
-    }
     return this.props.loading ? (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator
