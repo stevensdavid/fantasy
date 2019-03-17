@@ -170,7 +170,7 @@ class FantasyResultSchema(ma.ModelSchema):
         model = FantasyResult
     user = ma.Nested(
         UserSchema,
-        only=["user_id", "tag", "photo_path"]
+        only=["user_id", "tag", "photo_path", "first_name", "last_name"]
     )
 
 
