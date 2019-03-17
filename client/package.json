@@ -16,6 +16,7 @@
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-carousel-control": "^2.0.1",
+    "react-native-dropdownalert": "^3.9.2",
     "react-native-elements": "^1.1.0",
     "react-native-loading-spinner-overlay": "^1.0.1",
     "react-native-swipeout": "^2.3.6",

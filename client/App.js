@@ -3,6 +3,7 @@ import { Platform, StatusBar, StyleSheet, View, YellowBox } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
 import SocketIOClient from "socket.io-client";
+import DropdownAlert from 'react-native-dropdownalert';
 
 
 global.token = null;
@@ -20,7 +21,7 @@ global.webSocket = SocketIOClient(global.server + "/", {
 // Socket.IO has a harmless warning on react native which can safely be ignored
 console.ignoredYellowBox = ['Remote debugger'];
 YellowBox.ignoreWarnings([
-    'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
+  'Unrecognized WebSocket connection option(s) `agent`, `perMessageDeflate`, `pfx`, `key`, `passphrase`, `cert`, `ca`, `ciphers`, `rejectUnauthorized`. Did you mean to put these under `headers`?'
 ]);
 
 
@@ -31,7 +32,29 @@ export default class App extends React.Component {
 
   constructor(props) {
     super(props);
-    global.webSocket.on()
+    this.routineUpdate = this.routineUpdate.bind(this);
+    this.newLeague = this.newLeague.bind(this);
+    this.leagueRemoved = this.leagueRemoved.bind(this);
+  }
+
+  componentDidMount() {
+    global.webSocket.on('routine-update', this.routineUpdate);
+    global.webSocket.on('league-removed', this.leagueRemoved);
+    global.webSocket.on('new-league', this.newLeague)
+  }
+
+  routineUpdate() {
+
+  }
+
+  newLeague(league) {
+    this.dropdown.alertWithType('info', 'New league',
+      `You have been added to the league "${league.name}" for ${league.event.name} at ${league.event.tournament.name}`)
+  }
+
+  leagueRemoved(league) {
+    this.dropdown.alertWithType('info', 'League removed',
+      `The league "${league.name}" has been deleted.`)
   }
 
   render() {
@@ -47,6 +70,7 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          <DropdownAlert ref={ref => this.dropdown = ref} />
           <AppNavigator />
         </View>
       );
