@@ -313,7 +313,15 @@ export default class SnakeLeagueView extends React.Component {
             style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}
           >
             {this.state.league.name}
-          </Text>
+        </Text>
+        {this.state.league.fantasy_results && (
+            <Text style={{ alignSelf: "center" }}>
+              {`Owner: ${this.state.league.fantasy_results.find(
+                x => x.user.user_id == this.state.league.owner).user.tag}\n`}
+            {`Draft size: ${this.state.league.draft_size}\n`}
+            Snake draft
+            </Text>
+          )}
           {(this.state.done || this.state.turn == null) && (
             <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
               Drafting closed
