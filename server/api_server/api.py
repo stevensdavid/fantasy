@@ -1552,6 +1552,7 @@ class FantasyResultAPI(Resource):
         # Participation is marked by presence of a FantasyResult entity
         fantasy_result = FantasyResult.query.filter_by(
             user_id=user_id, league_id=league_id).first()
+        deleted_object = fantasy_result_schema.jsonify(fantasy_result)
         db.session.delete(fantasy_result)
         # Remove all drafts by the user
         FantasyDraft.query.filter_by(
@@ -1579,7 +1580,7 @@ class FantasyResultAPI(Resource):
                       namespace='/leagues', room=league_id)
         socketio.emit('turn-change', league.turn,
                       namespace='/leagues', room=league_id)
-        return fantasy_result_schema.jsonify(fantasy_result)
+        return deleted_object
 
 
 def user_is_logged_in(user_id, token=None):
