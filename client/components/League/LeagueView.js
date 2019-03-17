@@ -89,10 +89,14 @@ export default class LeagueView extends React.Component {
   }
 
   handlePress(userID) {
-    if (userID == global.userID && !this.state.done) {
-      this.props.navigation.navigate("EditDraft", {
-        league: this.state.league
-      });
+    if (userID == global.userID) {
+      if(!this.state.done) {
+        this.props.navigation.navigate("EditDraft", {
+          league: this.state.league
+        });
+      }
+    } else {
+      this.props.navigation.push("Friend", { friendID: userID });
     }
   }
 

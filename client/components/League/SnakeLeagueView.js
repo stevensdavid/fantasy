@@ -116,16 +116,18 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   handlePress(userID) {
-    if (userID == global.userID && this.state.turn == global.userID) {
-      this.props.navigation.navigate("EditDraft", {
-        league: this.state.league
-      });
-    } else {
-      if (this.state.league.turn == null) {
+    if (userID == global.userID) {
+      if(this.state.turn == global.userID) {
+        this.props.navigation.navigate("EditDraft", {
+          league: this.state.league
+        });
+      } else if (this.state.league.turn == null) {
         Alert.alert("Drafting is over");
       } else {
         Alert.alert("It is not your turn");
       }
+    } else {
+      this.props.navigation.push("Friend", { friendID: userID });
     }
   }
 
