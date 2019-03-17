@@ -136,6 +136,11 @@ export default class EditProfile extends React.Component {
           <View style={styles.inputContainer}>
             <TextInput style={styles.inputs}
               placeholder="First Name"
+              ref={input => (this._firstName = input)}
+              onSubmitEditing={() => this.lastName && this.lastName.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              autoFocus={true}
               keyboardType="default"
               underlineColorAndroid='transparent'
               onChangeText={(firstname) => this.setState({ firstName: firstname })} />
@@ -144,6 +149,10 @@ export default class EditProfile extends React.Component {
           <View style={styles.inputContainer}>
             <TextInput style={styles.inputs}
               placeholder="Last Name"
+              ref={input => (this.lastName = input)}
+              onSubmitEditing={() => this.tag && this.tag.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
               keyboardType="default"
               underlineColorAndroid='transparent'
               onChangeText={(lastname) => this.setState({ lastName: lastname })} />
@@ -152,6 +161,10 @@ export default class EditProfile extends React.Component {
           <View style={styles.inputContainer}>
             <TextInput style={styles.inputs}
               placeholder="Tag"
+              ref={input => (this.tag = input)}
+              onSubmitEditing={() => this.email && this.email.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
               keyboardType="default"
               underlineColorAndroid='transparent'
               onChangeText={(t) => this.setState({ tag: t })} />
@@ -160,6 +173,10 @@ export default class EditProfile extends React.Component {
           <View style={styles.inputContainer}>
             <TextInput style={styles.inputs}
               placeholder="Email"
+              ref={input => (this.email = input)}
+              onSubmitEditing={() => this.password && this.password.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
               keyboardType="email-address"
               underlineColorAndroid='transparent'
               autoCapitalize="none"
@@ -169,6 +186,10 @@ export default class EditProfile extends React.Component {
           <View style={styles.inputContainer}>
             <TextInput style={styles.inputs}
               placeholder="Password"
+              ref={input => (this.password = input)}
+              onSubmitEditing={() => this.confirm && this.confirm.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
               secureTextEntry={true}
               underlineColorAndroid='transparent'
               autoCapitalize="none"
@@ -177,6 +198,9 @@ export default class EditProfile extends React.Component {
 
           <View style={styles.inputContainer}>
             <TextInput style={styles.inputs}
+              placeholder="Confirm Password"
+              onSubmitEditing={() => this.tryEdit(this.state)}
+              ref={input => (this.confirm = input)}
               placeholder="Confirm Password"
               secureTextEntry={true}
               autoCapitalize="none"
