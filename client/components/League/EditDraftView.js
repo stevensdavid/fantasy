@@ -9,6 +9,7 @@ export default class EditDraftView extends React.Component {
 
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       league: {},
       draft: [],
@@ -23,6 +24,7 @@ export default class EditDraftView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     let league = this.props.navigation.getParam("league", null);
     this.setState(
       {
@@ -32,6 +34,7 @@ export default class EditDraftView extends React.Component {
       () => {
         this.getEntrants()
           .then(newEntrants => {
+            if (!this._isMounted) return;
             this.setState({
               entrants: this.state.entrants.concat(newEntrants)
             });
@@ -45,7 +48,12 @@ export default class EditDraftView extends React.Component {
     );
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   setFormattedLists() {
+    if (!this._isMounted) return;
     this.setState({
       formattedDraft: this.state.draft.map(x => {
         return {
@@ -117,6 +125,7 @@ export default class EditDraftView extends React.Component {
       }
     )
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           global.newDraft = true;
           return res.json();
@@ -125,6 +134,7 @@ export default class EditDraftView extends React.Component {
         }
       })
       .then(newDraft => {
+        if (!this._isMounted) return;
         this.setState({ draft: this.state.draft.concat(newDraft) });
         this.setFormattedLists();
         if (this.state.league.is_snake) {
@@ -156,6 +166,7 @@ export default class EditDraftView extends React.Component {
       }
     )
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           return res.json();
         } else {
@@ -163,6 +174,7 @@ export default class EditDraftView extends React.Component {
         }
       })
       .then(newDraft => {
+        if (!this._isMounted) return;
         this.setState({
           draft: this.state.draft.filter(
             x => x.player.player_id != newDraft.player_id

@@ -10,6 +10,7 @@ import { LeagueList } from './LeagueList'
 export class LeaguesHome extends React.Component {
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       leagues: [],
       loading: true,
@@ -21,6 +22,7 @@ export class LeaguesHome extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.navigationWillFocusListener = this.props.navigation.addListener('willFocus', () => {
         this.props.navigation.getParam("newData", false) ? 
         this.createdLeague(this.props.navigation.getParam("leagueID", -1)) 
@@ -33,6 +35,7 @@ export class LeaguesHome extends React.Component {
   }
 
   componentDidUpdate() {
+    if (!this._isMounted) return;
     if(this.state.token != global.token) {
       this.setState({token: global.token});
       this.fetchLeagues();
@@ -40,6 +43,7 @@ export class LeaguesHome extends React.Component {
   }
 
   leagueRemoved(league) {
+    if (!this._isMounted) return;
     console.log('league-removed handled in LeaguesHome');
     if (this.state.leagues.find(x => x.league_id == league.league_id)) {
       Alert.alert(`The league "${league.name}" has been deleted.`);
@@ -48,10 +52,12 @@ export class LeaguesHome extends React.Component {
   }
 
   newLeague(league) {
+    if (!this._isMounted) return;
     this.setState({ leagues: this.state.leagues.concat(league) });
   }
 
   createdLeague(newLeagueID) {
+    if (!this._isMounted) return;
     this.fetchLeagues();
     if(this.props.navigation.getParam("isSnake", false)) {
       this.props.navigation.navigate("SnakeLeague", { leagueID: newLeagueID })
@@ -60,7 +66,8 @@ export class LeaguesHome extends React.Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
+    this._isMounted = false;
     this.navigationWillFocusListener.remove();
     global.webSocket.off('league-removed', this.leagueRemoved);
     global.webSocket.off('removed-from-league', this.leagueRemoved);
@@ -68,6 +75,7 @@ export class LeaguesHome extends React.Component {
   }
 
   fetchLeagues() {
+    if (!this._isMounted) return;
     this.props.navigation.setParams({newData:false})
     this.setState({ loading: true })
     // apparently this isn't supported yet
@@ -77,8 +85,11 @@ export class LeaguesHome extends React.Component {
     fetch(global.server + '/leagues?userId=' + global.userID, { method: 'GET' }).then(response => {
       return response.json();
     }).then(obj => {
+      if (!this._isMounted) return;
       this.setState({ leagues: obj, loading: false});
     }).catch(err => {
+      if (!this._isMounted) return;
+      console.log(err);
       this.setState({ loading: false});
     });
   }

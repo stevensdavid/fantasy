@@ -7,6 +7,7 @@ import { AddButton } from "../Button/AddButton";
 export class LeagueList extends React.Component {
   constructor(props) {
     super(props);
+    this._isMounted = false
     this.state = {
       data: [],
       loading: true
@@ -15,7 +16,16 @@ export class LeagueList extends React.Component {
     this.openLeagueView = this.openLeagueView.bind(this);
   }
 
+  componentDidMount() {
+    this._isMounted = true
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   componentDidUpdate(prevProps) {
+    if (!this._isMounted) return;
     if (this.props.leagues !== prevProps.leagues) {
       this.setState({ loading: true });
       this.setState({
@@ -44,6 +54,7 @@ export class LeagueList extends React.Component {
       }
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           return res.json();
         } else {
@@ -51,6 +62,7 @@ export class LeagueList extends React.Component {
         }
       })
       .then(deletedLeague => {
+        if (!this._isMounted) return;
         this.setState({
           data: this.state.data.filter(x => x.key != deletedLeague.league_id)
         });
@@ -74,7 +86,7 @@ export class LeagueList extends React.Component {
         onPress={() => this.props.onPress()}
       >
         <Icon
-          containerStyle={{ alignSelf: "center"}}
+          containerStyle={{ alignSelf: "center" }}
           name="delete"
           type="material"
           color="#eff"
@@ -86,7 +98,7 @@ export class LeagueList extends React.Component {
     return (
       <View style={{ minWidth: "100%" }}>
         <ScrollableListContainer
-          showSearchBar = {true}
+          showSearchBar={true}
           data={this.state.data}
           onItemClick={key => {
             this.openLeagueView(key);
@@ -124,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    alignSelf:'center',
+    alignSelf: 'center',
     minWidth: 70,
     marginRight: 10,
     marginTop: "45%",

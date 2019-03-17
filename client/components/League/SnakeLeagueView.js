@@ -9,13 +9,13 @@ export default class SnakeLeagueView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       loading: true,
       league: {},
       data: [],
       turn: -1,
-      done: false,
-      isMounted: false
+      done: false
     };
 
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
@@ -37,17 +37,12 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   connected(users) {
-    if (!this.state.isMounted) {
-      return;
-    }
+    if (!this._isMounted) return;
     users.map(x => this.joinedRoom(x));
   }
 
   leftRoom(userID) {
-    console.log(userID + " left the room");
-    if (!this.state.isMounted) {
-      return;
-    }
+    if (!this._isMounted) return;
     this.setState({
       data: this.state.data
         .map(x =>
@@ -61,10 +56,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   joinedRoom(userID) {
-    console.log(userID + " joined the room");
-    if (!this.state.isMounted) {
-      return;
-    }
+    if (!this._isMounted) return;
     this.setState({
       data: this.state.data
         .map(x =>
@@ -78,6 +70,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   turnChange(userID) {
+    if (!this._isMounted) return;
     if (userID == null) {
       this.setState({
         data: this.state.data.map(x => Object.assign(x, { status: "" }))
@@ -85,13 +78,9 @@ export default class SnakeLeagueView extends React.Component {
       this.setState({ done: true });
       return;
     }
-    console.log(userID);
     this.setState({
       turn: userID
     });
-    if (!this.state.isMounted) {
-      return;
-    }
     this.setState({
       data: this.state.data.map(x =>
         x.key == userID
@@ -102,11 +91,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   newDraft(draft) {
-    console.log("New draft!");
-    if (!this.state.isMounted) {
-      console.log("returning");
-      return;
-    }
+    if (!this._isMounted) return;
     this.setState({
       data: this.state.data.map(x =>
         x.key == draft.user.user_id
@@ -140,6 +125,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     global.webSocket.on("removed-from-league", this.leagueRemoved);
     global.webSocket.on("league-removed", this.leagueRemoved);
     this.setState({
@@ -156,6 +142,7 @@ export default class SnakeLeagueView extends React.Component {
     this.setState({ isMounted: true }, () => {
       this.fetchLeagueInfo(this.leagueID)
         .then(() => {
+          if (!this._isMounted) return;
           const currentTime = Math.round(new Date().getTime() / 1000);
           this.setState({
             done: currentTime > this.state.league.event.start_at
@@ -188,6 +175,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   newParticipant(user) {
+    if (!this._isMounted) return;
     // A new user can't have a fantasy draft without triggering the new-draft event,
     // but they will have a fantasy result that needs to be appended to our state
     // and the user has to be appended to our presented data.
@@ -224,6 +212,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   deletedParticipant(userID) {
+    if (!this._isMounted) return;
     let user = this.state.league.fantasy_results.filter(
       x => x.user.user_id == userID
     );
@@ -250,6 +239,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this.setState({ isMounted: false });
     this.subs.forEach(sub => sub.remove());
     this.socket.emit("leave", this.socketIdentifier);
@@ -257,10 +247,7 @@ export default class SnakeLeagueView extends React.Component {
   }
 
   async fetchLeagueInfo(leagueID) {
-    if (!this.state.isMounted) {
-      console.log("return");
-      return;
-    }
+    if (!this._isMounted) return;
     this.setState({
       loading: true
     });
@@ -271,7 +258,7 @@ export default class SnakeLeagueView extends React.Component {
     } catch (err) {
       console.error(err);
     }
-
+    if (!this._isMounted) return;
     this.setState({ league: league_obj });
     let participants = this.state.league.fantasy_results.reduce(
       (newObj, x) =>

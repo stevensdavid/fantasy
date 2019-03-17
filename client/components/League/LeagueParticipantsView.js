@@ -11,6 +11,7 @@ export default class LeagueParticipantsView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       data: [],
       participantsData: [],
@@ -26,7 +27,12 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.fetchParticipantsAndUsers();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   addLeagueParticipant(userID) {
@@ -42,6 +48,7 @@ export default class LeagueParticipantsView extends React.Component {
       })
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           global.newParticipantsInfo = true;
           this.componentDidMount();
@@ -65,6 +72,7 @@ export default class LeagueParticipantsView extends React.Component {
       })
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           global.newParticipantsInfo = true;
           this.componentDidMount();
@@ -76,6 +84,7 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   updateSearch = value => {
+    if (!this._isMounted) return;
     this.setState({ term: value });
     this.fetchUsers(value);
   };
@@ -86,6 +95,7 @@ export default class LeagueParticipantsView extends React.Component {
       method: "GET"
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           return res.json();
         } else {
@@ -93,6 +103,7 @@ export default class LeagueParticipantsView extends React.Component {
         }
       })
       .then(userData => {
+        if (!this._isMounted) return;
         if (userData.length > 0) {
           userData.map(user => {
             if (user.user_id !== global.userID) {
@@ -118,6 +129,7 @@ export default class LeagueParticipantsView extends React.Component {
         }
       })
       .then(() => {
+        if (!this._isMounted) return;
         this.setState({
           data: newData
         });
@@ -131,6 +143,7 @@ export default class LeagueParticipantsView extends React.Component {
       method: "GET"
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           return res.json();
         } else {
@@ -138,6 +151,7 @@ export default class LeagueParticipantsView extends React.Component {
         }
       })
       .then(leagueData => {
+        if (!this._isMounted) return;
         if (leagueData.fantasy_results.length > 0) {
           leagueData.fantasy_results.map(result => {
             if (result.user.user_id !== global.userID) {
@@ -154,6 +168,7 @@ export default class LeagueParticipantsView extends React.Component {
         }
       })
       .then(() => {
+        if (!this._isMounted) return;
         this.setState({
           participantsData: newParticipantsData
         }, () => this.fetchUsers(this.state.term));

@@ -20,6 +20,7 @@ export default class CreateLeagueForm extends React.Component {
 
     constructor(props) {
         super(props)
+        this._isMounted = false;
         this.state = {
             eventId: this.props.navigation.getParam("eventId", -1),
             isSnake: false,
@@ -32,6 +33,14 @@ export default class CreateLeagueForm extends React.Component {
         this.createLeague = this.createLeague.bind(this)
 
         this.leagueID = null
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     createLeague(stateInfo) {
@@ -52,6 +61,7 @@ export default class CreateLeagueForm extends React.Component {
                 ownerId: global.userID
             })
         }).then(res => {
+            if (!this._isMounted) return;
             if (res.status === 404 || res.status === 400) {
                 Alert.alert("Alert", "Invalid input!");
                 throw 'Invalid input';
@@ -61,6 +71,7 @@ export default class CreateLeagueForm extends React.Component {
                 throw 'Create league server error';
             }
         }).then(obj => {
+            if (!this._isMounted) return;
             this.leagueID = obj.league_id
             return fetch(global.server + '/fantasy_participants', {
                 method: 'POST',
@@ -71,6 +82,7 @@ export default class CreateLeagueForm extends React.Component {
                 })
             });
         }).then(participant_res => {
+            if (!this._isMounted) return;
             if (participant_res.status == 200) {
                 this.props.navigation.goBack();
                 this.props.navigation.navigate("Leagues", {newData: true, leagueID: this.leagueID, isSnake: this.state.isSnake});

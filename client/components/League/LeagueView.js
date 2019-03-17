@@ -8,6 +8,7 @@ import { AddButton } from "../Button/AddButton";
 export default class LeagueView extends React.Component {
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       data: [],
       loading: true,
@@ -21,6 +22,7 @@ export default class LeagueView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     global.webSocket.on("league-removed", this.leagueRemoved);
     global.webSocket.on("removed-from-league", this.leagueRemoved);
     if (this.leagueID == -1) {
@@ -31,6 +33,7 @@ export default class LeagueView extends React.Component {
     fetch(global.server + "/leagues/" + this.leagueID)
       .then(res => res.json())
       .then(league_obj => {
+        if (!this._isMounted) return;
         this.setState({
           league: league_obj,
           done: league_obj.event.start_at * 1000 < Date.now
@@ -99,6 +102,7 @@ export default class LeagueView extends React.Component {
   }
 
   componentWillUnmount() {
+    this._isMounted = true;
     this.subs.forEach(sub => sub.remove());
     global.webSocket.off("league-removed", this.leagueRemoved);
     global.webSocket.off("removed-from-league", this.leagueRemoved);

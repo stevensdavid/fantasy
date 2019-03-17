@@ -22,6 +22,8 @@ export default class EventView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
+
     this.state = {
       loading: false,
       eventInfo: {},
@@ -43,6 +45,7 @@ export default class EventView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.fetchEventInfo();
 
     this.subs = [
@@ -56,6 +59,7 @@ export default class EventView extends React.Component {
 
   componentWillUnmount() {
     this.subs.forEach(sub => sub.remove());
+    this._isMounted = false;
   }
 
   httpGetHeaders = {};
@@ -67,6 +71,7 @@ export default class EventView extends React.Component {
       headers: this.httpGetHeaders
     })
       .then(response => {
+        if (!this._isMounted) return;
         if (response.status != 200 && response.status != 204) {
           Alert.alert(
             "ERROR!",
@@ -76,6 +81,7 @@ export default class EventView extends React.Component {
           );
         } else {
           response.json().then(event => {
+            if (!this._isMounted) return;
             this.setState({
               eventInfo: {
                 name: event.name,
@@ -117,6 +123,7 @@ export default class EventView extends React.Component {
       })
       .catch(error => {
         console.error("GET event info error: " + error);
+        if (!this._isMounted) return;
         this.setState({ loading: false });
       });
   }
