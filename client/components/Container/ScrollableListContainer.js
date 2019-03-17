@@ -14,7 +14,8 @@ import { HideAbleView } from "../View/HideAbleView";
 import Swipeout from "react-native-swipeout";
 
 /*Takes the following props:
-    data: Array with objects each containing {key, img_uri(optional), title, description(Optional)}.
+    data: Array with objects each containing {key, img_uri(optional), title, description(Optional),
+       titleStyle(Optional), statusStyle(Optional)}.
     onItemClick(key): Function which handles the key of a clicked item.(Optional).
     style: Object holding React Native CSS for the container(Optional).
     rightButton: Enable swipe left to show rightButton React component(Optional).
@@ -129,12 +130,19 @@ export class ScrollableListContainer extends React.Component {
                       <View />
                     )}
                     <View style={{ justifyContent: "center", flex: 1 }}>
-                      <Text style={[styles.headerText, item.titleStyle]}>
-                        {item.title + " " + (item.status ? item.status : "")}
-                      </Text>
-                      <Text style={styles.descriptionText}>
-                        {item.description ? item.description : ""}
-                      </Text>
+                      <View style={{ flexDirection: "row"}}>
+                        <Text style={[styles.headerText, item.titleStyle]}>
+                          {item.title + " "}
+                        </Text>
+                        <Text style={[item.statusStyle, {alignSelf: "center"}]}>
+                          {item.status ? item.status : ""}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text style={styles.descriptionText}>
+                          {item.description ? item.description : ""}
+                        </Text>
+                      </View>
                     </View>
                     <HideAbleView
                       hide={
@@ -184,14 +192,13 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   headerText: {
+    alignSelf: "center",
     marginLeft: 10,
-    marginRight: 70,
     fontSize: 21,
     fontWeight: "bold"
   },
   descriptionText: {
     marginLeft: 10,
-    marginRight: 90,
     fontSize: 12,
     fontWeight: "bold"
   },
