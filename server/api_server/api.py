@@ -1,3 +1,5 @@
+import api_server.socket_controller
+from api_server.socket_controller import SOCKETS
 """
 Main module for the restful Flask API. 
 """
@@ -1575,6 +1577,12 @@ class FantasyResultAPI(Resource):
             league.turn = min(map(lambda x: x.user.user_id,
                                   league.fantasy_results))
             db.session.commit()
+        # Inform user that they've been kicked
+        if user_id in SOCKETS:
+            socketio.emit('removed-from-league',
+                          fantasy_league_schema.dump(league),
+                          namespace='/',
+                          room=SOCKETS[user_id])
         # Inform connected participants that the user has been removed
         socketio.emit('deleted-participant', user_id,
                       namespace='/leagues', room=league_id)
@@ -1721,8 +1729,6 @@ def _score(place):
 
 
 # This import has to happen after all initialization
-from api_server.socket_controller import SOCKETS
-import api_server.socket_controller
 
 
 def main():
