@@ -19,6 +19,8 @@ import Swipeout from "react-native-swipeout";
     style: Object holding React Native CSS for the container(Optional).
     rightButton: Enable swipe left to show rightButton React component(Optional).
     rightButtonClick(key): Function which handles the click of right button(must if rightButton is given).
+    RightCardComponent: Component to put at the far end right of the card
+    onKeyShowRightCardComponent: Key to show RightCardComponent.
     emptyText: Text to display if filtered list is empty(Optional).
     showSearchBar: self-explanatory.
     searchBarPlaceholder: self-explanatory.
@@ -116,7 +118,7 @@ export class ScrollableListContainer extends React.Component {
                 }}
               >
                 <Card containerStyle={styles.cardContainer}>
-                  <View style={{flexDirection: "row", alignItems: 'stretch'}}>
+                  <View style={{ flexDirection: "row", alignItems: "stretch" }}>
                     {item.img_uri ? (
                       <Image
                         resizeMode="cover"
@@ -126,7 +128,7 @@ export class ScrollableListContainer extends React.Component {
                     ) : (
                       <View />
                     )}
-                    <View style={{ justifyContent: "center" }}>
+                    <View style={{ justifyContent: "center", flex: 1 }}>
                       <Text style={[styles.headerText, item.titleStyle]}>
                         {item.title + " " + (item.status ? item.status : "")}
                       </Text>
@@ -134,16 +136,22 @@ export class ScrollableListContainer extends React.Component {
                         {item.description ? item.description : ""}
                       </Text>
                     </View>
-                    <View
+                    <HideAbleView
+                      hide={
+                        this.props.rightCardComponent
+                          ? this.props.onKeyShowRightCardComponent
+                            ? item.key != this.props.onKeyShowRightCardComponent
+                            : false
+                          : false
+                      }
                       style={{
-                        flex:1,
                         alignSelf: "flex-end",
-                        alignItems: 'flex-end',
-                        justifyContent: 'flex-end'
+                        alignItems: "flex-end",
+                        justifyContent: "flex-end"
                       }}
                     >
                       {this.props.rightCardComponent}
-                    </View>
+                    </HideAbleView>
                   </View>
                 </Card>
               </TouchableOpacity>
@@ -166,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff"
   },
   cardContainer: {
-    right:2,
+    right: 2,
     minHeight: 120,
     borderRadius: 10
   },
