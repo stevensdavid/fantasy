@@ -14,13 +14,14 @@ import { HideAbleView } from "../View/HideAbleView";
 import Swipeout from "react-native-swipeout";
 
 /*Takes the following props:
-    data: Array with objects each containing {key, img_uri(optional), title, description(Optional)}
-    onItemClick(key): Function which handles the key of a clicked item.(Optional)
+    data: Array with objects each containing {key, img_uri(optional), title, description(Optional)}.
+    onItemClick(key): Function which handles the key of a clicked item.(Optional).
     style: Object holding React Native CSS for the container(Optional).
-    rightButton: Enable swipe left to show rightButton React component(Optional)
-    rightButtonClick(key): Function which handles the click of right button(must if rightButton is given)
-    emptyText: Text to display if filtered list is empty(Optional)
-    searchBarPlaceholder: self-explanatory
+    rightButton: Enable swipe left to show rightButton React component(Optional).
+    rightButtonClick(key): Function which handles the click of right button(must if rightButton is given).
+    emptyText: Text to display if filtered list is empty(Optional).
+    showSearchBar: self-explanatory.
+    searchBarPlaceholder: self-explanatory.
 */
 
 export class ScrollableListContainer extends React.Component {
