@@ -92,8 +92,9 @@ export default class EditDraftView extends React.Component {
   }
 
   async getEntrants() {
+    // TODO: Handle pagination
     let res = await fetch(
-      global.server + "/entrants/" + this.state.league.event.event_id
+      global.server + "/entrants/" + this.state.league.event.event_id + '?perPage=5000'
     );
     return await res.json();
   }
