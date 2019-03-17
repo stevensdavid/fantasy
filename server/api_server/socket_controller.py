@@ -17,7 +17,7 @@ def user_connected(msg):
 
 @socketio.on('disconnect', namespace='/')
 def user_disconnected():
-    for k, v in SOCKETS.items():
+    for k, v in SOCKETS.copy().items():
         if v == request.sid:
             del SOCKETS[k]
 
