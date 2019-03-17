@@ -100,12 +100,6 @@ export default class RegisterForm extends React.Component {
     }
     return (
       <View style={styles.container}>
-<<<<<<< HEAD
-        <Spinner
-          visible={this.state.loading}
-          textContent={"Loading..."}
-          textStyle={styles.spinnerTextStyle}
-        />
         <KeyboardAwareScrollView>
           <View style={styles.inputContainer}>
             <TextInput
@@ -121,22 +115,6 @@ export default class RegisterForm extends React.Component {
               onChangeText={firstName => this.setState({ firstName })}
             />
           </View>
-=======
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            ref={input => (this.firstName = input)}
-            onSubmitEditing={() => this.lastName && this.lastName.focus()}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            placeholder="First Name"
-            keyboardType="default"
-            autoFocus={true}
-            underlineColorAndroid="transparent"
-            onChangeText={firstName => this.setState({ firstName })}
-          />
-        </View>
->>>>>>> 5ebfb0eb81d37495fd3bcb8d63513eb60484a382
 
           <View style={styles.inputContainer}>
             <TextInput
