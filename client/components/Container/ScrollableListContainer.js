@@ -35,12 +35,25 @@ export class ScrollableListContainer extends React.Component {
       search: ""
     };
 
+    this._isMounted = false;
+
     this.dataHolder = this.props.data;
 
     this.searchFilterFunction = this.searchFilterFunction.bind(this);
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillMount() {
+    this._isMounted = false;
+  }
+
   componentDidUpdate(prevProps) {
+    if(!this._isMounted) {
+      return
+    }
     if (prevProps.data != this.props.data) {
       this.setState({
         show: this.props.data
@@ -50,6 +63,9 @@ export class ScrollableListContainer extends React.Component {
   }
 
   searchFilterFunction(text) {
+    if(!this._isMounted) {
+      return
+    }
     this.setState({ search: text });
     const newData = this.dataHolder.filter(item => {
       const itemData = `${item.title.toUpperCase()}`;
@@ -63,6 +79,9 @@ export class ScrollableListContainer extends React.Component {
   }
 
   render() {
+    if(!this._isMounted) {
+      return <View></View>
+    }
     return this.props.loading ? (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator
