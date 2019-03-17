@@ -11,6 +11,7 @@ export default class FollowView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       data: [],
       userID: global.userID,
@@ -21,21 +22,29 @@ export default class FollowView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.fetchUsers(this.state.term);
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   updateSearch = value => {
+    if (!this._isMounted) return;
     this.setState({ term: value });
     this.fetchUsers(value);
   };
 
   fetchUsers(term) {
+    if (!this._isMounted) return;
     newData = [];
     this.setState({ loading: true });
     fetch(global.server + "/users?tag=" + term, {
       method: "GET"
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           return res.json();
         } else {
@@ -43,6 +52,7 @@ export default class FollowView extends React.Component {
         }
       })
       .then(userData => {
+        if (!this._isMounted) return;
         if (userData.length > 0) {
           userData.map(user => {
             if (user.user_id !== global.userID) {
@@ -59,6 +69,7 @@ export default class FollowView extends React.Component {
         }
       })
       .then(() => {
+        if (!this._isMounted) return;
         this.setState({
           data: newData,
           loading: false

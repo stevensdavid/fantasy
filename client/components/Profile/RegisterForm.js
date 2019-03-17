@@ -18,6 +18,7 @@ export default class RegisterForm extends React.Component {
   };
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       email: "",
       name: "",
@@ -32,11 +33,20 @@ export default class RegisterForm extends React.Component {
     this.tryLogin = this.props.navigation.getParam("tryLogin", -1);
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillMount() {
+    this._isMounted = false;
+  }
+
   onClickListener = viewId => {
     Alert.alert("Alert", "Button pressed " + viewId);
   };
 
   tryCreateUser(stateInfo) {
+    if (!this._isMounted) return;
     this.setState({
       loading: true
     });
@@ -61,7 +71,7 @@ export default class RegisterForm extends React.Component {
       })
     })
       .then(response => {
-        console.log(response);
+        if (!this._isMounted) return;
         if (response.status === 404 || response.status === 400) {
           this.setState({
             loading: false
@@ -79,10 +89,11 @@ export default class RegisterForm extends React.Component {
         }
       })
       .catch(error => {
+        console.error("Login error: " + error);
+        if (!this._isMounted) return;
         this.setState({
           loading: false
         });
-        console.error("Login error: " + error);
       });
   }
 

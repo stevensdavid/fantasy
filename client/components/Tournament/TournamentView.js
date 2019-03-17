@@ -14,6 +14,7 @@ export default class TournamentView extends React.Component {
     constructor(props){
         super(props);
 
+        this._isMounted = false;
         this.state = { 
           search: '',
           data: [],
@@ -28,15 +29,26 @@ export default class TournamentView extends React.Component {
         this.tournamentID =  this.props.navigation.getParam("tournamentID", -1);
     }
     
+    componentDidMount() {
+        this._isMounted = true;
+        this.setTournamentInfo();
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    
     httpGetHeaders = {};
     httpGetHeaders2 = {};
-
+    
     setTournamentInfo() {
+        if (!this._isMounted) return;
         this.setState({loading: true});
         fetch(global.server + "/tournaments/" + this.tournamentID, {
             method: 'GET',
             headers: this.httpGetHeaders
         }).then((response) => {
+            if (!this._isMounted) return;
             if(response.status != 200 && response.status != 204) {
             Alert.alert(
                 'ERROR!',
@@ -48,6 +60,7 @@ export default class TournamentView extends React.Component {
             )
             } else {
             response.json().then((tournamentInfo) => {
+                if (!this._isMounted) return;
                 this.setState({
                     title: tournamentInfo.name,
                     banner_uri: (tournamentInfo.ext_banner_url != null ? tournamentInfo.ext_banner_url : 'https://www.mackspw.com/c.1179704/sca-dev-vinson/img/no_image_available.jpeg?resizeid=4&resizeh=1280&resizew=2560'),
@@ -60,12 +73,9 @@ export default class TournamentView extends React.Component {
             }
         }).catch((error) => {
             console.error('GET tournament info error: ' + error);
+            if (!this._isMounted) return;
             this.setState({loading: false});
         });
-    }
-
-    componentDidMount() {
-        this.setTournamentInfo()
     }
 
     render() {

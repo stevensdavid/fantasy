@@ -33,7 +33,7 @@ export class TournamentCoverFlow extends React.Component {
     this.getFetchPoint = this.getFetchPoint.bind(this);
     this.setFeaturedCards = this.setFeaturedCards.bind(this);
 
-    this.mounted = false;
+    this._isMounted = false;
 
     this.state = {
       showLoading: true
@@ -69,7 +69,7 @@ export class TournamentCoverFlow extends React.Component {
   }
 
   setFeaturedCards(featuredJSON) {
-    if (this.mounted === false) {
+    if (!this._isMounted) {
       return;
     }
     featuredJSON.map(tournamentInfo => {
@@ -110,7 +110,7 @@ export class TournamentCoverFlow extends React.Component {
         </View>
       ]);
     });
-    if (this.mounted === true) {
+    if (this._isMounted === true) {
       this.setState({
         showLoading: false
       });
@@ -118,12 +118,12 @@ export class TournamentCoverFlow extends React.Component {
   }
 
   componentDidMount() {
-    this.mounted = true;
+    this._isMounted = true;
     this.getFetchPoint(this.setFeaturedCards);
   }
 
   componentWillMount() {
-    this.mounted = false;
+    this._isMounted = false;
   }
 
   render() {

@@ -20,6 +20,7 @@ export default class FriendsView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       email: "",
       firstName: "",
@@ -46,10 +47,16 @@ export default class FriendsView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.getFriendInfo(this.friendID);
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   addFollow(friendID) {
+    if (!this._isMounted) return;
     fetch(global.server + "/friends/" + global.userID, {
       method: "POST",
       headers: {
@@ -61,6 +68,7 @@ export default class FriendsView extends React.Component {
       })
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           Alert.alert("Success!", "You now follow: " + this.state.tag);
           global.newUserInfo = true;
@@ -76,6 +84,7 @@ export default class FriendsView extends React.Component {
   }
 
   deleteFollow(friendID) {
+    if (!this._isMounted) return;
     fetch(global.server + "/friends/" + global.userID, {
       method: "DELETE",
       headers: {
@@ -87,6 +96,7 @@ export default class FriendsView extends React.Component {
       })
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           Alert.alert("Success!", "You no longer follow: " + this.state.tag);
           global.newUserInfo = true;
@@ -104,12 +114,14 @@ export default class FriendsView extends React.Component {
   httpGetHeaders = {};
 
   getFriendInfo(id) {
+    if (!this._isMounted) return;
     this.setState({ loading: true });
     fetch(global.server + "/users/" + id, {
       method: "GET",
       headers: this.httpGetHeaders
     })
       .then(response => {
+        if (!this._isMounted) return;
         if (response.status === 404 || response.status === 400) {
           Alert.alert(
             "ERROR!",
@@ -119,6 +131,7 @@ export default class FriendsView extends React.Component {
           );
         } else if (response.status === 200) {
           response.json().then(responseJSON => {
+            if (!this._isMounted) return;
             responseJSON.followers.map(follower => {
               console.log(follower.user_id);
               console.log(global.userID);

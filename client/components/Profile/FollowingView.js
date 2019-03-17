@@ -23,6 +23,7 @@ export default class FollowingView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       data: [],
       userID: global.userID,
@@ -31,6 +32,7 @@ export default class FollowingView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.fetchFollowing(this.state.userID);
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
@@ -42,16 +44,19 @@ export default class FollowingView extends React.Component {
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this.subs.forEach(sub => sub.remove());
   }
 
   fetchFollowing(userID) {
+    if (!this._isMounted) return;
     newData = [];
     this.setState({loading: true});
     fetch(global.server + "/friends/" + userID + "?page=1&perPage=20", {
       method: "GET"
     })
       .then(res => {
+        if (!this._isMounted) return;
         if (res.status === 200) {
           return res.json();
         } else {
@@ -59,6 +64,7 @@ export default class FollowingView extends React.Component {
         }
       })
       .then(friendsData => {
+        if (!this._isMounted) return;
         if (friendsData.length > 0) {
           friendsData.map((friend) => {
             newData.push({
@@ -74,6 +80,7 @@ export default class FollowingView extends React.Component {
         }
       })
       .then(() => {
+        if (!this._isMounted) return;
         this.setState({
           data: newData,
           loading: false

@@ -18,6 +18,7 @@ export class LoginForm extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       email: "",
       password: "",
@@ -29,22 +30,33 @@ export class LoginForm extends React.Component {
     this.tryLogin = this.tryLogin.bind(this);
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   onClickListener = viewId => {
     Alert.alert("Alert", "Button pressed " + viewId);
   };
 
   tryLogin(ema, pass) {
+    if (!this._isMounted) return;
     fetch(global.server + "/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: ema, pw: pass })
     })
       .then(response => {
+        if (!this._isMounted) return;
         if (response.status === 404 || response.status === 400) {
           Alert.alert("Invalid input!", "Wrong username or password.");
           this.setState({ loading: false });
         } else if (response.status === 200) {
           response.json().then(respjson => {
+            if (!this._isMounted) return;
             this.setState({ loading: false });
             global.userID = respjson.userId;
             // TODO: Remove one of these two
@@ -56,6 +68,7 @@ export class LoginForm extends React.Component {
       })
       .catch(error => {
         console.error("Login error: " + error);
+        if (!this._isMounted) return;
         this.setState({ loading: false });
       });
   }

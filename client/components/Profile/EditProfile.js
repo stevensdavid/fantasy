@@ -17,6 +17,7 @@ export default class EditProfile extends React.Component {
 
   constructor(props) {
     super(props);
+    this._isMounted = false;
     this.state = {
       email: null,
       name: null,
@@ -30,6 +31,14 @@ export default class EditProfile extends React.Component {
 
     this.tryEdit = this.tryEdit.bind(this);
     this.reload = this.props.navigation.getParam("reload", -1);
+  }
+
+  componentDidMount() {
+    this._isMounted = true;
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   //Help functions
@@ -55,6 +64,7 @@ export default class EditProfile extends React.Component {
   };
 
   tryEdit(userInfo) {
+    if (!this._isMounted) return;
     this.setState({
       loading: true
     });
@@ -102,6 +112,7 @@ export default class EditProfile extends React.Component {
       body: JSON.stringify(user)
     })
       .then(response => {
+        if (!this._isMounted) return;
         this.setState({ loading: false });
         console.log(response);
         if (response.status === 404 || response.status === 400) {

@@ -5,18 +5,46 @@ import { ScrollableListContainer } from '../Container/ScrollableListContainer';
 
 
 export class TournamentSearch extends React.Component {
+    constructor(props){
+        super(props);
+
+        this._isMounted = false;
+        this.searchAndSetTournaments = this.searchAndSetTournaments.bind(this);
+        this.updateSearch = this.updateSearch.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
+    
+        this.state = { 
+          search: '',
+          data: [],
+          tourID: null,
+          loading: false,
+        };
+    }
+
+    componentDidMount() {
+        this._isMounted = true;
+        this.searchAndSetTournaments('');
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
     searchAndSetTournaments = (term) => {
+        if (!this._isMounted) return;
         this.setState({loading: true});
         fetch(global.server + '/tournaments' + (term !='' ? ('?name=' + term) : ''), {
             method: "GET",
             headers: this.httpGetHeaders
         })
         .then((response) => {
+            if (!this._isMounted) return;
             if(response.status != 200 && response.status != 204) {
                 this.setState({loading: false});
                 Alert.alert("Alert", "(Status is !200) Should not be seing this.");
               } else {
                 response.json().then((respjson) => {
+                  if (!this._isMounted) return;
                   this.setState({data: []});
                   const newData = [];
                   respjson.map((tournamentInfo) => {
@@ -36,6 +64,7 @@ export class TournamentSearch extends React.Component {
               }
         })
         .catch((error) => {
+            if (!this._isMounted) return;
             this.setState({loading: true});
             console.error('Fetch featured error: ' + error);
         });
@@ -46,24 +75,6 @@ export class TournamentSearch extends React.Component {
         this.searchAndSetTournaments(term);
     };
 
-    componentDidMount() {
-        this.searchAndSetTournaments('');
-    }
-    
-    constructor(props){
-        super(props);
-
-        this.searchAndSetTournaments = this.searchAndSetTournaments.bind(this);
-        this.updateSearch = this.updateSearch.bind(this);
-        this.componentDidMount = this.componentDidMount.bind(this);
-    
-        this.state = { 
-          search: '',
-          data: [],
-          tourID: null,
-          loading: false,
-        };
-    }
 
     httpGetHeaders = {};
 

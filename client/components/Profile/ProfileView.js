@@ -17,6 +17,7 @@ export class ProfileView extends React.Component {
   constructor(props) {
     super(props);
 
+    this._isMounted = false;
     this.state = {
       email: "",
       firstName: "",
@@ -40,6 +41,7 @@ export class ProfileView extends React.Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
     this.getUserInfo();
     this.subs = [
       this.props.navigation.addListener("didFocus", payload => {
@@ -52,18 +54,21 @@ export class ProfileView extends React.Component {
   }
 
   componentWillUnmount() {
+    this._isMounted = false;
     this.subs.forEach(sub => sub.remove());
   }
 
   httpGetHeaders = {};
 
   getUserInfo() {
+    if (!this._isMounted) return;
     this.setState({ loading: true });
     fetch(global.server + "/users/" + global.userID, {
       method: "GET",
       headers: this.httpGetHeaders
     })
       .then(response => {
+        if (!this._isMounted) return;
         if (response.status === 404 || response.status === 400) {
           Alert.alert(
             "ERROR!",
@@ -73,6 +78,7 @@ export class ProfileView extends React.Component {
           );
         } else if (response.status === 200) {
           response.json().then(responseJSON => {
+            if (!this._isMounted) return;
             hasPhoto = responseJSON.photo_path != null;
             this.setState({
               email: responseJSON.email,
@@ -91,15 +97,18 @@ export class ProfileView extends React.Component {
       })
       .catch(error => {
         console.error("GET user error: " + error);
+        if (!this._isMounted) return;
         this.setState({ loading: false });
       });
   }
 
   async pickAndUploadPhoto() {
+    if (!this._isMounted) return;
     // Heavily inspired by https://stackoverflow.com/a/42521680
     const { status: cameraRollPerm } = await Permissions.askAsync(
       Permissions.CAMERA_ROLL
     );
+    if (!this._isMounted) return;
     if (cameraRollPerm !== "granted") {
       return;
     }
@@ -109,6 +118,7 @@ export class ProfileView extends React.Component {
       aspect: [1, 1],
       quality: 0.1
     });
+    if (!this._isMounted) return;
     if (result.cancelled) {
       return;
     }
