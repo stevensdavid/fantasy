@@ -26,7 +26,7 @@ export class LeagueList extends React.Component {
             description:
               league.event.tournament.name + ": " + league.event.name,
             status: Math.round(new Date().getTime() / 1000) > league.event.tournament.ends_at ?
-              "Finished" : "",
+              "(Finished)" : "",
             img_uri: league.event.tournament.ext_icon_url
           };
         }),
