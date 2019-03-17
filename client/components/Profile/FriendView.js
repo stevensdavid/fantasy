@@ -196,7 +196,7 @@ export default class FriendsView extends React.Component {
             >
               #{this.state.tag}
             </Text>
-            <Text style={{ fontSize: 14, color: "#b3002d" }}>Score: 0</Text>
+            <Text style={{ marginLeft: 4, fontSize: 14, color: "#b3002d" }}>Score: 0</Text>
           </View>
         </View>
         <View style={styles.container}>
@@ -205,7 +205,7 @@ export default class FriendsView extends React.Component {
               style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
               underlineColorAndroid="transparent"
             >
-              {this.state.firstName}
+              Name: {this.state.firstName + " " + this.state.lastName} 
             </Text>
           </View>
 
@@ -214,16 +214,7 @@ export default class FriendsView extends React.Component {
               style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
               underlineColorAndroid="transparent"
             >
-              {this.state.lastName}
-            </Text>
-          </View>
-
-          <View style={styles.textContainer}>
-            <Text
-              style={[styles.inputs, { fontSize: this.state.infoTextSize }]}
-              underlineColorAndroid="transparent"
-            >
-              {this.state.email}
+              Email: {this.state.email}
             </Text>
           </View>
 

@@ -331,8 +331,8 @@ export default class SnakeLeagueView extends React.Component {
               this.state.league.fantasy_results.find(
                 x => x.user.user_id == this.state.league.owner
               ).user.tag
-            }\n`}
-            {`Draft size: ${this.state.league.draft_size}\n`}
+            }, `}
+            {`Draft size: ${this.state.league.draft_size}, `}
             Snake draft
           </Text>
         )}

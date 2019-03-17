@@ -160,6 +160,11 @@ export default class LeagueParticipantsView extends React.Component {
   }
 
   addUser(user) {
+    if(user.user.tag.toLowerCase().indexOf(this.state.term.toLowerCase()) == -1 && this.state.term != "") {
+      console.log("Returning");
+      return
+    }
+    if (!this._isMounted) return;
     this.setState({
       data: this.state.data.concat({
         key: user.user.user_id.toString(),
@@ -168,11 +173,12 @@ export default class LeagueParticipantsView extends React.Component {
         img_uri: user.user.photo_path
           ? global.server + "/images/" + user.user.photo_path
           : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
-      })
+      }).sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0))
     });
   }
 
   deleteUser(user) {
+    if (!this._isMounted) return;
     this.setState({
       data: this.state.data.filter(x => x.key != user.user.user_id)
     });
