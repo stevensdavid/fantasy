@@ -8,7 +8,7 @@ import {
   TouchableHighlight,
   Image,
   Alert,
-  Platform
+  Platform,
 } from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
 
@@ -86,41 +86,6 @@ export default class RegisterForm extends React.Component {
       });
   }
 
-  /*tryLogin (ema,pass) {
-      fetch(global.server + '/login', {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email: ema, pw: pass})
-      })
-      .then((response) => {
-        if(response.status === 404 || response.status === 400) {
-          Alert.alert(
-            'Invalid input!',
-            'Please check your input.',
-            [
-              {text: 'OK', onPress: () => this.setState({loading: false})}
-            ],
-            { cancelable: false }
-          )
-        } else if (response.status === 200) {
-          response.json().then((respjson) => {
-            this.setState({
-              loading: false
-            })
-            global.userID = respjson.userId;
-            this.setToken(respjson.token); 
-            this.props.navigation.goBack();
-          })
-        }
-      })
-      .catch((error) => {
-        this.setState({
-          loading: false
-        });
-        console.error('Login error: ' + error);
-      });
-    }*/
-
   render() {
     return (
       <View style={styles.container}>
@@ -133,9 +98,12 @@ export default class RegisterForm extends React.Component {
           <TextInput
             style={styles.inputs}
             ref={input => (this.firstName = input)}
-            onSubmitEditing={() => this.lastName.focus()}
+            onSubmitEditing={() => this.lastName && this.lastName.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
             placeholder="First Name"
             keyboardType="default"
+            autoFocus={true}
             underlineColorAndroid="transparent"
             onChangeText={firstName => this.setState({ firstName })}
           />
@@ -145,7 +113,9 @@ export default class RegisterForm extends React.Component {
           <TextInput
             style={styles.inputs}
             ref={input => (this.lastName = input)}
-            onSubmitEditing={() => this.tag.focus()}
+            onSubmitEditing={() => this.tag && this.tag.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
             placeholder="Last Name"
             keyboardType="default"
             underlineColorAndroid="transparent"
@@ -157,7 +127,9 @@ export default class RegisterForm extends React.Component {
           <TextInput
             style={styles.inputs}
             ref={input => (this.tag = input)}
-            onSubmitEditing={() => this.email.focus()}
+            onSubmitEditing={() => this.email && this.email.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
             placeholder="Tag"
             keyboardType="default"
             underlineColorAndroid="transparent"
@@ -169,7 +141,9 @@ export default class RegisterForm extends React.Component {
           <TextInput
             style={styles.inputs}
             ref={input => (this.email = input)}
-            onSubmitEditing={() => this.password.focus()}
+            onSubmitEditing={() => this.password && this.password.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
             placeholder="Email"
             keyboardType="email-address"
             underlineColorAndroid="transparent"
@@ -182,7 +156,9 @@ export default class RegisterForm extends React.Component {
           <TextInput
             style={styles.inputs}
             ref={input => (this.password = input)}
-            onSubmitEditing={() => this.confirm.focus()}
+            onSubmitEditing={() => this.confirm && this.confirm.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
             placeholder="Password"
             secureTextEntry={true}
             underlineColorAndroid="transparent"
@@ -194,6 +170,7 @@ export default class RegisterForm extends React.Component {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.inputs}
+            onSubmitEditing={() => this.tryCreateUser(this.state)}
             ref={input => (this.confirm = input)}
             placeholder="Confirm Password"
             secureTextEntry={true}
@@ -211,6 +188,7 @@ export default class RegisterForm extends React.Component {
           <Text style={styles.loginText}>Register</Text>
         </TouchableHighlight>
       </View>
+
     );
   }
 }
