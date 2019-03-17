@@ -3,7 +3,8 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Text
+  Text,
+  Alert
 } from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 import { LeagueList } from './LeagueList'
@@ -17,6 +18,7 @@ export class LeaguesHome extends React.Component {
       token: global.token
     }
     this.fetchLeagues = this.fetchLeagues.bind(this);
+    this.leagueRemoved = this.leagueRemoved.bind(this);
   }
 
   componentDidMount() {
@@ -25,7 +27,7 @@ export class LeaguesHome extends React.Component {
         this.newLeague(this.props.navigation.getParam("leagueID", -1)) 
         : {}
     })
-
+    global.webSocket.on('league-removed', this.leagueRemoved);
     this.fetchLeagues();
   }
 
@@ -33,6 +35,14 @@ export class LeaguesHome extends React.Component {
     if(this.state.token != global.token) {
       this.setState({token: global.token});
       this.fetchLeagues();
+    }
+  }
+
+  leagueRemoved(leagueID) {
+    let league = this.state.leagues.find(x => x.league_id == leagueID);
+    if (league) {
+      Alert.alert(`The league "${league.name}" has been deleted.`);
+      this.setState({ leagues: this.state.leagues.filter(x => x.league_id != leagueID) });
     }
   }
 

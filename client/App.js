@@ -2,13 +2,20 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View, YellowBox } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import SocketIOClient from "socket.io-client";
+
 
 global.token = null;
 global.server = "https://dstevens.se:5000";
 global.userID = null;
 global.newUserInfo = false;
 global.newDraft = false;
-global.newParticipantsInfo= false;
+global.newParticipantsInfo = false;
+global.webSocket = SocketIOClient(global.server + "/", {
+  secure: true,
+  reconnect: true,
+  transports: ["websocket"]
+});
 
 // Socket.IO has a harmless warning on react native which can safely be ignored
 console.ignoredYellowBox = ['Remote debugger'];
@@ -21,6 +28,11 @@ export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
   };
+
+  constructor(props) {
+    super(props);
+    global.webSocket.on()
+  }
 
   render() {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {

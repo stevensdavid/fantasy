@@ -50,6 +50,7 @@ export class LoginForm extends React.Component {
             // TODO: Remove one of these two
             this.props.setToken(respjson.token);
             global.token = respjson.token;
+            global.webSocket.emit('login', {userID: respjson.userId, token:respjson.token})
           });
         }
       })

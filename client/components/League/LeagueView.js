@@ -98,7 +98,7 @@ export default class LeagueView extends React.Component {
 
   render() {
     return (
-      <View style={{ minHeight: "100%", flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
           <Text
             style={{ alignSelf: "center", fontSize: 32, fontWeight: "bold" }}
