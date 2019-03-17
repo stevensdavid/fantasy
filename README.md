@@ -1,6 +1,6 @@
 # SmashGG Fantasy
 This repository is an application that was created as a project in the course DD1389 Internetprogramming 
-at the KTH Royal Institute of Technology by @stevensdavid and @ruwaid123
+at the KTH Royal Institute of Technology by [@stevensdavid](https://github.com/stevensdavid) and [@ruwaid123](https://github.com/ruwaid123)
 
 It is a mobile application that interacts with the esport service [Smash.GG](https://www.smash.gg) by creating an automated system for creating fantasy leagues for any tournament that is hosted on Smash.GG.
 
