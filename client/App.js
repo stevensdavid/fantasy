@@ -35,11 +35,13 @@ export default class App extends React.Component {
     this.routineUpdate = this.routineUpdate.bind(this);
     this.newLeague = this.newLeague.bind(this);
     this.leagueRemoved = this.leagueRemoved.bind(this);
+    this.removedFromLeague = this.removedFromLeague.bind(this);
   }
 
   componentDidMount() {
     global.webSocket.on('routine-update', this.routineUpdate);
     global.webSocket.on('league-removed', this.leagueRemoved);
+    global.webSocket.on('removed-from-league', this.removedFromLeague);
     global.webSocket.on('new-league', this.newLeague)
   }
 
@@ -47,13 +49,18 @@ export default class App extends React.Component {
 
   }
 
+  removedFromLeague(league) {
+    this.dropdown.alertWithType('warn', 'Removed from league',
+      `You have been removed from "${league.name}".`)
+  }
+
   newLeague(league) {
-    this.dropdown.alertWithType('info', 'New league',
+    this.dropdown.alertWithType('success', 'New league',
       `You have been added to the league "${league.name}" for ${league.event.name} at ${league.event.tournament.name}`)
   }
 
   leagueRemoved(league) {
-    this.dropdown.alertWithType('info', 'League removed',
+    this.dropdown.alertWithType('warn', 'League removed',
       `The league "${league.name}" has been deleted.`)
   }
 
@@ -70,8 +77,8 @@ export default class App extends React.Component {
       return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <DropdownAlert ref={ref => this.dropdown = ref} />
           <AppNavigator />
+          <DropdownAlert ref={ref => this.dropdown = ref} />
         </View>
       );
     }

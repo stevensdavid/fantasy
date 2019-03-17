@@ -17,9 +17,12 @@ export default class LeagueView extends React.Component {
     this.componentDidMount = this.componentDidMount.bind(this);
     this.leagueID = this.props.navigation.getParam("leagueID", -1);
     this.handlePress = this.handlePress.bind(this);
+    this.leagueRemoved = this.leagueRemoved.bind(this);
   }
 
   componentDidMount() {
+    global.webSocket.on('league-removed', this.leagueRemoved);
+    global.webSocket.on('removed-from-league', this.leagueRemoved);
     if (this.leagueID == -1) {
       console.error("LeagueView: League ID was not received successfully");
       return;
@@ -85,8 +88,16 @@ export default class LeagueView extends React.Component {
     ];
   }
 
+  leagueRemoved(league) {
+    if (league.league_id == this.leagueID) {
+      this.props.navigation.goBack();
+    }
+  }
+
   componentWillUnmount() {
     this.subs.forEach(sub => sub.remove());
+    global.webSocket.off('league-removed', this.leagueRemoved);
+    global.webSocket.off('removed-from-league', this.leagueRemoved);
   }
 
   handlePress(userID) {

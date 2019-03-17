@@ -85,7 +85,7 @@ export default class CreateLeagueForm extends React.Component {
         return (
             <View style={styles.container}>
                 <View style={styles.inputContainer}>
-                    <Text>League name</Text>
+                    <Text style={styles.textStyle}>League name:</Text>
                     <TextInput style={styles.inputs}
                     ref={input => (this.leagueName = input)}
             onSubmitEditing={() => this.draftSize.focus()}
@@ -96,7 +96,7 @@ export default class CreateLeagueForm extends React.Component {
                     />
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text>Draft size</Text>
+                    <Text style={styles.textStyle}>Draft size:</Text>
                     <TextInput style={styles.inputs}
                     ref={input => (this.draftSize = input)}
                         defaultValue="5"
@@ -106,15 +106,15 @@ export default class CreateLeagueForm extends React.Component {
                     />
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text>Snake draft</Text>
-                    <Switch style={styles.inputs}
+                    <Text style={styles.textStyle}>Snake draft:</Text>
+                    <Switch style={styles.switches}
                         value={this.state.isSnake}
                         onValueChange={(isSnake) => this.setState({ isSnake })}
                     />
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text>Public</Text>
-                    <Switch style={styles.inputs}
+                    <Text style={styles.textStyle}>Public:</Text>
+                    <Switch style={styles.switches}
                         value={this.state.isPublic}
                         onValueChange={(isPublic) => this.setState({ isPublic })}
                     />
@@ -149,9 +149,17 @@ const styles = StyleSheet.create({
     spinnerTextStyle: {
         color: '#FFF',
     },
+    textStyle:{
+        width: 100,
+    },
     inputs: {
         height: 45,
         width: '100%',
+        marginLeft: 16,
+        borderBottomColor: '#FFFFFF',
+    },
+    switches: {
+        height: 45,
         marginLeft: 16,
         borderBottomColor: '#FFFFFF',
     },

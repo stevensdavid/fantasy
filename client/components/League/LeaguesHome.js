@@ -19,15 +19,18 @@ export class LeaguesHome extends React.Component {
     }
     this.fetchLeagues = this.fetchLeagues.bind(this);
     this.leagueRemoved = this.leagueRemoved.bind(this);
+    this.newLeague = this.newLeague.bind(this);
   }
 
   componentDidMount() {
     this.navigationWillFocusListener = this.props.navigation.addListener('willFocus', () => {
         this.props.navigation.getParam("newData", false) ? 
-        this.newLeague(this.props.navigation.getParam("leagueID", -1)) 
+        this.createdLeague(this.props.navigation.getParam("leagueID", -1)) 
         : {}
     })
     global.webSocket.on('league-removed', this.leagueRemoved);
+    global.webSocket.on('removed-from-league', this.leagueRemoved);
+    global.webSocket.on('new-league', this.newLeague);
     this.fetchLeagues();
   }
 
@@ -38,15 +41,19 @@ export class LeaguesHome extends React.Component {
     }
   }
 
-  leagueRemoved(leagueID) {
-    let league = this.state.leagues.find(x => x.league_id == leagueID);
-    if (league) {
+  leagueRemoved(league) {
+    console.log('league-removed handled in LeaguesHome');
+    if (this.state.leagues.find(x => x.league_id == league.league_id)) {
       Alert.alert(`The league "${league.name}" has been deleted.`);
-      this.setState({ leagues: this.state.leagues.filter(x => x.league_id != leagueID) });
+      this.setState({ leagues: this.state.leagues.filter(x => x.league_id != league.league_id) });
     }
   }
 
-  newLeague(newLeagueID) {
+  newLeague(league) {
+    this.setState({ leagues: this.state.leagues.concat(league) });
+  }
+
+  createdLeague(newLeagueID) {
     this.fetchLeagues();
     if(this.props.navigation.getParam("isSnake", false)) {
       this.props.navigation.navigate("SnakeLeague", { leagueID: newLeagueID })
@@ -56,7 +63,10 @@ export class LeaguesHome extends React.Component {
   }
 
   componentWillUnmount () {
-    this.navigationWillFocusListener.remove()
+    this.navigationWillFocusListener.remove();
+    global.webSocket.off('league-removed', this.leagueRemoved);
+    global.webSocket.off('removed-from-league', this.leagueRemoved);
+    global.webSocket.off('new-league', this.newLeague);
   }
 
   fetchLeagues() {
