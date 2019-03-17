@@ -8,9 +8,10 @@ import {
   TouchableHighlight,
   Image,
   Alert,
-  Platform,
+  Platform
 } from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 export default class RegisterForm extends React.Component {
   static navigationOptions = {
@@ -94,99 +95,101 @@ export default class RegisterForm extends React.Component {
           textContent={"Loading..."}
           textStyle={styles.spinnerTextStyle}
         />
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            ref={input => (this.firstName = input)}
-            onSubmitEditing={() => this.lastName && this.lastName.focus()}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            placeholder="First Name"
-            keyboardType="default"
-            autoFocus={true}
-            underlineColorAndroid="transparent"
-            onChangeText={firstName => this.setState({ firstName })}
-          />
-        </View>
+        <KeyboardAwareScrollView>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputs}
+              ref={input => (this.firstName = input)}
+              onSubmitEditing={() => this.lastName && this.lastName.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              placeholder="First Name"
+              keyboardType="default"
+              autoFocus={true}
+              underlineColorAndroid="transparent"
+              onChangeText={firstName => this.setState({ firstName })}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            ref={input => (this.lastName = input)}
-            onSubmitEditing={() => this.tag && this.tag.focus()}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            placeholder="Last Name"
-            keyboardType="default"
-            underlineColorAndroid="transparent"
-            onChangeText={lastName => this.setState({ lastName })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputs}
+              ref={input => (this.lastName = input)}
+              onSubmitEditing={() => this.tag && this.tag.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              placeholder="Last Name"
+              keyboardType="default"
+              underlineColorAndroid="transparent"
+              onChangeText={lastName => this.setState({ lastName })}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            ref={input => (this.tag = input)}
-            onSubmitEditing={() => this.email && this.email.focus()}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            placeholder="Tag"
-            keyboardType="default"
-            underlineColorAndroid="transparent"
-            onChangeText={tag => this.setState({ tag })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputs}
+              ref={input => (this.tag = input)}
+              onSubmitEditing={() => this.email && this.email.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              placeholder="Tag"
+              keyboardType="default"
+              underlineColorAndroid="transparent"
+              onChangeText={tag => this.setState({ tag })}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            ref={input => (this.email = input)}
-            onSubmitEditing={() => this.password && this.password.focus()}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            placeholder="Email"
-            keyboardType="email-address"
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            onChangeText={email => this.setState({ email })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputs}
+              ref={input => (this.email = input)}
+              onSubmitEditing={() => this.password && this.password.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              placeholder="Email"
+              keyboardType="email-address"
+              underlineColorAndroid="transparent"
+              autoCapitalize="none"
+              onChangeText={email => this.setState({ email })}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            ref={input => (this.password = input)}
-            onSubmitEditing={() => this.confirm && this.confirm.focus()}
-            returnKeyType="next"
-            blurOnSubmit={false}
-            placeholder="Password"
-            secureTextEntry={true}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            onChangeText={password => this.setState({ password })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputs}
+              ref={input => (this.password = input)}
+              onSubmitEditing={() => this.confirm && this.confirm.focus()}
+              returnKeyType="next"
+              blurOnSubmit={false}
+              placeholder="Password"
+              secureTextEntry={true}
+              underlineColorAndroid="transparent"
+              autoCapitalize="none"
+              onChangeText={password => this.setState({ password })}
+            />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputs}
-            onSubmitEditing={() => this.tryCreateUser(this.state)}
-            ref={input => (this.confirm = input)}
-            placeholder="Confirm Password"
-            secureTextEntry={true}
-            underlineColorAndroid="transparent"
-            autoCapitalize="none"
-            onChangeText={passwordConfirm => this.setState({ passwordConfirm })}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputs}
+              onSubmitEditing={() => this.tryCreateUser(this.state)}
+              ref={input => (this.confirm = input)}
+              placeholder="Confirm Password"
+              secureTextEntry={true}
+              underlineColorAndroid="transparent"
+              autoCapitalize="none"
+              onChangeText={passwordConfirm => this.setState({ passwordConfirm })}
+            />
+          </View>
 
-        <TouchableHighlight
-          disabled={this.state.loading}
-          style={[styles.buttonContainer, styles.loginButton]}
-          onPress={() => this.tryCreateUser(this.state)}
-        >
-          <Text style={styles.loginText}>Register</Text>
-        </TouchableHighlight>
+          <TouchableHighlight
+            disabled={this.state.loading}
+            style={[styles.buttonContainer, styles.loginButton]}
+            onPress={() => this.tryCreateUser(this.state)}
+          >
+            <Text style={styles.loginText}>Register</Text>
+          </TouchableHighlight>
+        </KeyboardAwareScrollView>
       </View>
 
     );
@@ -195,7 +198,6 @@ export default class RegisterForm extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
