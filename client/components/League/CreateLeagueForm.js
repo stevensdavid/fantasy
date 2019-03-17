@@ -107,14 +107,14 @@ export default class CreateLeagueForm extends React.Component {
                 </View>
                 <View style={styles.inputContainer}>
                     <Text>Snake draft</Text>
-                    <Switch style={styles.inputs}
+                    <Switch style={styles.switches}
                         value={this.state.isSnake}
                         onValueChange={(isSnake) => this.setState({ isSnake })}
                     />
                 </View>
                 <View style={styles.inputContainer}>
-                    <Text>Public</Text>
-                    <Switch style={styles.inputs}
+                    <Text style=>Public</Text>
+                    <Switch style={styles.switches}
                         value={this.state.isPublic}
                         onValueChange={(isPublic) => this.setState({ isPublic })}
                     />
@@ -152,6 +152,11 @@ const styles = StyleSheet.create({
     inputs: {
         height: 45,
         width: '100%',
+        marginLeft: 16,
+        borderBottomColor: '#FFFFFF',
+    },
+    switches: {
+        height: 45,
         marginLeft: 16,
         borderBottomColor: '#FFFFFF',
     },
