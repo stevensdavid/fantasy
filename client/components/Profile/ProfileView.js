@@ -127,7 +127,6 @@ export class ProfileView extends React.Component {
     // Infer the type of the image
     let match = /\.(\w+)$/.exec(filename);
     let type = match ? `image/${match[1]}` : `image`;
-    console.log(type);
     if (
       !["image/jpeg", "image/jpg", "image/png"].includes(type.toLowerCase())
     ) {
@@ -156,11 +155,14 @@ export class ProfileView extends React.Component {
       });
     } catch (err) {
       console.log(err);
-      Alert.alert("Unsuccesful");
     }
-    if (result.status !== 204) {
-      text = await result.text();
-      Alert.alert(text);
+    if (result.status != 204) {
+      try {
+        text = await result.json();
+        Alert.alert(text.error);
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 
