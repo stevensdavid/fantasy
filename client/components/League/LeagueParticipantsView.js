@@ -44,19 +44,20 @@ export default class LeagueParticipantsView extends React.Component {
       .then(res => {
         if (res.status === 200) {
           global.newParticipantsInfo = true;
-          res.json().then((participant) => {          
+          res.json().then(participant => {
             this.setState({
               participantsData: this.state.participantsData.concat({
                 key: participant.user.user_id.toString(),
                 title: participant.user.tag,
-                description: participant.user.first_name + " " + participant.user.last_name,
-                img_uri:
-                  participant.user.photo_path
-                    ? global.server + "/images/" + participant.user.photo_path
-                    : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+                description:
+                  participant.user.first_name +
+                  " " +
+                  participant.user.last_name,
+                img_uri: participant.user.photo_path
+                  ? global.server + "/images/" + participant.user.photo_path
+                  : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
               })
-            });
-            this.fetchUsers(this.state.term);
+            }, () => {this.deleteUser(participant)});
           });
         } else {
           throw res;
@@ -78,13 +79,16 @@ export default class LeagueParticipantsView extends React.Component {
       })
     })
       .then(res => {
+        console.log(res);
         if (res.status === 200) {
           global.newParticipantsInfo = true;
-          res.json().then((participant) => {          
+          res.json().then(participant => {
+            console.log(participant);
             this.setState({
-              participantsData: this.state.participantsData.filter((x) => x.key != participant.user_id)
-            });
-            this.fetchUsers(this.state.term);
+              participantsData: this.state.participantsData.filter(
+                x => x.key != participant.user.user_id
+              )
+            }, () => {this.addUser(participant)});
           });
         } else {
           throw res;
@@ -141,6 +145,25 @@ export default class LeagueParticipantsView extends React.Component {
         });
       })
       .catch(err => console.log(err));
+  }
+
+  addUser(user) {
+    this.setState({
+      data: this.state.data.concat({
+        key: user.user.user_id.toString(),
+        title: user.user.tag,
+        description: user.user.first_name + " " + user.user.last_name,
+        img_uri: user.user.photo_path
+          ? global.server + "/images/" + user.user.photo_path
+          : "https://cdn.cwsplatform.com/assets/no-photo-available.png"
+      })
+    });
+  }
+
+  deleteUser(user) {
+    this.setState({
+      data: this.state.data.filter(x => x.key != user.user.user_id)
+    });
   }
 
   fetchParticipants() {
