@@ -18,7 +18,7 @@ export default class TournamentView extends React.Component {
         this.state = { 
           search: '',
           data: [],
-          loading: false,
+          loading: true,
           title: '',
           banner_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',
           icon_uri: 'https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif',

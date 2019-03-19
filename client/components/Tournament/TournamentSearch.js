@@ -17,7 +17,7 @@ export class TournamentSearch extends React.Component {
           search: '',
           data: [],
           tourID: null,
-          loading: false,
+          loading: true,
         };
     }
 

@@ -25,7 +25,7 @@ export default class EventView extends React.Component {
     this._isMounted = false;
 
     this.state = {
-      loading: false,
+      loading: true,
       eventInfo: {},
       icon_uri:
         "https://media1.tenor.com/images/556e9ff845b7dd0c62dcdbbb00babb4b/tenor.gif",
