@@ -44,7 +44,7 @@ export default class CreateLeagueForm extends React.Component {
     }
 
     createLeague(stateInfo) {
-        if(!global.token) {
+        if (!global.token) {
             Alert.alert("Alert", "Please log in before creating a league");
             this.props.navigation.goBack();
             return;
@@ -85,7 +85,7 @@ export default class CreateLeagueForm extends React.Component {
             if (!this._isMounted) return;
             if (participant_res.status == 200) {
                 this.props.navigation.goBack();
-                this.props.navigation.navigate("Leagues", {newData: true, leagueID: this.leagueID, isSnake: this.state.isSnake});
+                this.props.navigation.navigate("Leagues", { newData: true, leagueID: this.leagueID, isSnake: this.state.isSnake });
             } else {
                 throw ('Add league owner to league error');
             }
@@ -96,49 +96,49 @@ export default class CreateLeagueForm extends React.Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <KeyboardAwareScrollView>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.textStyle}>League name:</Text>
-                    <TextInput style={styles.inputs}
-                    ref={input => (this.leagueName = input)}
-            onSubmitEditing={() => this.draftSize.focus()}
-                        placeholder="Press to type..."
-                        keyboardType="default"
-                        underlineColorAndroid='transparent'
-                        onChangeText={(name) => this.setState({ name })}
-                    />
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.textStyle}>Draft size:</Text>
-                    <TextInput style={styles.inputs}
-                    ref={input => (this.draftSize = input)}
-                        defaultValue="5"
-                        keyboardType="number-pad"
-                        underlineColorAndroid='transparent'
-                        onChangeText={(draftSize) => this.setState({ draftSize })}
-                    />
+            <KeyboardAwareScrollView>
+                <View style={styles.container}>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.textStyle}>League name:</Text>
+                        <TextInput style={styles.inputs}
+                            ref={input => (this.leagueName = input)}
+                            onSubmitEditing={() => this.draftSize.focus()}
+                            placeholder="Press to type..."
+                            keyboardType="default"
+                            underlineColorAndroid='transparent'
+                            onChangeText={(name) => this.setState({ name })}
+                        />
                     </View>
-                </KeyboardAwareScrollView>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.textStyle}>Snake draft:</Text>
-                    <Switch style={styles.switches}
-                        value={this.state.isSnake}
-                        onValueChange={(isSnake) => this.setState({ isSnake })}
-                    />
-                </View>
-                <View style={styles.inputContainer}>
-                    <Text style={styles.textStyle}>Public:</Text>
-                    <Switch style={styles.switches}
-                        value={this.state.isPublic}
-                        onValueChange={(isPublic) => this.setState({ isPublic })}
-                    />
-                </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.textStyle}>Draft size:</Text>
+                        <TextInput style={styles.inputs}
+                            ref={input => (this.draftSize = input)}
+                            defaultValue="5"
+                            keyboardType="number-pad"
+                            underlineColorAndroid='transparent'
+                            onChangeText={(draftSize) => this.setState({ draftSize })}
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.textStyle}>Snake draft:</Text>
+                        <Switch style={styles.switches}
+                            value={this.state.isSnake}
+                            onValueChange={(isSnake) => this.setState({ isSnake })}
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.textStyle}>Public:</Text>
+                        <Switch style={styles.switches}
+                            value={this.state.isPublic}
+                            onValueChange={(isPublic) => this.setState({ isPublic })}
+                        />
+                    </View>
 
-                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.createLeague(this.state)}>
-                    <Text style={styles.loginText}>Create</Text>
-                </TouchableHighlight>
-            </View>
+                    <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.createLeague(this.state)}>
+                        <Text style={styles.loginText}>Create</Text>
+                    </TouchableHighlight>
+                </View>
+            </KeyboardAwareScrollView >
         );
     }
 }
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    textStyle:{
+    textStyle: {
         width: 100,
     },
     inputs: {
