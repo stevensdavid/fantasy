@@ -10,6 +10,6 @@ Flask_SocketIO==3.3.2
 Flask_RESTful==0.3.7
 APScheduler==3.5.3
 marshmallow==2.18.1
-Pillow==5.4.1
+Pillow==6.2.0
 python_bcrypt==0.3.2
 eventlet==0.24.1
