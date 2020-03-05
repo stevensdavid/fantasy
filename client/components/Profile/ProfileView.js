@@ -10,7 +10,8 @@ import {
   ScrollView,
   ActivityIndicator
 } from "react-native";
-import { ImagePicker, Permissions } from "expo";
+import * as Permissions from 'expo-permissions';
+import * as ImagePicker from 'expo-image-picker';
 import { Icon } from "react-native-elements";
 
 export class ProfileView extends React.Component {
